@@ -91,6 +91,7 @@ button{cursor:pointer}
 .meta-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
 .meta-fields input{width:100%;min-height:38px;padding:7px 11px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--paper)}
 .count{font-variant-numeric:tabular-nums;font-size:var(--t-sm);color:var(--ink-3)}
+.wrap-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:var(--t-sm);color:var(--ink-2)}
 
 /* library */
 .library{display:grid;gap:12px;padding:18px 20px;background:var(--leaf);border:1px solid var(--rule);border-radius:12px}
@@ -168,7 +169,7 @@ button{cursor:pointer}
 .folio{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,1fr);gap:30px;align-items:start}
 .text-pane{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);max-height:calc(100vh - 24px);overflow:auto;padding:20px 24px 28px;background:var(--leaf);border:1px solid var(--rule);border-radius:12px}
 .pane-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;margin-bottom:12px}
-.src{margin:0;max-width:68ch;font-family:var(--font-text);font-size:1.08rem;line-height:1.72;white-space:pre-wrap;overflow-wrap:anywhere}
+.src{margin:0;max-width:68ch;font-family:var(--font-text);font-size:1.08rem;line-height:1.72;white-space:pre-wrap;overflow-wrap:anywhere;unicode-bidi:plaintext;text-align:start}
 .src mark{background:transparent;color:inherit;border-radius:2px;cursor:pointer;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-skip-ink:none;transition:background-color .2s}
 .src mark.k-rhet{text-decoration-color:var(--rhet)} .src mark.k-phil{text-decoration-color:var(--phil)} .src mark.k-spir{text-decoration-color:var(--spir)}
 .src mark.sel.k-rhet{background:var(--rhet-tint)} .src mark.sel.k-phil{background:var(--phil-tint)} .src mark.sel.k-spir{background:var(--spir-tint)}
@@ -189,7 +190,7 @@ button{cursor:pointer}
 .distilled{margin:0;font-size:1.14rem;font-weight:500;line-height:1.42}
 .q{position:relative;margin:0;padding-left:1.15em;font-family:var(--font-text);font-style:italic;color:var(--ink-2);line-height:1.55}
 .q::before{content:"\201C";position:absolute;left:0;top:-.08em;font-size:1.55em;font-style:normal;color:var(--ink-3)}
-.q p{margin:0;overflow-wrap:anywhere}
+.q p{margin:0;overflow-wrap:anywhere;unicode-bidi:plaintext}
 .q footer{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:5px;font-family:var(--font-gloss);font-style:normal;font-size:var(--t-xs);color:var(--ink-3)}
 .found.ok{color:var(--accent)}
 .found.partial,.found.missing{color:var(--ink);font-weight:700;text-decoration:underline dashed var(--ink-3);text-underline-offset:3px}
@@ -269,7 +270,7 @@ button{cursor:pointer}
     </fieldset>
     <div class="drop" id="drop">
       <label class="visually-hidden" for="src">The text to read</label>
-      <textarea id="src" spellcheck="false" placeholder="Paste a text here, or drop in a PDF, a Word file (.docx), or a plain-text file."></textarea>
+      <textarea id="src" dir="auto" spellcheck="false" placeholder="Paste a text here, or drop in a PDF, a Word file (.docx), or a plain-text file."></textarea>
       <div class="drop-veil" id="drop-veil" hidden>Drop the file to load its text</div>
     </div>
     <div class="row">
@@ -277,6 +278,10 @@ button{cursor:pointer}
       <button class="btn quiet" type="button" id="clear">Clear</button>
       <span class="count" id="count">0 words</span>
       <span class="note" id="file-status" role="status"></span>
+    </div>
+    <div class="wrap-note" id="wrap-note" hidden>
+      <span>This text keeps the line breaks of a PDF or scan, which chops it into short lines.</span>
+      <button class="btn small" type="button" id="reflow">Join lines into paragraphs</button>
     </div>
     <div class="meta-fields">
       <label><span class="visually-hidden">Title</span><input id="in-title" type="text" placeholder="Title (optional)" autocomplete="off"></label>
@@ -617,6 +622,11 @@ function folds(r) {
   if (!f) { f = { strict: fold(r.text, false), loose: fold(r.text, true), paras: paraStarts(r.text) }; FOLDS.set(r, f); }
   return f;
 }
+function squeeze(T) {
+  const out = [], map = [];
+  for (let i = 0; i < T.s.length; i++) if (T.s[i] !== ' ') { out.push(T.s[i]); map.push(T.map[i]); }
+  return { s: out.join(''), map };
+}
 function foldIndex(T, orig) { let lo = 0, hi = T.map.length; while (lo < hi) { const m = (lo + hi) >> 1; if (T.map[m] < orig) lo = m + 1; else hi = m; } return lo; }
 function paraOf(r, offset) { const P = folds(r).paras; let lo = 0, hi = P.length - 1, ans = 0; while (lo <= hi) { const m = (lo + hi) >> 1; if (P[m] <= offset) { ans = m; lo = m + 1; } else hi = m - 1; } return ans + 1; }
 // Finds a claimed quotation in the text: exact first, then ignoring punctuation, then by its opening and closing words.
@@ -630,6 +640,14 @@ function locate(r, quote, fromOrig) {
     let k = T.s.indexOf(Q, foldIndex(T, fromOrig || 0));
     if (k < 0) k = T.s.indexOf(Q);
     if (k >= 0) return { start: T.map[k], end: T.map[k + Q.length - 1] + 1, match: loose ? 'close' : 'exact' };
+  }
+  const Qn = fold(q, true).s.replace(/ /g, '');
+  if (Qn.length >= 16) {
+    if (!F.nospace) F.nospace = squeeze(F.loose);
+    const N = F.nospace;
+    let k = N.s.indexOf(Qn, foldIndex(N, fromOrig || 0));
+    if (k < 0) k = N.s.indexOf(Qn);
+    if (k >= 0) return { start: N.map[k], end: N.map[k + Qn.length - 1] + 1, match: 'close' };
   }
   const W = fold(q, true).s.split(' ').filter(Boolean);
   if (W.length >= 8) {
@@ -656,6 +674,8 @@ const S = {
 
 /* ------------------------------------------------------------------ rendering a reading */
 function openReading(r) {
+  for (const ctl of S.deepCtl.values()) ctl.abort();
+  S.deepCtl.clear();
   S.r = r; S.sel = null; S.fKind = 'all'; S.fWho = 'all';
   let prev = 0;
   for (const c of r.claims) { c.loc = locate(r, c.quote, prev); if (c.loc) prev = c.loc.start; }
@@ -667,7 +687,7 @@ function renderHead() {
   const r = S.r, lens = LENSES[r.lens] ? LENSES[r.lens].label : '';
   $('#r-eyebrow').textContent = r.example ? `Example reading \u00B7 ${lens}` : r.pending ? `Reading in progress \u00B7 ${lens}` : `Reading \u00B7 ${lens}${r.createdAt ? ' \u00B7 ' + fmtDate(r.createdAt) : ''}`;
   $('#r-title').textContent = r.title || (r.pending ? 'Reading the text\u2026' : 'Untitled text');
-  $('#r-byline').textContent = r.author || '';
+  $('#r-byline').textContent = (r.author || '') + (r.author && r.authorIdentified ? ' \u00b7 identified by Claude; the text does not name its author' : '');
   $('#r-byline').hidden = !r.author;
   $('#r-example').hidden = !r.example;
   $('#r-cut').hidden = !r.note;
@@ -795,6 +815,7 @@ function card(c, i) {
       el('span', { class: 'sig', 'aria-hidden': 'true' }, String(i + 1)),
       el('span', { class: 'who' }, c.claimant),
       c.luminary ? el('span', { class: 'tag' }, 'luminary') : null,
+      c.identified ? el('span', { class: 'tag', title: 'The text does not name this claimant; Claude identified them. Check before you cite it.' }, 'identified') : null,
       el('span', { class: 'voice' }, VOICES[c.voice])),
     el('p', { class: 'distilled', id: 'd-' + c.id }, el('span', { class: 'visually-hidden' }, `Claim ${i + 1}: `), c.distilled || '(no distillation given)'),
     c.quote ? el('blockquote', { class: 'q' }, el('p', null, c.quote), el('footer', null, where, badge)) : null,
@@ -968,7 +989,7 @@ Kind of text: ${LENSES[r.lens].prompt}
 Report between ${lo} and ${hi} claims, in order of appearance, choosing the ones that carry the most weight.
 
 For each claim:
-- "claimant": who asserts it, named as the text names them; "The author" if the author is unknown.
+- "claimant": who asserts it, named as the text names them. If the text leaves a claimant unnamed (its own author, or the source of a quotation or saying) but you recognize them with confidence, use that name and set "identified" to true; if you are not confident, describe them as the text does ("The author", "A common saying") and set "identified" to false.
 - "voice": "author" (the author in their own voice), "quoted" (someone's exact words quoted in the text), "paraphrased" (someone's position reported in the author's words), or "speaker" (a figure inside the text who speaks it).
 - "luminary": true if the claimant is a widely recognized thinker, writer, religious figure, or public figure; otherwise false.
 - "invokes": names of people or texts the claim calls on as authorities or exemplars; [] if none.
@@ -983,10 +1004,10 @@ Relations: list only relations the text makes or clearly implies, using "support
 Write plainly and exactly. Do not flatter the text or its author. Use no em dashes.
 
 Output: JSON Lines, one compact JSON object per line, with no code fences and nothing else.
-Line 1: {"type":"meta","title":"...","author":"...","central":"..."}
-"central" is one paragraph of 60 to 130 words naming the text's central claim and how the other claims serve, complicate, or resist it; refer to claims by number in parentheses, for example (3). For "title" and "author", use the reader's if given, else the text's own, else a short descriptive title and "".
+Line 1: {"type":"meta","title":"...","author":"...","identified":false,"central":"..."}
+"central" is one paragraph of 60 to 130 words naming the text's central claim and how the other claims serve, complicate, or resist it; refer to claims by number in parentheses, for example (3). For "title" and "author", use the reader's if given, else the text's own. If the text does not name its author but you recognize the passage with confidence, give the author and work in "author" and set "identified" to true; if you are not confident, use "" rather than guess. With no title given, write a short descriptive one.
 Then one line per claim, with ids "c1", "c2", ... in order of appearance:
-{"type":"claim","id":"c1","claimant":"...","voice":"author","luminary":false,"invokes":[],"quote":"...","distilled":"...","kinds":["philosophical"],"kind_reason":"...","support":"asserted"}
+{"type":"claim","id":"c1","claimant":"...","identified":false,"voice":"author","luminary":false,"invokes":[],"quote":"...","distilled":"...","kinds":["philosophical"],"kind_reason":"...","support":"asserted"}
 Then one line per relation:
 {"type":"relation","from":"c2","to":"c1","rel":"supports","note":"..."}
 
@@ -1010,11 +1031,11 @@ function deepPrompt(r, c) {
   const others = r.claims.filter(x => x !== c).map(x => `${r.claims.indexOf(x) + 1}. ${x.distilled} (${x.claimant})`).join('\n');
   return `You are reading one claim closely for a teacher of rhetoric and literature. Kind of text: ${LENSES[r.lens].prompt}
 
-Text: ${r.title || 'Untitled'}${r.author ? ' by ' + r.author : ''}
+Text: ${r.title || 'Untitled'}${r.author ? ' by ' + r.author + (r.authorIdentified ? ' (an identification: the text itself does not name its author)' : '') : ''}
 The text's central claim, as already identified: ${r.central || '(not given)'}
 
 The claim under study (number ${i}):
-- Claimant: ${c.claimant} (${VOICES[c.voice].toLowerCase()})
+- Claimant: ${c.claimant} (${VOICES[c.voice].toLowerCase()}${c.identified ? '; an identification, since the text does not name them' : ''})
 - Exact words: "${c.quote}"
 - Distilled: ${c.distilled}
 - Kinds: ${c.kinds.join(', ')}; support: ${c.support}${c.invokes.length ? '; invokes: ' + c.invokes.join(', ') : ''}
@@ -1067,7 +1088,7 @@ function cleanClaim(o, existing) {
     id = 'c' + n;
   }
   return {
-    id, claimant: str(o.claimant) || 'The author', voice: VOICES[o.voice] ? o.voice : 'author',
+    id, claimant: str(o.claimant) || 'The author', identified: o.identified === true, voice: VOICES[o.voice] ? o.voice : 'author',
     luminary: o.luminary === true, invokes: arr(o.invokes).map(str).filter(Boolean).slice(0, 12),
     quote: str(o.quote), distilled: str(o.distilled), kinds: kinds.length ? kinds : ['rhetorical'],
     kind_reason: str(o.kind_reason), support: SUPPORT[o.support] ? o.support : 'asserted'
@@ -1090,7 +1111,7 @@ function ingest(r, o) {
   const live = S.r === r;
   if (type === 'meta') {
     if (!r.userTitle && str(o.title)) r.title = str(o.title);
-    if (!r.userAuthor && str(o.author)) r.author = str(o.author);
+    if (!r.userAuthor && str(o.author)) { r.author = str(o.author); r.authorIdentified = o.identified === true; }
     if (str(o.central)) r.central = str(o.central);
     if (live) { renderHead(); renderCentral(); }
   } else if (type === 'claim') {
@@ -1134,7 +1155,9 @@ function finalize(r) {
 /* ------------------------------------------------------------------ asking Claude */
 function errCopy(e) {
   switch (e && e.code) {
-    case 'not_granted': case 'sampling_disabled': case 'not_declared': case 'capability_disabled': case 'capability_removed':
+    case 'not_granted': return 'Claude access was declined for this page. Reload the page to be asked again.';
+    case 'sampling_disabled': return 'Claude isn\u2019t available for this account, so this page can\u2019t read new texts.';
+    case 'not_declared': case 'capability_disabled': case 'capability_removed':
       return 'Claude isn\u2019t available to this page right now, so it can\u2019t read new texts here.';
     case 'rate_limited': return 'You\u2019ve reached a usage limit for the moment. Try again in a little while.';
     case 'session_expired': return 'Your Claude session has expired. Sign in again, then try once more.';
@@ -1146,7 +1169,7 @@ function errCopy(e) {
   }
 }
 function losePermanently(e) {
-  if (e && PERMANENT.includes(e.code)) { S.cap.sample = null; updateRunState(); renderHead(); renderGloss(); }
+  if (e && PERMANENT.includes(e.code)) { S.cap.sample = null; S.cap.lost = e; updateRunState(); renderHead(); renderGloss(); }
 }
 function setStatus(kind, msg, stop) {
   const s = $('#status');
@@ -1176,7 +1199,6 @@ async function runSurvey(again) {
   r.words = countWords(r.text);
   fitToBudget(r);
   Object.assign(r, { central: '', claims: [], relations: [], deep: {}, createdAt: new Date().toISOString(), pending: true });
-  for (const ctl of S.deepCtl.values()) ctl.abort();
   const ctl = new AbortController();
   S.survey = { ctl, r };
   openReading(r);
@@ -1242,7 +1264,7 @@ async function runDeep(id, fresh) {
     err = e && e.code === 'cancelled' ? null : e;
     losePermanently(e);
   } finally {
-    S.deepCtl.delete(id);
+    if (S.deepCtl.get(id) === ctl) S.deepCtl.delete(id);
   }
   w = wrapFor();
   if (w) fillDeep(w, c, null, err);
@@ -1272,7 +1294,7 @@ async function saveReading(r) {
     await queueWrite(r.id, async () => {
       for (let i = 0; i < chunks; i++) await parts.doc('text-' + i).set({ t: r.text.slice(i * CH, (i + 1) * CH) });
       await parts.doc('analysis').set({ central: r.central, claims: r.claims.map(({ loc, ...c }) => c), relations: r.relations, deep: r.deep, note: r.note || '' });
-      await base.set({ title: r.title, author: r.author || '', userTitle: r.userTitle || '', userAuthor: r.userAuthor || '', lens: r.lens, words: r.words, claims: r.claims.length, chunks, createdAt: r.createdAt, updatedAt: new Date().toISOString() });
+      await base.set({ title: r.title, author: r.author || '', authorIdentified: !!r.authorIdentified, userTitle: r.userTitle || '', userAuthor: r.userAuthor || '', lens: r.lens, words: r.words, claims: r.claims.length, chunks, createdAt: r.createdAt, updatedAt: new Date().toISOString() });
     });
     r.saved = true; r.saveState = 'saved';
   } catch (e) {
@@ -1330,7 +1352,7 @@ async function openFromLibrary(id) {
     if (!a.exists) throw { code: 'missing' };
     const A = a.data();
     const r = {
-      id, saved: true, saveState: 'saved', lens: LENSES[item.lens] ? item.lens : 'essay', title: item.title || 'Untitled text', author: item.author || '',
+      id, saved: true, saveState: 'saved', lens: LENSES[item.lens] ? item.lens : 'essay', title: item.title || 'Untitled text', author: item.author || '', authorIdentified: item.authorIdentified === true,
       userTitle: item.userTitle || '', userAuthor: item.userAuthor || '', words: item.words || 0, createdAt: item.createdAt,
       text: texts.map(t => (t.exists ? String(t.data().t || '') : '')).join(''),
       central: str(A.central), claims: [], relations: arr(A.relations).map(x => ({ from: str(x.from), to: str(x.to), rel: RELS[x.rel] ? x.rel : 'supports', note: str(x.note) })),
@@ -1338,7 +1360,6 @@ async function openFromLibrary(id) {
     };
     arr(A.claims).forEach(o => r.claims.push(cleanClaim(o, r.claims)));
     for (const [k, v] of Object.entries(A.deep || {})) { const d = cleanDeep(v); if (d) r.deep[k] = d; }
-    for (const ctl of S.deepCtl.values()) ctl.abort();
     setStatus(null);
     openReading(r);
     renderLibrary();
@@ -1382,14 +1403,14 @@ function locText(r, c) {
 }
 function toMarkdown(r) {
   const L = [`# ${r.title}`];
-  if (r.author) L.push('', `*${r.author}*`);
+  if (r.author) L.push('', `*${r.author}*${r.authorIdentified ? ' (identified by Claude; the text does not name its author)' : ''}`);
   L.push('', `${LENSES[r.lens].label}. Read with The Claims Reader, ${fmtDate(r.createdAt || new Date().toISOString())}.`);
   if (r.note) L.push('', `> ${r.note}`);
   L.push('', '## The central claim', '', r.central || '(none named)', '', '## The claims');
   r.claims.forEach((c, i) => {
     const d = r.deep[c.id];
     L.push('', `### ${i + 1}. ${c.distilled}`, '',
-      `**${c.claimant}**${c.luminary ? ' (luminary)' : ''}, ${VOICES[c.voice].toLowerCase()}. ${kindsText(c)}. ${SUPPORT[c.support]}.${c.invokes.length ? ` Invokes ${c.invokes.join(', ')}.` : ''}`,
+      `**${c.claimant}**${c.luminary ? ' (luminary)' : ''}${c.identified ? ' (identified by Claude; unnamed in the text)' : ''}, ${VOICES[c.voice].toLowerCase()}. ${kindsText(c)}. ${SUPPORT[c.support]}.${c.invokes.length ? ` Invokes ${c.invokes.join(', ')}.` : ''}`,
       '', `> ${c.quote}` + (locText(r, c) ? ` (${locText(r, c)})` : ''));
     if (c.kind_reason) L.push('', c.kind_reason);
     if (d) {
@@ -1417,7 +1438,7 @@ function toHandout(r) {
       deep = `<dl>${d.premises.length ? `<dt>What it rests on</dt><dd><ul>${d.premises.map(p => `<li>${esc(p.text)} <em>(${p.stated ? 'stated' : 'unstated'})</em></li>`).join('')}</ul></dd>` : ''}${dd('How it is held up', d.method)}${dd('How the form carries it', d.form)}${dd('Does the form invite or exclude?', d.community)}${dd('Where it lives', d.tradition)}${dd('The strongest objection', d.objection)}${d.echoes.length ? `<dt>Echoes and answers</dt><dd><ul>${d.echoes.map(e => `<li>${e.who ? `<strong>${esc(e.who)}</strong>: ` : ''}${esc(e.how)}</li>`).join('')}</ul></dd>` : ''}${dd('Fidelity to its sources', d.fidelity)}${dd(LENSES[r.lens].question, d.question)}</dl>`;
     }
     const lt = locText(r, c);
-    return `<section class="claim"><h3><span class="n">${i + 1}</span> ${esc(c.distilled)}</h3><p class="meta"><strong>${esc(c.claimant)}</strong>${c.luminary ? ' (luminary)' : ''}, ${esc(VOICES[c.voice].toLowerCase())} &middot; ${esc(kindsText(c))} &middot; ${esc(SUPPORT[c.support])}${c.invokes.length ? ` &middot; invokes ${esc(c.invokes.join(', '))}` : ''}</p><blockquote>${esc(c.quote)}${lt ? ` <span class="loc">(${esc(lt)})</span>` : ''}</blockquote>${c.kind_reason ? `<p class="why">${esc(c.kind_reason)}</p>` : ''}${deep}</section>`;
+    return `<section class="claim"><h3><span class="n">${i + 1}</span> ${esc(c.distilled)}</h3><p class="meta"><strong>${esc(c.claimant)}</strong>${c.luminary ? ' (luminary)' : ''}${c.identified ? ' (identified by Claude; unnamed in the text)' : ''}, ${esc(VOICES[c.voice].toLowerCase())} &middot; ${esc(kindsText(c))} &middot; ${esc(SUPPORT[c.support])}${c.invokes.length ? ` &middot; invokes ${esc(c.invokes.join(', '))}` : ''}</p><blockquote>${esc(c.quote)}${lt ? ` <span class="loc">(${esc(lt)})</span>` : ''}</blockquote>${c.kind_reason ? `<p class="why">${esc(c.kind_reason)}</p>` : ''}${deep}</section>`;
   }).join('');
   const rels = r.relations.map(x => `<li>${idx.get(x.from)} ${esc(x.rel)} ${idx.get(x.to)}${x.note ? ': ' + esc(x.note) : ''}</li>`).join('');
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(r.title)}: claims</title>
@@ -1429,7 +1450,7 @@ h3{font-size:12.5pt;margin:0 0 .3em}.n{display:inline-block;min-width:1.4em;font
 blockquote{margin:.4em 0 .4em 1.2em;font-style:italic}dl{margin:.4em 0 0}dt{font-size:9.5pt;letter-spacing:.06em;text-transform:uppercase;color:#444;margin-top:.5em}dd{margin:.1em 0 0}
 ul{margin:.2em 0;padding-left:1.2em}ol{padding-left:1.6em}@media print{body{padding:0}}
 </style></head><body>
-<h1>${esc(r.title)}</h1>${r.author ? `<p class="byline">${esc(r.author)}</p>` : ''}
+<h1>${esc(r.title)}</h1>${r.author ? `<p class="byline">${esc(r.author)}${r.authorIdentified ? ' (identified by Claude; the text does not name its author)' : ''}</p>` : ''}
 <p class="small">${esc(LENSES[r.lens].label)}. Read with The Claims Reader, ${esc(fmtDate(r.createdAt || new Date().toISOString()))}.${r.note ? ' ' + esc(r.note) : ''}</p>
 <h2>The central claim</h2><p>${esc(r.central || '(none named)')}</p>
 ${qs ? `<h2>Questions</h2><ol>${qs}</ol>` : ''}
@@ -1510,9 +1531,7 @@ async function pdfText(file) {
       if (!t.trim()) return;
       if (!out) { out = t; return; }
       const g = ln.y != null && lines[i - 1].y != null ? Math.abs(lines[i - 1].y - ln.y) : med;
-      if (g > med * 1.45) out += '\n\n' + t;
-      else if (/\p{L}-$/u.test(out) && /^\p{Ll}/u.test(t.trimStart())) out = out.slice(0, -1) + t.trimStart();
-      else out += '\n' + t;
+      out += (g > med * 1.45 ? '\n\n' : '\n') + t;
     });
     pages.push(out);
     page.cleanup();
@@ -1562,8 +1581,40 @@ async function loadFile(file) {
 /* ------------------------------------------------------------------ the composer */
 const currentLens = () => { const c = $('input[name="lens"]:checked'); return c && LENSES[c.value] ? c.value : 'essay'; };
 function updateCount() {
-  const w = countWords($('#src').value);
+  const t = $('#src').value, w = countWords(t);
   $('#count').textContent = `${w.toLocaleString()} ${w === 1 ? 'word' : 'words'}`;
+  $('#wrap-note').hidden = !looksHardWrapped(t);
+}
+// Prose copied from a PDF breaks every printed line; poems break by design. Only long, mostly unpunctuated line ends count.
+function looksHardWrapped(text) {
+  const lines = text.split('\n'), lens = [];
+  let pairs = 0, soft = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const a = lines[i].trim();
+    if (!a) continue;
+    lens.push(a.length);
+    const b = (lines[i + 1] || '').trim();
+    if (b) { pairs++; if (!/[.!?:;"'\u201D\u2019)\]\u2026]$/.test(a)) soft++; }
+  }
+  if (lens.length < 6 || pairs < 5) return false;
+  lens.sort((x, y) => x - y);
+  return lens[lens.length >> 1] >= 55 && soft / pairs >= 0.45;
+}
+function reflow(text) {
+  return text.split(/\n[ \t]*\n/).map(block => {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    const lens = lines.map(l => l.length).sort((x, y) => x - y);
+    const med = lens.length ? lens[lens.length >> 1] : 0;
+    let out = '';
+    lines.forEach((l, i) => {
+      if (!i) { out = l; return; }
+      const prev = lines[i - 1];
+      if (/[.!?:"\u201D\u2026]$/.test(prev) && prev.length < med * 0.7) out += '\n\n' + l;
+      else if (/\p{L}-$/u.test(prev) && /^\p{Ll}/u.test(l)) out += l;
+      else out += ' ' + l;
+    });
+    return out;
+  }).join('\n\n');
 }
 let draftTimer = 0;
 function saveDraft() {
@@ -1584,6 +1635,7 @@ function updateRunState() {
   btn.textContent = S.survey ? 'Reading\u2026' : 'Read the claims';
   $('#student-note').hidden = currentLens() !== 'student';
   if (!S.cap.ready) note.textContent = 'Connecting to Claude\u2026';
+  else if (!S.cap.sample && S.cap.lost) note.textContent = errCopy(S.cap.lost);
   else if (!S.cap.sample) note.textContent = 'New readings run inside Claude. Open this page from your Claude artifacts to read your own texts; the example below works anywhere.';
   else note.textContent = 'Runs on your Claude plan\u2019s usage. A short essay takes a minute or two; a long chapter can take several.';
   $('#reread').disabled = !!S.survey;
@@ -1604,6 +1656,13 @@ function wire() {
   composer.addEventListener('dragover', e => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) e.preventDefault(); });
   composer.addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (!depth) veil(false); });
   composer.addEventListener('drop', e => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; depth = 0; veil(false); if (f) { e.preventDefault(); loadFile(f); } });
+  $('#reflow').addEventListener('click', () => {
+    const before = src.value;
+    src.value = reflow(before);
+    updateCount(); saveDraft();
+    $('#file-status').replaceChildren('Joined the lines into paragraphs. ',
+      el('button', { class: 'btn small quiet', type: 'button', onclick: () => { src.value = before; updateCount(); saveDraft(); $('#file-status').textContent = ''; } }, 'Undo'));
+  });
   $('#run').addEventListener('click', () => runSurvey(false));
   $('#reread').addEventListener('click', () => runSurvey(true));
   $('#to-composer').addEventListener('click', () => { composer.scrollIntoView({ behavior: motionOK() ? 'smooth' : 'auto', block: 'start' }); src.focus({ preventScroll: true }); });
