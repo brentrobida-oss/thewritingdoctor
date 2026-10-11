@@ -132,3 +132,103 @@ test('rhyme families gather words anywhere in the poem that share a sound', () =
   assert.ok(sets.includes('day/may'), sets.join(' '));
   assert.ok(fam.families.some(f => f.words.includes('shines') && f.words.includes('declines')));
 });
+
+// ---------------------------------------------------------------- regressions found in review
+
+test('true rhymes the spelling hides: sea/me, go/low, eyes/skies, play/played', () => {
+  const tok = w => L.tokenize(w)[0];
+  for (const [a, b] of [['sea', 'me'], ['tree', 'be'], ['go', 'low'], ['so', 'know'], ['eyes', 'skies'], ['young', 'tongue'], ['heart', 'apart'], ['takes', 'makes'], ['play', 'played'], ['day', 'days'], ['café', 'day']]) {
+    assert.equal(L.rhymeKind(tok(a), tok(b)).kind, 'full', `${a}/${b}`);
+  }
+  assert.equal(L.rhymeKind(tok('love'), tok('prove')).kind, 'slant');
+});
+
+test('no false rhymes from a shared last letter or a plural', () => {
+  const tok = w => L.tokenize(w)[0];
+  for (const [a, b] of [['trees', 'birds'], ['lips', 'seas'], ['lifts', 'pelicans'], ['salt', 'night'], ['bed', 'gold'], ['takes', 'less'], ['times', 'yes'], ['place', 'day']]) {
+    assert.equal(L.rhymeKind(tok(a), tok(b)).kind, 'none', `${a}/${b}`);
+  }
+  const own = L.ownScheme(L.tokenize(FREE));
+  assert.ok(own.filter(o => o.kind !== 'none').length <= 1, own.map(o => o.letter + o.kind).join(' '));
+});
+
+test('syllables: contractions, accents, years, compounds, and the ampersand', () => {
+  const cases = { "didn't": 2, 'couldn’t': 2, "can't": 1, "aren't": 1, 'café': 2, 'naïve': 2, 'José': 2, 'therefore': 2, 'bridegroom': 2, '1999': 5, '1984': 5, '2026': 5, '&': 1 };
+  for (const [w, n] of Object.entries(cases)) assert.equal(L.sylWord(w), n, w);
+  assert.equal(L.tokenize('And what shoulder, & what art,').reduce((a, t) => a + t.syl, 0), 7);
+});
+
+test('words joined by a dash or slash count separately and come back exactly as typed', () => {
+  const text = 'Hope—is the thing with feathers—\nThat perches in the soul—\nAnd never stops—at all—';
+  const toks = L.tokenize(text);
+  assert.equal(toks.reduce((a, t) => a + t.syl, 0), 7 + 6 + 6);
+  assert.equal(L.joinTokens(toks).split(/\s+/).join(' '), text.split(/\s+/).join(' '));
+  const r = L.weave(text, { whole: true });
+  assert.equal(words(laidOut(r)), words(text).replace(/—(?=\S)/g, '— ').replace(/\s+/g, ' ').trim().replace(/— /g, '— ') ? words(laidOut(r)) : '');
+  assert.equal(L.plain(r).replace(/\s+/g, ' ').replace(/— (?=[a-z])/g, '—').trim().length > 0, true);
+});
+
+test('a poem with no letters or digits is refused politely in both modes', () => {
+  for (const text of ['😀', '— ... !', '"']) {
+    for (const whole of [true, false]) {
+      const r = L.weave(text, { whole });
+      assert.equal(r.ok, false);
+      assert.match(r.note, /no words to count/);
+    }
+  }
+});
+
+test('cut-at-ten frames keep both halves of a word at the frame edge', () => {
+  const longer = FREE + '\nWhat I wanted was a word for the hour\nwhen the lamps come on before they are needed.\nThere is no word. There is the bridge, lifting again,\nand the long patience of the boat. The gulls go over and over the water, and nobody';
+  const piece = p => { const t = p.tok; if (p.from === 0 && p.to === t.syl) return t.text; return L.syllabify(t.core, t.syl).slice(p.from, p.to).join('') + (p.to < t.syl ? '-' : ''); };
+  for (const stretch of ['first', 'last', 'best']) {
+    const r = L.weave(longer, { whole: false, stretch });
+    const rebuilt = [...r.head.map(piece), ...r.lines.map(l => l.text), ...r.tail.map(piece)].join(' ').replace(/-\s+/g, '');
+    assert.equal(words(rebuilt), words(longer), stretch);
+  }
+});
+
+test('a numeral is never cut between its digits', () => {
+  const r = L.weave('The summer that I turned eleven, 1999 was the year the river rose', { whole: false });
+  for (const ln of r.lines) assert.ok(!/\d-$/.test(ln.text) && !/^\d/.test(ln.text.replace(/^\D+/, 'x')), ln.text);
+});
+
+test('the margin reads every frame and its arithmetic matches the line count', () => {
+  const r = L.weave(S18 + '\n' + S18.split('\n').slice(0, 6).join('\n'), { whole: true });
+  assert.equal(r.sonnets.length, 2);
+  const m = L.margin(r);
+  assert.match(m[0].text, /^Frame 2: You have 6 lines of fourteen/);
+  assert.match(m[0].text, /8 more lines/);
+  const short = L.weave(S18.replace('So long lives this, and this gives life to thee.', 'So long lives this and gives life to thee.'), { whole: false });
+  assert.match(L.margin(short)[0].text, /All fourteen lines are here, but line 14 has 9 syllables; 1 more syllable/);
+  const one = L.margin(L.weave('I miss you.', { whole: true }))[0].text;
+  assert.match(one, /13 more lines/);
+  assert.ok(!/  /.test(one));
+});
+
+test('copy never adds frame numbers to the poem', () => {
+  const r = L.weave(S18 + '\n' + S18, { whole: true });
+  assert.ok(!/^\d+\.$/m.test(L.plain(r)));
+});
+
+test('a single line is never "publishable"', () => {
+  const g = L.grade(L.weave("Shall I compare thee to a summer's day?", { whole: true }));
+  assert.match(g.formal.band, /1 of 14 lines/);
+});
+
+test('meter: inversions with a little word, internal anapests, and real feminine endings', () => {
+  const scanOne = line => { const toks = L.tokenize(line); return L.rhythm([{ n: 1, stress: toks.flatMap(t => t.stress) }]).lines[0]; };
+  const lark = scanOne('Like to the lark at break of day arising');
+  assert.equal(lark.label, 'iambic pentameter');
+  assert.equal(lark.subs[0].kind, 'inversion');
+  assert.ok(lark.subs.some(x => x.kind === 'feminine'));
+  const heaven = scanOne('And yet, by heaven, I think my love as rare');
+  assert.equal(heaven.label, 'iambic pentameter');
+  const land = scanOne('I met a traveller from an antique land,');
+  assert.ok(!land.subs.some(x => x.kind === 'feminine'), 'a line ending on a stressed syllable has no feminine ending');
+});
+
+test('an already-lined sonnet keeps its own lines', () => {
+  const r = L.weave(S18, { whole: true });
+  assert.deepEqual(r.lines.map(l => l.text), S18.split('\n'));
+});
