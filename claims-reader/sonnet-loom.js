@@ -30,7 +30,7 @@ extraordinary:5 february:4 january:4 library:3 necessary:4 secretary:4 military:
 colonel:2 colonels:2 lieutenant:3 sergeant:2 wednesday:2 forecastle:3 boatswain:2 victuals:2 yacht:1 yachts:1 choir:1 choirs:1 quire:1 squire:1 acquire:2 require:2 inquire:2 desire:2 entire:2 empire:2 umpire:2 vampire:2 sapphire:2 satire:2 attire:2 retire:2 admire:2 inspire:2 expire:2 aspire:2 conspire:2 transpire:2 perspire:2 respire:2 quagmire:2 bonfire:2 wildfire:2 hellfire:2 spitfire:2 campfire:2 backfire:2 crossfire:2 misfire:2
 hyperbole:4 epitome:4 apostrophe:4 catastrophe:4 anemone:4 simile:3 recipe:3 psyche:2 finale:3 sesame:3 acne:2 karate:3 adobe:3 calliope:4 penelope:4 antigone:4 persephone:4 hermione:4 nike:2 chile:2 guacamole:4 cafe:2 resume:2 naive:2 forte:2 coyote:3 agape:3 tempe:2 abalone:4 machete:3
 `;
-const EXC_MORE = `therefore:2 wherefore:2 thereby:2 whereby:2 hereby:2 therewith:2 herewith:2 therein:2 wherein:2 thereon:2 whereon:2 nevertheless:4 viceroy:2 farewell:2 bridegroom:2 aren't:1 weren't:1 naive:2 noel:2`;
+const EXC_MORE = `forehead:2 foreheads:2 unfed:2 abed:2 therefore:2 wherefore:2 thereby:2 whereby:2 hereby:2 therewith:2 herewith:2 therein:2 wherein:2 thereon:2 whereon:2 nevertheless:4 viceroy:2 farewell:2 bridegroom:2 aren't:1 weren't:1 naive:2 noel:2`;
 const EXC = {};
 EXC_MORE.split(/\s+/).forEach(pair => { const i = pair.lastIndexOf(':'); if (i > 0 && EXC[pair.slice(0, i)] == null) EXC[pair.slice(0, i)] = Number(pair.slice(i + 1)); });
 EXC_RAW.trim().split(/\s+/).forEach(pair => { const i = pair.lastIndexOf(':'); if (i > 0) EXC[pair.slice(0, i)] = Number(pair.slice(i + 1)); });
@@ -61,7 +61,8 @@ function sylWord(raw) {
   let w = String(raw || '').toLowerCase().replace(/[’‘`´]/g, "'");
   if (!w) return 0;
   if (w === '&') return 1;
-  w = w.replace(/èd$/, 'id');                    // a grave accent sounds the -ed: belovèd, wreathèd
+  w = w.replace(/èd$/, 'id');
+  if (/(s|x|z|ch|sh|ce|ge|se|ze)'s$/.test(w)) return sylWord(w.slice(0, -2)) + 1;   // church's, horse's, James's                    // a grave accent sounds the -ed: belovèd, wreathèd
   if (/[^\x00-\x7f]/.test(w)) w = foldAccents(w);
   if (w.includes('-')) return w.split('-').filter(Boolean).reduce((a, b) => a + sylWord(b), 0) || 1;
   if (EXC[w] != null) return EXC[w];
@@ -90,7 +91,7 @@ function sylWord(raw) {
   if (/[^aeiou]eo(?![nu])/.test(s)) c += 1;            // video, theory, geology
   if (/[^aeiouqg]ua/.test(s)) c += 1;                  // usual, graduate, January, valuable
   if (/[^aeiouqg]uo/.test(s)) c += 1;                  // duo, virtuoso
-  if (/[^aeiouqg]ui[dn]/.test(s)) c += 1;              // ruin, fluid, genuine
+  if (/[^aeiouqg]ui(d|n(?!g$))/.test(s)) c += 1;       // ruin, fluid, genuine (not the -ing of suing, pursuing)
   if (/[^aeiouqg]ue[lnt]/.test(s)) c += 1;             // cruel, fluent, duet
   if (/[^cg]eous$/.test(s)) c += 1;                    // spontaneous, hideous
   // -ed: silent unless after t or d, or after a consonant cluster that could not end a word (hundred, settled)
@@ -127,17 +128,18 @@ function numberSyllables(d) {
 }
 
 /* ------------------------------------------------------------------ stress */
-const FUNCTION_WORDS = new Set(`a an the and but or nor so yet for of to in on at by with from as than that this these those it its he she we they you i me him her us them my your his our their be am is are was were been do does did has have had will would shall should can could may might must if then when where while who whom whose which what up out off down into onto upon over under through till until unless since because though although nor either neither both each every any some no not o oh ah ye thee thou thy thine mine own just too very there here how why also ere oft 'tis tis twas 'twas yes & art hath doth dost hast wilt shalt canst couldst wouldst shouldst didst more most such 'gainst 'mid 'mongst whilst`.split(/\s+/));
+const FUNCTION_WORDS = new Set(`a an the and but or nor so yet for of to in on at by with from as than that this these those it its he she we they you i me him her us them my your his our their be am is are was were been do does did has have had will would shall should can could may might must if then when where while who whom whose which what up out off down into onto upon over under through till until unless since because though although nor either neither both each every any some no not o oh ah ye thee thou thy thine mine own just too very there here how why also ere oft 'tis tis twas 'twas yes & th t art hath doth dost hast wilt shalt canst couldst wouldst shouldst didst more most such 'gainst 'mid 'mongst whilst`.split(/\s+/));
 const IAMBIC = new Set(`ago although became begat altern provoc evoc endow avow about above abroad absorb absurd abuse accept accord account accuse achieve acquire across adapt address adjust admire admit adopt adore adorn advance advice advise afar affair afford afraid again against agree ahead alarm alas alight alike alive allow allure alone along aloof aloud amaze amen amid among amount amuse anew annoy apart appeal appear applause apply approach approve arise arose around arouse array arrest arrive ascend ashamed aside asleep assail assault assent assert assign assist assume assure astray attach attack attain attempt attend attire attract avail avoid await awake aware away awoke awry baptize because become befall before began begin begot begun behave behead behind behold belief believe belong beloved below beneath bequeath beseech beset beside bestow betide betray between beware beyond bizarre canal career caress cement cigar collapse collect combine command commence commit compare compel complain complete comply compose comprise conceal conceit conceive concern conclude condemn confess confide confine confirm conform confuse connect consent conserve consign consist console construct consult consume contain contempt contend content control convey convince correct corrupt create debate decay deceit deceive decide declare decline decree deduce defeat defend defer define defy degree delay delete delight demand deny depart depend depict deplore deprive derive descend describe deserve design desire despair despise despite destroy detach detain detect deter devise devoid devote devour direct discern discuss disdain disease disgrace disguise dismay dismiss display dispose dispute distinct distress disturb divide divine divorce domain elapse elect elite elope elude embark embrace emerge employ enclose endure enforce engage enjoy enough enrage enrich ensue ensure entire entreat erase erect escape estate esteem event evoke exact exalt exceed except excess exchange excite exclaim exclude excuse exert exhale exhaust exist expand expect expel expense expire explain explode explore expose express extend extent extreme forbear forbid forgave forget forgive forgo forgot forlorn forsake forsook fulfil fulfill giraffe guitar hello hotel humane ignore immense impart impose impress improve incline include indeed induce infer inform inhale inquire inside insist inspire instead instill insure intend intense invade invent invite involve itself lament machine maintain mature mistake mistook misuse misled mislead misjudge misplace mistrust myself obey oblige obscure observe obtain occur offend omit oppose oppress ordain outdo outgrow outlast outlive outrun outshine outweigh parade patrol perceive perform perhaps permit persist persuade pertain perverse police polite possess postpone precede precise prefer prepare preserve presume pretend prevail prevent proceed proclaim profane profound prolong promote propose protect provide provoke pursue rebuke recall receive recite record recur redeem reduce refer refine reflect refrain refuse regain regard regret rejoice relate relax release relent relief relieve rely remain remark remind remote remove renew renown repair repay repeat repent replace reply report repose repress request require rescind resent reserve reside resign resist resolve resort respect respond restore restrain result resume retain retire retreat return reveal revere reverse review revive revolt reward romance secure seduce select serene severe sincere subdue submit subside succeed success suffice suggest supply support suppose suppress supreme surpass surprise surround survive sustain today tonight toward transcend transform translate transport unbound unborn unclean undone unfit unfold unheard unite unjust unkind unknown unless unlike unseen untie until unveil unwind upon upset uphold uplift upstairs withdraw withhold within without withstand yourself herself himself abide ado ajar aloft amiss anon askew athwart awhile enorm tremend stupend horrend intact adrift adept abrupt august austere baroque benign bereft bereave bizarre brunette canoe cascade cliche crusade decoy decrease delude demure deploy depose depress despond detest dethrone devout diffuse digest dilute discard discharge disclose discreet discrete disgust dislike dismount disown displace displease dispel disrobe distract distrust disuse divest divulge eclipse edict elate embalm embed emit enact encase enchant encroach endorse enfold engulf enlist enrol enroll enslave enthrall entice entomb entrust entwine enwrap equip erode erupt evade evict evince evolve excel exempt exhort exhume expound expunge extol extort extract exude exult forsworn forswear immerse immune impair impeach impede impel implore imply import impute incense incite incur indict induct indulge infect infest inflame inflate inflict infuse ingest inhere inhume inject insane insert inspect install instruct insult intrude inure invoke lampoon marine mature misdeed mishap misread mistime misname morose obsess obtrude obtuse occult outcast outdo outface outgo outpace outpour outreach outright outstrip outwit perchance perforce permit perplex pervade pollute portray prelude premise prescribe presage pretense profuse prorogue protrude purvey rebuild rebut recant recede recess recoil recount redress refit reform refute regale rehearse reject relapse relay remiss remit renounce repast repel repine reprieve reprove repulse repute rescue resound restrict retort retrace retract revile revise revoke robust rotund sedate seclude secrete sublime subsist subtract subvert suspect suspend taboo technique tirade traverse umbrella unarm unbend unclasp uncurl undo unfurl unlace unlock unmask unmoved unpack unreal unrest unsaid unsung untold untrue unwell unwise unworn vacate espouse accurse bemoan belove beweep bewail beguile belie belied betroth betrothed usurp usurped imprison colossal primeval surmise demesne brigade whereon`.split(/\s+/));
 IAMBIC.delete('outcast');
 const TROCHAIC_FORCE = new Set('under uncle unto union unit units unity universe uniform unison unicorn unify misty mister mistress missile missing mission misery miser disc dish dismal distance distant district outcast outlaw outline outward outcome output outfit outrage upright upper upward upshot overt overly record present content contest object subject rebel permit protest produce conduct contract convict desert digest escort export import increase insult perfume progress project rebel refuse survey suspect transfer transport'.split(/\s+/));
 const LAST_STRESS = new Set('indistinct understand understood overcome disappear introduce represent recommend entertain interfere intervene overthrow undertake overlook underneath reappear disagree disallow disobey disbelieve misunderstand nonetheless nevertheless afternoon engineer volunteer pioneer guarantee refugee magazine tambourine submarine japanese picturesque silhouette cigarette serenade lemonade masquerade promenade kangaroo incomplete indiscreet inexact unaware unafraid overflow overhead overheard overjoyed overrun overseas overwhelm overwrought overgrown overnight undergo underline undergrad underpay undersea undersold underworn underfoot evermore furthermore heretofore nevermore anymore inasmuch insomuch whatsoever whosoever howsoever wheresoever'.split(/\s+/));
 const PENULT3 = new Set('already altogether idea ideas ideal ideals another together forever whatever whenever wherever whoever however remember deliver consider continue discover tomorrow important eternal immortal internal external maternal paternal infernal nocturnal supernal according forgotten begotten companion religion familiar peculiar horizon museum umbrella vanilla banana piano potato tomato volcano tobacco mosquito agenda dilemma aroma diploma arena hyena sonata apparent transparent arrival survival revival approval removal disposal proposal refusal recital appearance assurance endurance resistance insistence existence acceptance allowance compliance defiance reliance alliance adventure departure procedure agreement commandment commitment enjoyment employment excitement arrangement engagement discernment adornment atonement fulfillment acquaintance attendance abundance remembrance abandon abolish accomplish accustom admonish astonish develop envelop establish embarrass embellish encounter endeavor endeavour examine imagine determine illumine inhabit inherit exhibit prohibit inhibit deposit disorder disaster disciple discourage disfigure dishonor dishonour dismantle distinguish diminish replenish relinquish demolish bewilder bedevil beginner believer betrayer conductor consumer container commander committee confetti consensus contentment creator decipher decorum defector demeanor denial dependent designer detective detergent dictator director disclosure discomfort discredit disgraceful disgusting dishonest dismissal displeasure distraction distressing disturbance effective elusive embargo employer enchantment enormous enrichment entitle equipment exceeding excessive exhausted expansion expensive extensive forbidden forgiveness forsaken gorilla guerrilla impressive incentive incumbent indulgence inertia informal injustice insistent inspector instructor investor jamaica madonna manila manhattan miranda momentous november december september october offensive opponent opposing pajamas pervasive portentous precaution pretentious professor projector reluctant remainder reminder repentant replacement reporter resemblance resentment retirement sahara semester sincerely spectator stupendous supporter surrender surrounding survivor tremendous triumphant uncertain uncommon unfaithful unhappy unwilling veranda whatever whichever elsewhere wherever assembly consider courageous outrageous advantage disadvantage percentage exhausting astounding abounding confounding resounding surrounding attendant attendance pretender defender offender contender perfecter'.split(/\s+/));
-const TURN_WORDS = new Set('but yet though although still however then so thus therefore hence nor or and for if when whence now o oh let come till until since while whereas yes no nay only alas unless lest nay'.split(/\s+/));
+// The words a sonnet turns on, as the app tells students: but, yet, though, still, so, and their kin. Not "and" or "when".
+const TURN_WORDS = new Set('but yet though although still however so thus therefore hence then now nor whereas alas'.split(/\s+/));
 const DANGLERS = new Set('the a an of to and or but nor in on at by for with from as than that which who whose my your his her its our their this these those some any no not very such each every into upon within without through toward towards until unless if when while because although though whether'.split(/\s+/));
 
 // Words the suffix rules would get wrong, stressed by hand: 1 primary, 0 weak.
-const STRESS_OVERRIDE = { creature: '10', creatures: '10', mariner: '100', mariners: '100', beautifully: '1000', pierian: '0100', galilee: '100', everything: '100', everyone: '100', anyone: '100', nobody: '100', somebody: '100' };
+const STRESS_OVERRIDE = { thyself: '01', ourself: '01', ourselves: '01', themselves: '01', alack: '01', defence: '01', defense: '01', offence: '01', offense: '01', offences: '010', descry: '01', descries: '01', unbred: '01', unbent: '01', almighty: '010', assorted: '010', caprice: '01', casualty: '1000', catechism: '1020', compacted: '010', disdaineth: '010', diverged: '01', engenders: '010', fatigue: '01', methinks: '01', obstructs: '01', outbraves: '01', superhuman: '2010', transposing: '010', agamemnon: '2010', admirably: '1000', intent: '01', descent: '01', suspense: '01', askance: '01', aback: '01', increase: '01', decease: '01', creature: '10', creatures: '10', mariner: '100', mariners: '100', beautifully: '1000', pierian: '0100', galilee: '100', everything: '100', everyone: '100', anyone: '100', nobody: '100', somebody: '100' };
 // Stresses checked word by word against Merriam-Webster on the same corpus (1 primary, 2 secondary, 0 weak).
 const STRESS_SWEEP = `emoji:010 eleven:010 percent:01 iguana:010 computer:010 restart:01 remembers:010 empanadas:2010 avocado:2010 tortilla:010 croissant:01 pastelitos:2010 guayaba:010 croquetas:010 ventanita:2010 maduros:010 guacamole:2010 spaghetti:010 papaya:010 burritos:010 jalapeño:2010 biscayne:01 alligators:1020 palmetto:010 miami:010 expressway:012 aventura:2010 escalators:1020 arepas:010 tequeños:010 havana:010 doral:01 graffiti:010 nicaraguan:2010 tamiami:2010 announcement:010 tornadoes:010 sargassum:010 barracuda:2010 garage:01 nostalgia:010 okay:21 self-driving:210 violin:201 naive:01 reunion:010 hawaiian:010 casino:010 maria:010 sylvester:010 soprano:010 cafe:01 salami:010 sophia:010 aaliyah:010 sebastian:010 mateo:010 camila:010 daniela:010 tattoo:01 quesadilla:2010 enchilada:2010 piñata:010 australian:010 brazilian:010 calculator:1020 elevator:1020 radiator:1020 colada:010 estefan:010 cortadito:2010 rescue:10 premise:10 prelude:12 edict:12 mishap:12 overt:01 july:01 canteen:01 routine:01 grenade:01 charade:01 arcade:01 bazaar:01 quartet:01 bouquet:01 duet:01 shampoo:01 bamboo:01 regime:01 terrain:01 campaign:01 champagne:01 cocaine:01 arcane:01 urbane:01 inane:01 obscene:01 ornate:01 innate:01 malign:01 alert:01 inert:01 akin:01 afoot:01 ablaze:01 aghast:01 aglow:01 afloat:01 ashore:01 aboard:01 abode:01 aflame:01 apace:01 ascent:01 conspire:01 transpire:01 perspire:01 bewitch:01 beget:01 behest:01 bemoan:01 bewail:01 betwixt:01 behalf:01 belie:01 bedew:01 begone:01 beheld:01 forbade:01 foretold:01 foresee:01 beguile:01 bedeck:01 benumb:01 bequest:01 berate:01 compute:01 concur:01 condone:01 confer:01 contrive:01 constrain:01 construe:01 contort:01 commend:01 compile:01 concede:01 condense:01 confront:01 congeal:01 connive:01 debase:01 decease:01 decry:01 deduct:01 defame:01 defile:01 deform:01 defraud:01 degrade:01 demean:01 demise:01 demur:01 denote:01 denounce:01 deride:01 desist:01 recline:01 refresh:01 remorse:01 reproach:01 revenge:01 predict:01 preside:01 profess:01 propel:01 procure:01 pronounce:01 imbue:01 impale:01 impure:01 inept:01 infirm:01 inscribe:01 intone:01 invest:01 adjourn:01 adhere:01 allay:01 allot:01 allude:01 amass:01 amend:01 appall:01 applaud:01 appoint:01 ascribe:01 atone:01 attest:01 avert:01 succumb:01 suffuse:01 supplant:01 surmount:01 perturb:01 transgress:01 expend:01 extinct:01 eject:01 ambiguity:20100 continuity:20100 gratuity:0100 perpetuity:20100 ingenuity:20100 spontaneity:20100 theatrical:0100 civilian:010 egyptian:010 elysian:010 dominion:010 rebellion:010 communion:010 opinion:010 battalion:010 pavilion:010 vermilion:010 medallion:010 oblivion:0100 accordion:0100 criterion:0100 centurion:0100 contagion:010 ambiguous:0100 contiguous:0100 zoology:0100 ignorance:100 allegiance:010 coincidence:0100 independence:2010 destructive:010 progressive:010 objective:010 subjective:010 beweep:01 outcast:12 afresh:01 fore-bemoanèd:2010 restored:01 besmeared:01 overturn:201 all-oblivious:20100 confound:01 transfix:01 defaced:01 outworn:21 down-razed:21 confounded:010 compounded:010 whereon:01 consumed:01 perceivest:01 ever-fixed:201 pursuit:01 proposed:01 belied:01 false-speaking:210 delivery:0100 o'erthrow:01 usurped:01 betrothed:01 imprison:010 abound:01 therewith:01 methought:01 espousèd:010 alcestis:010 rescued:10 restraint:01 avenge:01 piemontese:201 redoubled:010 italian:010 assay:01 eternize:012 whenas:01 hélas:01 travail:01 afore:01 up-gathered:210 beautifully:1000 heroic:010 ourselves:01 creature:10 apollo:010 expanse:01 demesne:01 surmise:01 cortez:01 traveller:100 colossal:010 unrepealed:201 transparence:010 beguiled:01 imprest:01 themselves:01 thereby:01 belovèd:010 astride:01 imprisoned:010 autumnal:010 accursèd:010 constrained:01 outnumbered:010 demented:010 goodbyes:01 aspire:01 brigade:01 lenore:01 ojibways:012 dacotahs:010 nawadaha:2010 surmised:01 interposed:201 abash:01 unequal:010 enamel:010 avalanching:1020 representative:20100 initiative:0100 affirmative:0100 intuitive:0100 defective:010 decisive:010 exclusive:010 explosive:010 defensive:010 aggressive:010 submissive:010 attentive:010 productive:010 deceptive:010 receptive:010 evasive:010 conclusive:010 seductive:010 appreciate:0102 associate:0102 negotiate:0102 initiate:0102 substantiate:0102 enunciate:0102 differentiate:20102 irate:01 manure:01 immature:201 canary:010 anniversary:20100 documentary:20100 complimentary:20100 elementary:2010 auxiliary:0100 discovery:0100 recovery:0100 artillery:0100 machinery:0100 embroidery:0100 debauchery:0100 periphery:0100 illusory:0100 lunatic:102 politic:102 heretic:102 rhetoric:100 choleric:100 arabic:100 arsenic:100 politics:102 etiquette:100 delirium:0100 millennium:0100 geranium:0100 aquarium:0100 gymnasium:0100 symposium:0100 auditorium:20100 equilibrium:20100 militia:010 acacia:010 magnolia:010 amnesia:010 anesthesia:2010 mausoleum:2010 petroleum:0100 linoleum:0100 lyceum:010 european:2010 cerulean:0100 mediterranean:200100 subterranean:20100 panacea:2010 behavior:010 optimism:1020 mechanism:1020 patriotism:10020 unable:010 unfathomable:01000 recover:010 rewrite:01 retell:01 revisit:010 remorseless:010 remorseful:010 resemble:010 rearrange:201 reawaken:2010 reinforce:201 reaffirm:201 reopen:010 disarm:01 disband:01 dismember:010 dishearten:010 discolor:010 disparage:010 misfortune:010 misspell:01 misgiving:010 mischance:01 misgovern:010 misshapen:010 mismanage:010 overtake:201 overshadow:2010 overpower:2010 overreach:201 overrule:201 overweening:2010 underworld:102 undergrowth:102 underground:102 undercurrent:1020 understate:201 undermine:201 undertaker:1020 underling:100 underwear:102 undercover:2010 understudy:1020 underlie:201 undergrad:102 interrupt:201 interact:201 intercept:201 interpret:010 interstellar:2010 intertwine:201 interweave:201 intercede:201 interpose:201 intermingle:2010 furthermore:102 honeymoon:102 everlasting:2010 forevermore:0201 hereafter:010 notwithstanding:2010 whatsoever:2010 farewell:01 goodbye:01 wherein:01 therein:01 whereas:01 melancholy:1020 alabaster:1020 paradise:102 fraternal:010 abysmal:010 betrothal:010 abundant:010 redundant:010 resplendent:010 indignant:010 malignant:010 defiant:010 enigma:010 memento:010 tornado:010 bravado:010 armada:010 aurora:010 extinguish:010 encourage:010 entangle:010 embitter:010 embody:010 embolden:010 emblazon:010 encircle:010 encompass:010 endanger:010 enlighten:010 enliven:010 ennoble:010 enthrone:01 ensnare:01 engrave:01 endear:01 entail:01 foreshadow:010 corporeal:0100 funereal:0100 empyrean:2010 triumphant:010 oasis:010 coincide:201 diana:010 adonis:010 narcissus:010 olympus:010 parnassus:010 hyperion:0100 endymion:0100 prometheus:0100 odysseus:0100 medea:010 assuage:01 dissuade:01 premier:01 gondolier:201 financier:201 proprietary:01020 contested:010 unrequited:2010 disappointed:2010 affected:010 neglected:010 perfected:010 construed:01 imbued:01 endeared:01 persevered:201 awakened:010 enlightened:010 endangered:010 enamored:010 bewitched:01 benighted:010 besieged:01 bedecked:01 becalmed:01 rescues:10 diabetes:2010 achilles:010 ulysses:010`;
 STRESS_SWEEP.split(/\s+/).forEach(pair => { const i = pair.lastIndexOf(':'); if (i > 0 && !STRESS_OVERRIDE[pair.slice(0, i)]) STRESS_OVERRIDE[pair.slice(0, i)] = pair.slice(i + 1); });
@@ -206,7 +208,7 @@ function stressWord(raw, n) {
       const verbal = /(ed|ing|s)$/.test(w);
       for (const [cand, k] of cands) { if (IAMBIC.has(cand) || PENULT3.has(cand) || LAST_STRESS.has(cand) || (verbal && k === 2 && TROCHAIC_FORCE.has(cand) && /^(record|present|object|subject|rebel|permit|protest|produce|conduct|contract|convict|desert|digest|escort|export|import|increase|insult|perfume|progress|project|refuse|survey|suspect|transfer|transport)$/.test(cand))) { const b = (verbal && k === 2 && TROCHAIC_FORCE.has(cand)) ? 1 : baseStress(cand, k); if (b >= 0) { idx = b; break; } } }
       if (idx < 0) for (const [cand, k] of cands) { if (TROCHAIC_FORCE.has(cand) || EXC[cand] === k) { const b = baseStress(cand, k); if (b >= 0) { idx = b; break; } } }
-      if (idx < 0 && cands.length && cands[0][1] === 1 && n <= 3) idx = 0;
+      if (idx < 0 && cands.length && cands[0][1] === 1 && n <= 3 && !/^(un|de|be|dis|mis|re|en|em|ob|trans|out|ex|a[bcdfglmnprstv])/.test(w)) idx = 0;
       if (idx < 0) { for (const [cand, k] of cands) { const b = baseStress(cand, k); if (b >= 0 && k >= 2) { idx = b; break; } } }
       // stress retracts to the front in preference, confidence, president, excellent, maintenance
       if (idx === 1 && n === 3 && /(ence|ent|ance|ant|ency|ancy)$/.test(w) && cands.some(([c]) => /(fer|fide|vide|side|cede|vere|pete|tain|cel|cell)$/.test(c))) idx = 0;
@@ -247,6 +249,10 @@ function phon(raw, lastStressed) {
   if (!s) return '';
   const w = s;
   const sub = (re, rep) => { s = s.replace(re, rep); };
+  if (RESPELL[w]) s = RESPELL[w];
+  sub(/gui(?=[^aeiou])/, 'gi');                             // guide, disguise, guile: the u is silent
+  sub(/^([bg])uy(?=(s|er|ers|ing)$)/, '$1I');               // buys, buyer, buying, guys: said like buy
+  sub(/ew(?=(ed|s|n|ly|ing|er|est)$)/, 'U');               // brewed, news, strewn, renewing, newer
   // words whose spelling hides their sound, said as a reader says them (and compounds that end in them: anywhere, o'erthrow)
   if (SAID[w]) return SAID[w];
   const tailWord = SAID_TAILS.find(k => w.length > k.length + 1 && w.endsWith(k));
@@ -259,12 +265,14 @@ function phon(raw, lastStressed) {
   sub(/ie(?=[^aeiou][aeiou])/g, 'E');                       // believing, achieving
   if (/^(give|gives|forgive|forgives|have)$/.test(w)) return w.replace(/e(s?)$/, '$1').replace(/^h/, 'h');   // give and have keep a short vowel
   sub(/([aeou])yed$/, '$1yd');   // played, obeyed, enjoyed: the -ed adds no vowel
-  sub(/ear(?=th?$)/, 'ar');
+  if (/^(heart|hearts|hearth|hearths|sweetheart|sweethearts)$/.test(w)) sub(/ear/, 'ar');
   // the "er" sound of heard, bird, word, fur and verse is one sound however it is spelled
-  sub(/ear(?=[dlnc]|s(?!$))/, 'er');
+  sub(/ear(?=[dlnc]|th|s(?!$))/, 'er');                     // earth, learn, heard, rehearse (not years)
   sub(/^wor(?=(d|ld|k|m|se|st|th|ship))/, 'wer');
   sub(/(?<![aeiouy])[iuy]r(?=[^aeiouy]|$)/g, 'er');
   sub(/^(s?w)ar(?=[mnd]?s?$)/, '$1or');                    // warm rhymes with storm, war with door
+  sub(/^wa(?=t)/, 'wQ'); sub(/augh(?=t)/, 'Q');             // water rhymes with daughter
+  sub(/our(?=[^aeiouy])/, 'or');                            // mourn, course, court say "or"
   sub(/([^aeiouy])ind(s?)$/, '$1Ind$2');                   // mind, kind, find, behind
   sub(/(ch|w|m)ild(s?)$/, '$1Ild$2');                      // child, wild, mild
   sub(/aste(s?)$/, 'Ast$1'); sub(/aight(s?)$/, 'At$1');    // waste, haste; straight
@@ -277,13 +285,16 @@ function phon(raw, lastStressed) {
   // endings
   sub(/tion$/, 'shun'); sub(/sion$/, 'zhun'); sub(/cian$/, 'shun'); sub(/tious$/, 'shus'); sub(/cious$/, 'shus'); sub(/xious$/, 'kshus'); sub(/gious$/, 'jus'); sub(/geous$/, 'jus');
   sub(/cial$/, 'shul'); sub(/tial$/, 'shul'); sub(/tient$/, 'shunt'); sub(/cient$/, 'shunt'); sub(/ture$/, 'chur'); sub(/sure$/, 'zhur'); sub(/ious$/, 'Eus'); sub(/eous$/, 'Eus'); sub(/uous$/, 'Uus'); sub(/ous$/, 'us');
-  sub(/eight$/, 'At'); sub(/eigh$/, 'A'); sub(/ight(s?)$/, 'It$1'); sub(/igh(s?)$/, 'I$1'); sub(/ought$/, 'Qt'); sub(/aught$/, 'Qt'); sub(/augh$/, 'af');
+  sub(/eight$/, 'At'); sub(/eigh$/, 'A'); sub(/ight(s?)$/, 'It$1'); sub(/igh(s?)$/, 'I$1'); sub(/igh(?=(ing|er|est)$)/, 'I'); sub(/[ae]y(?=ing$)/, 'A'); sub(/ought$/, 'Qt'); sub(/aught$/, 'Qt'); sub(/augh$/, 'af');
   if (/ough$/.test(s)) { if (/^(r|t|en|sl)ough$/.test(w)) sub(/ough$/, 'uf'); else if (/^(c|tr)ough$/.test(w)) sub(/ough$/, 'Qf'); else if (/through$/.test(w)) sub(/ough$/, 'U'); else if (/^(b|pl|sl)ough$/.test(w)) sub(/ough$/, 'W'); else sub(/ough$/, 'O'); }
-  sub(/ould$/, 'ud'); sub(/alk$/, 'Qk'); sub(/all$/, 'Ql'); sub(/alt$/, 'Qlt'); sub(/alf$/, 'af'); sub(/alm$/, 'am');
+  sub(/ould$/, 'Vd'); sub(/alk$/, 'Qk'); sub(/all$/, 'Ql'); sub(/alt$/, 'Qlt'); sub(/alf$/, 'af'); sub(/alm$/, 'am');
   sub(/stle$/, 'sul'); sub(/sten$/, 'sun'); sub(/ften$/, 'fun'); sub(/mb$/, 'm'); sub(/mn$/, 'm'); sub(/bt$/, 't'); sub(/gn$/, 'n'); sub(/^kn/, 'n'); sub(/^wr/, 'r'); sub(/^gn/, 'n'); sub(/^wh/, 'w'); sub(/^ps/, 's');
   // vowel digraphs
-  sub(/ee/g, 'E'); sub(/oa/g, 'O'); sub(/oi/g, 'Y'); sub(/oy/g, 'Y'); sub(/au/g, 'Q'); sub(/aw/g, 'Q'); sub(/ew$/, 'U'); sub(/ue$/, 'U'); sub(/ui(?=[^aeiou]+$)/, 'U'); sub(/oo/g, SHORT_OO.has(w) ? 'u' : 'U');
-  sub(/ea(?=[^aeiou]*$)/, SHORT_EA.has(w) ? 'e' : /^(great|break|steak|yea)$/.test(w) ? 'A' : 'E'); sub(/ea/g, 'E');
+  sub(/iew/, 'U');                                          // view
+  sub(/ee/g, 'E'); sub(/oa/g, 'O'); sub(/oi/g, 'Y'); sub(/oy/g, 'Y'); sub(/au/g, 'Q'); sub(/aw/g, 'Q'); sub(/ew(?=[^aeiou]*$)/, 'U'); sub(/ue$/, 'U'); sub(/ui(?=[^aeiou]+$)/, 'U'); sub(/oo/g, SHORT_OO.has(w) ? 'V' : 'U');
+  const shortEa = SHORT_EA.has(w) || /(head|bread|dread|spread|thread|stead|breath|death|weather|feather|leather|heather|measure|pleasure|treasure|weapon|heaven)s?$/.test(w);
+  if (shortEa) sub(/ea/, 'e');
+  sub(/ea(?=[^aeiou]*$)/, /^(great|break|steak|yea)$/.test(w) ? 'A' : 'E'); sub(/ea/g, 'E');
   sub(/ie$/, 'I'); sub(/ied$/, 'Id'); sub(/ies$/, lastStressed ? 'Iz' : 'Ez'); sub(/ie(?=[^aeiou]+$)/, 'E');
   sub(/ei(?=[^aeiou]*$)/, /c|seiz|either|neither|leisure|weird|weir|sheik/.test(w) ? 'E' : 'A'); sub(/ey(?=[sd]?$)/, lastStressed ? 'A' : 'E'); sub(/ay(?=[^aeiouy]*$)/, 'A'); sub(/ai(?=[^aeiou]+$)/, 'A');
   sub(/uy$/, 'I'); sub(/eye$/, 'I'); sub(/ye$/, 'I');
@@ -291,8 +302,12 @@ function phon(raw, lastStressed) {
   sub(/ou(?=l)/, 'O'); sub(/ou(?=r$)/, 'W'); sub(/ou/g, /you|youth|group|soup|wound|route|tour|your|through|coupe|troupe|roup/.test(w) ? 'U' : 'W');
   // a silent e before -s or -d still lengthens its vowel (takes, named), and a silent -es or -ed adds no vowel
   sub(/([aeiouy])([^aeiouy])e([sd])$/, (m, v, c, x) => ((x === 'd' ? /[td]/.test(c) : /[sxzcg]/.test(c)) ? m : ({ a: 'A', e: 'E', i: 'I', o: 'O', u: 'U', y: 'I' })[v] + c + x));
-  sub(/(sh|ch|ss|[pkfx])ed$/, '$1t'); sub(/(sh|ch|ss|[pkfx])d$/, '$1t');   // passed, kissed, possess'd: a voiceless -ed says t
-  sub(/([^aeiouyAEIOUWQYtd])ed$/, '$1d');
+  if (/[aeiouyAEIOUWQYV]/.test(s.slice(0, -2))) {          // red, bed, fled keep their vowel; only a real suffix -ed is trimmed
+    sub(/(sh|ch|ss|[pkfx])ed$/, '$1t');
+    sub(/([^aeiouyAEIOUWQYtd])ed$/, '$1d');
+  }
+  sub(/(sh|ch|ss|[pkfx])d$/, '$1t');                       // possess'd, kiss'd: a voiceless -'d says t
+  sub(/([AEIOUWQYV])ed$/, '$1d');                          // brewed, renewed: the -ed after a vowel adds no vowel
   sub(/([^aeiouyAEIOUWQYsxzhcg])es$/, '$1s');
   // magic e: long vowel before consonant + e
   sub(/([aeiouy])([^aeiouy])e$/, (m, v, c) => ({ a: 'A', e: 'E', i: 'I', o: 'O', u: 'U', y: 'I' })[v] + (c === 'c' ? 's' : c === 'g' ? 'j' : c));   // grace keeps its soft c, page its soft g
@@ -306,13 +321,14 @@ function phon(raw, lastStressed) {
   sub(/e$/, '');
   return s;
 }
-const VOWEL_RE = /[aeiouAEIOUWQY]+/g;
+const VOWEL_RE = /[aeiouAEIOUWQYV]+/g;
 const SAID = { height: 'hIt', heights: 'hIts', sleight: 'slIt', gone: 'gQn', foregone: 'forgQn', friend: 'frend', friends: 'frendz', again: 'agen', against: 'agenst', said: 'sed', says: 'sez',
   truth: 'trUth', build: 'bild', builds: 'bildz', built: 'bilt', choir: 'kwIr', choirs: 'kwIrz', i: 'I', are: 'ar', were: 'wer', there: 'thAr', where: 'wAr', ere: 'Ar',
   bear: 'bAr', bears: 'bArz', wear: 'wAr', wears: 'wArz', pear: 'pAr', pears: 'pArz', swear: 'swAr', forswear: 'forswAr', prayer: 'prAr', prayers: 'prArz',
   naive: 'nIEv', chloe: 'klOE', zoe: 'zOE', door: 'dor', doors: 'dorz', floor: 'flor', floors: 'florz', poor: 'pUr', moor: 'mor', oer: 'or',
   hour: 'Wr', hours: 'Wrz', our: 'Wr', ours: 'Wrz', flower: 'flWr', flowers: 'flWrz', power: 'pWr', powers: 'pWrz', tower: 'tWr', towers: 'tWrz', shower: 'shWr', showers: 'shWrz', bower: 'bWr', bowers: 'bWrz',
-  fire: 'fIr', fires: 'fIrz', higher: 'hIr', liar: 'lIr', sow: 'sO', sows: 'sOz', strown: 'strOn', key: 'kE', keys: 'kEz', eyes: 'Iz', eye: 'I' };
+  eyed: 'Id', view: 'vU', views: 'vUz', viewed: 'vUd', review: 'revU', fire: 'fIr', fires: 'fIrz', higher: 'hIr', liar: 'lIr', sow: 'sO', sows: 'sOz', strown: 'strOn', key: 'kE', keys: 'kEz', eyes: 'Iz', eye: 'I' };
+const RESPELL = { pretty: 'pritty', women: 'wimmen', busy: 'bizzy', business: 'bizness', sugar: 'shugar', beauty: 'byuty', eyed: 'Id' };
 const SAID_TAILS = ['where', 'there', 'fire', 'flower', 'power', 'tower', 'friend', 'friends', 'hour', 'hours', 'choir'];
 const LONG_OW_TAILS = ['throw', 'grow', 'flow', 'blow', 'glow', 'know', 'show', 'stow', 'low', 'bow'].filter(k => k !== 'bow' && k !== 'low');
 // The coda without an inflection, when the spelling shows one: days -> day, played -> play (but not grace, rose, red).
@@ -340,11 +356,21 @@ function rimeOf(raw, stress) {
     const chunks = syllabify(String(raw || '').replace(/[^\p{L}]/gu, ''), n);
     if (chunks.length === n) {
       const fem = stress[n - 1] !== 1 && stress[n - 1] !== 0.5;
-      const take = fem ? chunks.slice(-2) : chunks.slice(-1);
+      let si = n - 1; while (si > 0 && stress[si] !== 1 && stress[si] !== 0.5) si--;   // the rhyme runs from the last stressed syllable: ma-TE-ri-al, not ma-te-RI-al
+      const take = fem ? chunks.slice(Math.max(si, n - 3, 0)) : chunks.slice(-1);
+      for (let j = 1; j < take.length; j++) {                  // a glide or a doubled vowel the split pushed forward belongs to the vowel before it: sho-wing is show-ing, si-ghing is sigh-ing, se-eing is see-ing
+        const prev = take[j - 1], cur = take[j];
+        if (!/[aeiouy]$/i.test(prev)) continue;
+        const g = cur.match(/^([wy]|gh)(?=[aeiou])/i) || (cur[0] && cur[0].toLowerCase() === prev.slice(-1).toLowerCase() && /^[aeiou][^aeiouy]*[aeiouy]/i.test(cur) ? [cur[0]] : null);
+        if (g) { take[j - 1] = prev + g[0]; take[j] = cur.slice(g[0].length); }
+      }
       const parts = take.map((c, j) => phon(c, !fem || j === 0));
+      if (/ow$/i.test(take[0]) && /W/.test(p) && /O$/.test(parts[0])) parts[0] = parts[0].replace(/O$/, 'W');   // the whole word knows allow from low
+      const firstV = parts[0].search(/[aeiouAEIOUWQYV]/);
+      if (firstV > 0) parts[0] = parts[0].slice(firstV);       // a rhyme starts at its vowel: kn-OWING, sh-OWING
       const key = parts.join('');
       const lastP = parts[parts.length - 1];
-      const lm = lastP.match(/[aeiouAEIOUWQY]+/g);
+      const lm = lastP.match(/[aeiouAEIOUWQYV]+/g);
       const vowel = lm ? lm[lm.length - 1] : '';
       const coda = vowel ? lastP.slice(lastP.lastIndexOf(vowel) + vowel.length) : lastP;
       return { key, vowel, coda, feminine: fem, dactylic: fem && n >= 3 && stress[n - 2] !== 1 && stress[n - 2] !== 0.5, bare: coda };
@@ -366,17 +392,18 @@ const bareCoda = c => (c.length > 1 ? c.replace(/[sdz]$/, '') : c);   // an infl
 function rhymeKind(a, b) {
   // a, b: token records with .core and .rime
   if (!a || !b || !a.rime.key || !b.rime.key) return { kind: 'none', score: 0 };
+  if (a.partial || b.partial) return { kind: 'none', score: 0 };   // the front of a word cut at a seam cannot rhyme
   const sa = a.core.toLowerCase().replace(/[’']/g, ''), sb = b.core.toLowerCase().replace(/[’']/g, '');
   if (sa === sb) return { kind: 'same', score: 0.3 };
   if (a.rime.key === b.rime.key) return { kind: 'full', score: 1 };
   if (a.rime.feminine || b.rime.feminine) {
     // a feminine rhyme (SUM-mer, WA-ter) is judged from its stressed vowel on: the stressed vowel and everything after it
     // must agree, the slack vowels heard as one neutral sound
-    const split = r => { const m = r.key.match(/^[aeiouAEIOUWQY]+/); return m ? { sv: m[0], rest: r.key.slice(m[0].length).replace(/[aeiou]/g, 'e').replace(/z/g, 's') } : { sv: '', rest: r.key }; };
+    const split = r => { const m = r.key.match(/^[aeiouAEIOUWQYV]+/); return m ? { sv: m[0], rest: r.key.slice(m[0].length).replace(/[aeiou]/g, 'e').replace(/z/g, 's') } : { sv: '', rest: r.key }; };
     if (a.rime.feminine && b.rime.feminine) {
       const A = split(a.rime), B = split(b.rime);
       if (A.sv && A.sv === B.sv && A.rest === B.rest) return { kind: 'full', score: 0.95 };
-      if ((A.sv && A.sv === B.sv) || (A.rest === B.rest && A.rest.length >= 2)) return { kind: 'slant', score: 0.5 };
+      if ((A.sv && A.sv === B.sv && !a.rime.dactylic === !b.rime.dactylic) || (A.rest === B.rest && A.rest.length >= 2)) return { kind: 'slant', score: 0.5 };   // the same stressed vowel chimes only across rhymes of the same length
       return { kind: 'none', score: 0 };
     }
     // a word ending in two slack syllables can lift its last onto the beat and rhyme there: TEM-per-ATE with date
@@ -429,7 +456,7 @@ function tokenize(text, overrides) {
         return;
       }
       const pre = [lead, pending].filter(Boolean).join(' ');
-      toks.push({ text: pre ? pre + ' ' + t : t, core: c, origEnd: last, line: li, glue: glue && !pre });
+      toks.push({ text: pre ? pre + (glue ? '' : ' ') + t : t, core: c, origEnd: last, line: li, glue: glue && !pre });   // "\u2014and" stays "\u2014and"
       lead = ''; pending = '';
     });
     if (pending && toks.length) { toks[toks.length - 1].text += ' ' + pending; toks[toks.length - 1].origEnd = true; }
@@ -749,6 +776,7 @@ function wholeLines(toks, L, opts) {
     // a word carried across a stop belongs to the next line ("delivery. Thou"), and a line that opens on a word ending
     // a sentence belongs to the line before ("land, Who said")
     if (b - a >= 2 && !last.endPunct && toks[b - 2].endPunct) c += toks[b - 2].endPunct === 'stop' ? 2.5 : 1.5;
+    else if (b - a >= 2 && last.endPunct && last.endPunct !== 'stop' && toks[b - 2].endPunct === 'stop') c += 2.5 + (last.endPunct === 'pause' ? 0.9 : 0.7);   // "a face! What," belongs to the next line
     if (b - a >= 2 && toks[a].endPunct) c += toks[a].endPunct === 'stop' ? 2.5 : 1.5;
     // the poet's own break counts, and counts most where the poet also ended a sentence
     if (b < N && last.origEnd) c -= last.endPunct === 'stop' ? honor * 5 : honor;
@@ -892,22 +920,20 @@ function margin(result) {
     const tag = multi ? `Frame ${fi + 1}: ` : '';
     const at = lines[0].n;
     // the frame note: what this frame holds and what comes next (only the last frame can be unfinished)
-    const shortLast = result.mode === 'strict' && lines[lines.length - 1].syl < 10 ? lines[lines.length - 1] : null;
+    const shortLast = lines[lines.length - 1].syl < (result.mode === 'strict' ? 10 : 9) ? lines[lines.length - 1] : null;
     if (fi === frames.length - 1 && (lines.length < 14 || shortLast)) {
       const n = lines.length;
       if (n === 14) {
         const s = shortLast.syl;
         notes.push({ line: 0, at: at - 0.5, kind: 'frame', text: `${tag}All fourteen lines are here, but line ${shortLast.n} has ${pl(s, 'syllable')}; ${pl(10 - s, 'more syllable')} would bring it to ten and close the frame.` });
       } else {
-        const written = shortLast ? n - 1 : n;
-        const need = Math.max(0, 140 - lines.reduce((a, l) => a + l.syl, 0));
         const left = 14 - n;
+        const m = ((shortLast ? shortLast.n : 0) - at) + 1;   // the short line's place in this frame
         const parts = [
           `${tag}You have ${n === 1 ? 'one line' : n + ' lines'} of fourteen: ${framePart(n)}.`,
-          shortLast ? `Line ${shortLast.n} stops at ${pl(shortLast.syl, 'syllable')} because the words run out there.` : '',
-          shortLast ? `Finish line ${shortLast.n} (${shortLast.syl} of 10 syllables)${n === 1 ? '; it sets the A rhyme' : ''}.` : nextNote(lines.slice(0, written), at - 1),
-          left > 0 ? `${left} more ${left === 1 ? 'line' : 'lines'}, about ${pl(need, 'syllable')}, would close the frame.` : '',
-          'Everything below reads what is here and leaves the rest for you.'
+          shortLast ? `Line ${shortLast.n} has ${pl(shortLast.syl, 'syllable')}${result.mode === 'strict' ? ', because the words run out there' : ''}; finish it with ${pl(10 - shortLast.syl, 'more syllable')}${m === 1 ? ', and its last word sets the A rhyme' : rhymePartnerOf(m) && lines[rhymePartnerOf(m) - 1] ? `, ending on a word that chimes with line ${lines[rhymePartnerOf(m) - 1].n}` : ''}.` : nextNote(lines, at - 1),
+          left > 0 ? `${left} more ${left === 1 ? 'line' : 'lines'} of about ten syllables would close the frame.` : '',
+          multi ? '' : 'Everything below reads what is here and leaves the rest for you.'
         ];
         notes.push({ line: 0, at: at - 0.5, kind: 'frame', text: parts.filter(Boolean).join(' ') });
       }
@@ -923,12 +949,18 @@ function margin(result) {
     lines.forEach(ln => {
       if (ln.end.partial) notes.push({ line: ln.n, kind: 'split', text: `Line ${ln.n} breaks inside “${ln.end.tok.core}” (“${ln.end.core}-”). The tenth syllable fell mid-word; a syllable gained or spent earlier in the line moves the seam.` });
       if (ln.end.dangler) notes.push({ line: ln.n, kind: 'end', text: `Line ${ln.n} ends on “${ln.end.core}”, a little word. A line end wants weight: a noun, a verb, a word a reader can lean on.` });
-      const kept = scan(ln).filter(Boolean).length;
-      if (ln.syl >= 8 && kept <= Math.floor(ln.syl * 0.6)) {
+      // the same scansion the rhythm panel shows, with its allowances (an inverted first foot, an anapest, a feminine ending)
+      const sc = ln.syl >= 8 ? scanMeter(ln.stress, 'iambic') : null;
+      if (sc && sc.feet && sc.regularity < 0.75) {
         const bad = [];
         let p = 0;
-        for (const piece of ln.pieces) { for (let k = piece.from; k < piece.to; k++) { const v = piece.tok.stress[k]; const strong = p % 2 === 1; if (v === 1 && !strong && !bad.includes(piece.tok.core)) bad.push(piece.tok.core); p++; } }
-        notes.push({ line: ln.n, kind: 'meter', text: `Line ${ln.n} keeps ${kept} of ${ln.syl} iambic slots${bad.length ? `; the stresses in ${bad.map(w => '“' + w + '”').join(', ')} land on weak beats` : ''}. Read it aloud: da-DUM five times, or near it.` });
+        for (const piece of ln.pieces) for (let k = piece.from; k < piece.to; k++, p++) {
+          const sub = (sc.subs || []).find(x => x.foot === (sc.spans.findIndex(sp => p >= sp.a && p < sp.b) + 1));
+          if (sc.realized[p] === '/' && sc.positions[p] === 0 && !(sub && (sub.kind === 'inversion' || sub.kind === 'spondee')) && !bad.includes(piece.tok.core)) bad.push(piece.tok.core);
+        }
+        const on = Math.round(sc.regularity * ln.syl);
+        // a five-foot line whose only departures are licensed (inversions, spondees, an anapest) is not marked
+        if (bad.length || sc.feet !== 5) notes.push({ line: ln.n, kind: 'meter', text: `Line ${ln.n} keeps ${on} of ${ln.syl} syllables on the iambic pattern${bad.length ? `; ${bad.map(w => '\u201C' + w + '\u201D').join(', ')} ${bad.length === 1 ? 'pulls' : 'pull'} a stress onto a slack beat` : ''}. Read it aloud: da-DUM five times, or near it.` });
       }
     });
     if (lines[8] && !TURN_WORDS.has(lines[8].startLower)) notes.push({ line: lines[8].n, kind: 'turn', text: `Line ${lines[8].n} opens on “${lines[8].pieces[0].tok.core}”. The sonnet turns here; a but, yet, though, still, or so at the head of this line tells the reader the argument has changed direction.` });
@@ -970,7 +1002,8 @@ function grade(result) {
   const near = lines.reduce((a, l) => a + Math.max(0, 1 - Math.abs((isFem(l) ? 10 : l.syl) - 10) / 5), 0);
   F.push({ name: 'Measure', got: Math.round(20 * near / n), max: 20, note: `${exact} of ${n} ${n === 1 ? 'line' : 'lines'} at ten syllables${fem ? `, ${fem} at eleven with a feminine ending` : ''}${n < 14 ? `; graded on the ${n === 1 ? 'line' : n + ' lines'} written` : ''}` });
   const keptRatio = lines.reduce((a, l) => a + scan(l).filter(Boolean).length / Math.max(1, l.syl), 0) / n;
-  F.push({ name: 'Meter', got: Math.round(25 * clamp((keptRatio - 0.5) / 0.5, 0, 1) * Math.min(1, lines.reduce((a, l) => a + l.syl, 0) / (10 * n))), max: 25, note: `${Math.round(keptRatio * 100)}% of syllables keep strict da-DUM alternation (this row allows no inversions or extra syllables; the rhythm panel above does)` });
+  const lenFactor = Math.min(1, lines.reduce((a, l) => a + l.syl, 0) / (10 * n));
+  F.push({ name: 'Meter', got: Math.round(25 * clamp((keptRatio - 0.5) / 0.5, 0, 1) * lenFactor), max: 25, note: `${Math.round(keptRatio * 100)}% of syllables keep strict da-DUM alternation (this row allows no inversions or extra syllables; the rhythm panel above does)${lenFactor < 1 ? `; scaled by length, since the ${n === 1 ? 'line has' : 'lines have'} ${lines.reduce((a, l) => a + l.syl, 0)} of ${10 * n} syllables` : ''}` });
   const pairs = [[0, 2], [1, 3], [4, 6], [5, 7], [8, 10], [9, 11], [12, 13]].filter(([x, y]) => lines[x] && lines[y]);
   if (pairs.length) {
     let rh = 0, full = 0, slant = 0;
@@ -997,7 +1030,7 @@ function grade(result) {
     else turnNote = 'no turn: the sestet continues the octave without a pivot';
     C.push({ name: 'The turn', got: turn, max: 20, note: turnNote });
   } else notYet(C, 'The turn', 20, `not yet: the turn comes at line 9, and the frame has ${n === 1 ? 'one line' : n + ' lines'}`);
-  if (n >= 13 && Q[3].length >= 2) {
+  if (n >= 14 && Q[3].length >= 2) {
     const coup = Q[3], before = new Set([...Q[0], ...Q[1], ...Q[2]].map(stemOf)), q1 = new Set(Q[0].map(stemOf));
     let cp = 0; const cpNotes = [];
     const returns = coup.filter(w => q1.has(stemOf(w)));
@@ -1005,14 +1038,16 @@ function grade(result) {
     if (returns.length) { cp += 10; cpNotes.push(`returns to the opening (${returns.slice(0, 2).map(w => '“' + w + '”').join(', ')})`); } else cpNotes.push('no word of the first quatrain comes back');
     if (fresh.length >= 2) { cp += 10; cpNotes.push(`adds new matter (${fresh.slice(0, 2).map(w => '“' + w + '”').join(', ')})`); } else cpNotes.push('adds little the quatrains had not said');
     C.push({ name: 'The couplet', got: cp, max: 20, note: cpNotes.join('; ') });
-  } else notYet(C, 'The couplet', 20, 'not yet: the couplet is lines 13 and 14');
+  } else notYet(C, 'The couplet', 20, n === 13 ? 'not yet: the couplet needs line 14' : 'not yet: the couplet is lines 13 and 14');
   const devPairs = [[0, 1, '1 to 2'], [1, 2, '2 to 3']].filter(([a, b]) => Q[a].length && Q[b].length);
   if (devPairs.length) {
     let dev = 0; const devNotes = [];
     for (const [a, b, label] of devPairs) {
       const j = jaccard(Q[a], Q[b]);
-      if (j >= 0.05 && j <= 0.4) { dev += 10; devNotes.push(`quatrains ${label} share a word or two and move on (${Math.round(j * 100)}% of their words)`); }
-      else if (j < 0.05) { dev += 6; devNotes.push(`quatrains ${label} share no words; the thread, if there is one, runs under the diction`); }
+      const sb = new Set(Q[b].map(stemOf));
+      const shared = [...new Set(Q[a].filter(w => sb.has(stemOf(w))))];
+      if (!shared.length) { dev += 6; devNotes.push(`quatrains ${label} share no words; the thread, if there is one, runs under the diction`); }
+      else if (j <= 0.4) { dev += 10; devNotes.push(`quatrains ${label} share ${shared.slice(0, 2).map(w => '\u201C' + w + '\u201D').join(' and ')} and move on`); }
       else { dev += 4; devNotes.push(`quatrains ${label} circle the same words (${Math.round(j * 100)}% shared)`); }
     }
     C.push({ name: 'Development', got: Math.round(20 * dev / (10 * devPairs.length)), max: 20, note: devNotes.join('; ') });
@@ -1024,7 +1059,7 @@ function grade(result) {
     const saNotes = [`${sentences} ${sentences === 1 ? 'sentence' : 'sentences'} across the frame`];
     const qEnds = [3, 7, 11].filter(i => i < n);
     const closes = qEnds.filter(i => endsStop(lines[i])).length, pauses = qEnds.filter(i => endsPause(lines[i])).length;
-    if (closes) { sa += 6; saNotes.push(`a sentence ends with ${closes === 1 ? 'a quatrain' : closes + ' quatrains'}`); } else if (pauses) { sa += 3; saNotes.push('a quatrain ends on a pause'); } else saNotes.push('no sentence ends where a quatrain ends');
+    if (closes) { sa += 6; saNotes.push(closes === 1 ? 'a sentence ends with a quatrain' : `sentences end with ${closes} quatrains`); } else if (pauses) { sa += 3; saNotes.push('a quatrain ends on a pause'); } else saNotes.push('no sentence ends where a quatrain ends');
     C.push({ name: 'Sentence architecture', got: sa, max: 15, note: saNotes.join('; ') });
   } else notYet(C, 'Sentence architecture', 15, 'not yet: read once there is a quatrain');
   // Toward the Why: when you look up from a book you should see the world and yourself differently.
@@ -1036,20 +1071,21 @@ function grade(result) {
     const so = selfShare(octave), ss = selfShare(sestet);
     let why = 0; const whyNotes = [];
     if ((so === 0 && ss > 0) || (ss === 0 && so > 0) || Math.abs(ss - so) >= 0.04) { why += 8; whyNotes.push(ss > so ? 'the octave looks at the world, the sestet turns to the self' : 'the octave speaks from the self, the sestet turns to the world'); }
-    else whyNotes.push('octave and sestet face the same way; no one looks up');
+    else whyNotes.push('octave and sestet face the same way');
     const WORLD = new Set(['world', 'life', 'lives', 'time', 'death', 'love', 'all', 'every', 'everything', 'nothing', 'always', 'never', 'anyone', 'everyone', 'we', 'us', 'our', 'ourselves', 'men', 'women', 'earth', 'god', 'truth', 'years', 'age', 'ages', 'forever']);
-    if (coupletWords.length && coupletWords.some(w => WORLD.has(w))) { why += 7; whyNotes.push(`the couplet lifts its eyes (${coupletWords.filter(w => WORLD.has(w)).slice(0, 2).map(w => '“' + w + '”').join(', ')})`); }
+    if (coupletWords.length && coupletWords.some(w => WORLD.has(w))) { why += 7; whyNotes.push(`the couplet lifts its eyes (${[...new Set(coupletWords.filter(w => WORLD.has(w)))].slice(0, 2).map(w => '\u201C' + w + '\u201D').join(', ')})`); }
     else if (coupletWords.length) whyNotes.push('the couplet stays inside the poem’s own scene');
-    else whyNotes.push('the couplet is not written yet');
-    C.push({ name: 'Toward the Why', got: why, max: 15, note: whyNotes.join('; ') });
+    // the couplet's 7 points wait for the couplet: before line 13 the row is out of 8
+    C.push({ name: 'Toward the Why', got: why, max: n >= 13 ? 15 : 8, note: whyNotes.join('; ') + (n < 13 ? '; the couplet part waits for lines 13 and 14' : '') });
   } else notYet(C, 'Toward the Why', 15, 'not yet: the poem looks up in its sestet, lines 9 to 14');
   const content = contentStems(lines), abstract = content.filter(w => ABSTRACT_RE.test(w)).length;
   const ratio = content.length ? abstract / content.length : 0;
-  C.push({ name: 'Concreteness', got: Math.round(10 * (1 - clamp(ratio / 0.25, 0, 1))), max: 10, note: `${abstract} of ${content.length} content ${content.length === 1 ? 'word is' : 'words are'} ${abstract === 1 && content.length === 1 ? 'an abstraction' : 'abstractions'} (${Math.round(ratio * 100)}%)` });
+  C.push({ name: 'Concreteness', got: Math.round(10 * (1 - clamp(ratio / 0.25, 0, 1))), max: 10, note: `${abstract} of ${content.length} content ${content.length === 1 ? 'word' : 'words'} ${abstract === 1 ? 'is an abstraction' : 'are abstractions'} (${Math.round(ratio * 100)}%)` });
   const live = rows => rows.filter(r => !r.na);
   const scoreOf = rows => { const max = live(rows).reduce((a, r) => a + r.max, 0); return max ? Math.round(100 * live(rows).reduce((a, r) => a + r.got, 0) / max) : null; };
   // a partial frame is judged as work in progress: "publishable" waits for all fourteen lines
-  const band = x => x == null ? 'not yet' : n < 14 ? (x >= 85 ? `on pace, ${n} of 14 lines` : x >= 50 ? `working, ${n} of 14 lines` : `early, ${n} of 14 lines`) : x >= 85 ? 'publishable by the numbers' : x >= 70 ? 'nearly there' : x >= 50 ? 'working' : 'early';
+  const partial = n < 14 || lines[13].syl < 10;
+  const band = x => x == null ? 'not yet' : partial ? (n < 14 ? (x >= 85 ? `on pace, ${n} of 14 lines` : x >= 50 ? `working, ${n} of 14 lines` : `early, ${n} of 14 lines`) : 'nearly there: line 14 is short') : x >= 85 ? 'publishable by the numbers' : x >= 70 ? 'nearly there' : x >= 50 ? 'working' : 'early';
   // The argument needs room to show: with fewer than a quatrain's worth of rows the conceptual grade waits.
   const cMax = live(C).reduce((a, r) => a + r.max, 0);
   const formal = scoreOf(F), conceptual = cMax >= 30 ? scoreOf(C) : null;
@@ -1099,6 +1135,14 @@ function makeTemplates(meter, n) {
       const pos = [];
       base.forEach(x => { if (x.f === f && x.s) pos.push({ s: 0, f, extra: true, inner: true }); pos.push(x); });
       add(pos, 'anapest', 0.5);
+      // the same, closed by a feminine ending
+      add(pos.concat([{ s: 0, f: feet - 1, extra: true }]), 'anapest', 0.65);
+      // two extra light syllables in two different feet (Frost's loose four-beat lines)
+      for (let g = f + 1; g < feet; g++) {
+        const pos2 = [];
+        base.forEach(x => { if ((x.f === f || x.f === g) && x.s) pos2.push({ s: 0, f: x.f, extra: true, inner: true }); pos2.push(x); });
+        add(pos2, 'anapest', 1.0);
+      }
     }
   }
   return out;
@@ -1112,7 +1156,7 @@ function fitCost(stress, t) {
     else c += slotCost(v, strong);
   });
   // a "feminine" ending on a fully stressed syllable is no feminine ending
-  if (t.kind === 'feminine') stress.forEach((v, i) => { if (t.pos[i].extra && v === 1) c += 2; });
+  if (t.kind === 'feminine' || t.kind === 'anapest') stress.forEach((v, i) => { if (t.pos[i].extra && !t.pos[i].inner && v === 1) c += 2; });
   // an inverted first foot is a licence in rising meters, not a fault
   if (t.meter === 'iambic' && t.kind !== 'headless' && stress.length >= 2 && stress[0] === 1 && (stress[1] === 0 || stress[1] === 'F')) c -= 1 + (stress[1] === 0 ? 0.55 : 0.12) - 0.25;
   return Math.max(0, c);
@@ -1135,7 +1179,7 @@ function scanMeter(stress, meter) {
     const strong = !!t.pos[i].s;
     if (strong) {
       // a little word right after a stressed syllable in the same foot stays slack: LIKE to the LARK is an inversion, not a spondee
-      if (v === 'F' && i > 0 && stress[i - 1] === 1 && !t.pos[i - 1].s && t.pos[i - 1].f === t.pos[i].f) return '˘';
+      if (v === 'F' && i > 0 && i < n - 1 && stress[i - 1] === 1 && !t.pos[i - 1].s && t.pos[i - 1].f === t.pos[i].f) return '˘';
       if (v === 'F' || v >= 0.5) return '/';
       return stress[i - 1] !== 1 && stress[i + 1] !== 1 ? '/' : '˘';
     }
@@ -1162,16 +1206,19 @@ function scanMeter(stress, meter) {
     else subs.push({ foot: j + 1, kind: 'other', text: `${where} reads as ${FOOT_SAID[got] || name}` });
   });
   if (t.kind === 'anapest') {
-    const f = t.pos.find(p => p.inner).f;
-    if (!subs.some(x => x.foot === f + 1)) subs.push({ foot: f + 1, kind: 'anapest', text: `foot ${f + 1} takes an extra light syllable: an anapest (da-da-DUM) in place of an iamb` });
+    [...new Set(t.pos.filter(p => p.inner).map(p => p.f))].forEach(f => {
+      if (!subs.some(x => x.foot === f + 1)) subs.push({ foot: f + 1, kind: 'anapest', text: `foot ${f + 1} takes an extra light syllable: an anapest (da-da-DUM) in place of an iamb` });
+    });
   }
-  if (t.kind === 'feminine' && t.pos.every((p, i) => !p.extra || realized[i] === '˘')) subs.push({ foot: t.feet, kind: 'feminine', text: `a feminine ending: ${n - t.feet * METERS[meter].foot.length === 1 ? 'one extra slack syllable' : 'two extra slack syllables'} after the last beat` });
+  const femSlots = t.pos.some(p => p.extra && !p.inner);
+  if ((t.kind === 'feminine' || (t.kind === 'anapest' && femSlots)) && t.pos.every((p, i) => !p.extra || p.inner || realized[i] === '˘')) subs.push({ foot: t.feet, kind: 'feminine', text: `a feminine ending: ${t.pos.filter(p => p.extra && !p.inner).length === 1 ? 'one extra slack syllable' : 'two extra slack syllables'} after the last beat` });
   if (t.kind === 'headless') subs.push({ foot: 1, kind: 'headless', text: t.pos[0].s ? 'headless: the line drops its first slack syllable and starts on the beat' : 'the first foot drops one slack syllable, so the line opens da-DUM' });
   if (t.kind === 'catalectic') subs.push({ foot: t.feet, kind: 'catalectic', text: 'catalectic: the last foot drops its weak syllable and the line ends on the beat' });
   const kept = realized.filter((m, i) => (m === '/') === !!t.pos[i].s).length;
   const lengthName = LENGTH_NAMES[t.feet] || `${t.feet}-foot`;
   const dadum = spans.map(sp => realized.slice(sp.a, sp.b).map(m => (m === '/' ? 'DUM' : 'da')).join('-')).join(' ');
-  return { meter, unit, feet: t.feet, kind: t.kind, label: `${meter} ${lengthName}`, realized, positions: t.pos.map(p => (p.s ? 1 : 0)), spans, kinds, subs, regularity: kept / n, cost: c, perSyl: c / n, dadum };
+  const said = spans.map(sp => { const m = realized.slice(sp.a, sp.b).join(''); return FOOT_SAID[m] || m.replace(/\//g, 'DUM-').replace(/˘/g, 'da-').replace(/-$/, ''); });
+  return { said, meter, unit, feet: t.feet, kind: t.kind, label: `${meter} ${lengthName}`, realized, positions: t.pos.map(p => (p.s ? 1 : 0)), spans, kinds, subs, regularity: kept / n, cost: c, perSyl: c / n, dadum };
 }
 // Reads every line of a laid-out poem: finds the meter most lines walk in, then scans each line against it.
 // A line that walks clearly better in another meter says so.
@@ -1188,7 +1235,7 @@ function rhythm(lines, opts) {
     if (bestM) wins[bestM]++;
   });
   let dominant = 'iambic';
-  Object.keys(METERS).forEach(m => { if (wins[m] > wins[dominant] || (wins[m] === wins[dominant] && totals[m] < totals[dominant] * 0.92)) dominant = m; });
+  Object.keys(METERS).forEach(m => { if (wins[m] > wins[dominant] || (wins[m] === wins[dominant] && totals[m] < totals[dominant] * (dominant === 'iambic' ? 0.75 : 0.92))) dominant = m; });
   // a single line near ten syllables that walks iambic well enough is read as the sonnet's own meter
   if (ls.length === 1 && ls[0].stress.length >= 9 && ls[0].stress.length <= 11 && totals.iambic <= 0.3) dominant = 'iambic';
   // the caller may know the poem's pulse better (read from the poet's own lines, before the loom re-cut them)
@@ -1219,8 +1266,8 @@ function rhymeFamilies(toks) {
   (toks || []).forEach(t => {
     if (!t.core || !t.rime || !t.rime.key) return;
     if ((FUNCTION_WORDS.has(t.lower) || DANGLERS.has(t.lower)) && !t.origEnd && !t.cut) return;   // a little word counts only at a line end
-    if (!/[aeiouAEIOUWQY]/.test(t.rime.key)) return;
-    const k = t.rime.key;
+    if (!/[aeiouAEIOUWQYV]/.test(t.rime.key)) return;
+    const k = t.rime.key.replace(/z/g, 's');
     if (!groups.has(k)) groups.set(k, []);
     groups.get(k).push(t);
   });

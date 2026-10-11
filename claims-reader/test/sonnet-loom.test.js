@@ -164,8 +164,7 @@ test('words joined by a dash or slash count separately and come back exactly as 
   assert.equal(toks.reduce((a, t) => a + t.syl, 0), 7 + 6 + 6);
   assert.equal(L.joinTokens(toks).split(/\s+/).join(' '), text.split(/\s+/).join(' '));
   const r = L.weave(text, { whole: true });
-  assert.equal(words(laidOut(r)), words(text).replace(/—(?=\S)/g, '— ').replace(/\s+/g, ' ').trim().replace(/— /g, '— ') ? words(laidOut(r)) : '');
-  assert.equal(L.plain(r).replace(/\s+/g, ' ').replace(/— (?=[a-z])/g, '—').trim().length > 0, true);
+  assert.equal(words(L.plain(r)), words(text));
 });
 
 test('a poem with no letters or digits is refused politely in both modes', () => {
@@ -231,4 +230,30 @@ test('meter: inversions with a little word, internal anapests, and real feminine
 test('an already-lined sonnet keeps its own lines', () => {
   const r = L.weave(S18, { whole: true });
   assert.deepEqual(r.lines.map(l => l.text), S18.split('\n'));
+});
+
+test('a dash or ellipsis at the very start of a word survives the round trip', () => {
+  for (const text of ['—and then you came', '…and then you came', 'I waited—and then you came, all at once—\nand stayed']) {
+    assert.equal(words(L.joinTokens(L.tokenize(text))), words(text));
+    assert.equal(words(L.plain(L.weave(text, { whole: true }))), words(text));
+  }
+});
+
+test('rhymes the old rules missed or invented', () => {
+  const tok = w => L.tokenize(w)[0];
+  for (const [a, b] of [['red', 'bed'], ['knowing', 'showing'], ['earth', 'birth'], ['said', 'bed'], ['heart', 'art'], ['view', 'true'], ['would', 'could'],
+    ['showing', 'going'], ['being', 'seeing'], ['sighing', 'lying'], ['renewing', 'doing'], ['saying', 'weighing'], ['buying', 'dying']]) {
+    assert.equal(L.rhymeKind(tok(a), tok(b)).kind, 'full', `${a}/${b}`);
+  }
+  for (const [a, b] of [['good', 'mud'], ['material', 'vial'], ['stadium', 'auditorium'], ['casino', 'video']]) {
+    assert.equal(L.rhymeKind(tok(a), tok(b)).kind, 'none', `${a}/${b}`);
+  }
+  for (const [w, n] of [['pursuing', 3], ['continuing', 4], ['suing', 2], ['ruin', 2], ['ruining', 3]]) assert.equal(L.sylWord(w), n, w);
+});
+
+test('"and" is not a turn word; "but" and "yet" are', () => {
+  const turns = [...L.TURN_WORDS];
+  assert.equal(turns.includes('and'), false);
+  assert.equal(turns.includes('but'), true);
+  assert.equal(turns.includes('yet'), true);
 });
