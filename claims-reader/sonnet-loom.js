@@ -943,7 +943,7 @@ function margin(result) {
       const A = lines[x], B = lines[y]; if (!A || !B) continue;
       const rk = rhymeKind(A.end, B.end);
       if (rk.kind === 'none') notes.push({ line: B.n, kind: 'rhyme', text: `Lines ${A.n} and ${B.n} should rhyme (${A.letter}); they end on ${endWord(A.end)} and ${endWord(B.end)}. One of those two line ends wants a word that chimes with the other.`, ex: 'Sonnet 73, lines 1 and 3: behold / cold.' });
-      else if (rk.kind === 'slant') notes.push({ line: B.n, kind: 'slant', text: `Lines ${A.n} and ${B.n} slant-rhyme (${endWord(A.end)}, ${endWord(B.end)}). Slant rhyme is a choice in a modern sonnet; make sure it reads as one.` });
+      else if (rk.kind === 'slant') notes.push({ line: B.n, kind: 'slant', text: `Lines ${A.n} and ${B.n} slant-rhyme (${endWord(A.end)}, ${endWord(B.end)}). Slant rhyme is a choice in a modern sonnet; make sure it reads as one.`, ex: 'Sonnet 18 allowed one: temperate / date.' });
       else if (rk.kind === 'same') notes.push({ line: B.n, kind: 'rhyme', text: `Lines ${A.n} and ${B.n} end on the same word, ${endWord(A.end)}. Identical rhyme reads as a lapse unless the repetition is the point.` });
     }
     lines.forEach(ln => {
