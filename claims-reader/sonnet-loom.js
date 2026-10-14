@@ -942,13 +942,13 @@ function margin(result) {
     for (const [x, y] of pairs) {
       const A = lines[x], B = lines[y]; if (!A || !B) continue;
       const rk = rhymeKind(A.end, B.end);
-      if (rk.kind === 'none') notes.push({ line: B.n, kind: 'rhyme', text: `Lines ${A.n} and ${B.n} should rhyme (${A.letter}); they end on ${endWord(A.end)} and ${endWord(B.end)}. One of those two line ends wants a word that chimes with the other.` });
+      if (rk.kind === 'none') notes.push({ line: B.n, kind: 'rhyme', text: `Lines ${A.n} and ${B.n} should rhyme (${A.letter}); they end on ${endWord(A.end)} and ${endWord(B.end)}. One of those two line ends wants a word that chimes with the other.`, ex: 'Sonnet 73, lines 1 and 3: behold / cold.' });
       else if (rk.kind === 'slant') notes.push({ line: B.n, kind: 'slant', text: `Lines ${A.n} and ${B.n} slant-rhyme (${endWord(A.end)}, ${endWord(B.end)}). Slant rhyme is a choice in a modern sonnet; make sure it reads as one.` });
       else if (rk.kind === 'same') notes.push({ line: B.n, kind: 'rhyme', text: `Lines ${A.n} and ${B.n} end on the same word, ${endWord(A.end)}. Identical rhyme reads as a lapse unless the repetition is the point.` });
     }
     lines.forEach(ln => {
       if (ln.end.partial) notes.push({ line: ln.n, kind: 'split', text: `Line ${ln.n} breaks inside “${ln.end.tok.core}” (“${ln.end.core}-”). The tenth syllable fell mid-word; a syllable gained or spent earlier in the line moves the seam.` });
-      if (ln.end.dangler) notes.push({ line: ln.n, kind: 'end', text: `Line ${ln.n} ends on “${ln.end.core}”, a little word. A line end wants weight: a noun, a verb, a word a reader can lean on.` });
+      if (ln.end.dangler) notes.push({ line: ln.n, kind: 'end', text: `Line ${ln.n} ends on “${ln.end.core}”, a little word. A line end wants weight: a noun, a verb, a word a reader can lean on.`, ex: 'Sonnet 73 ends its lines on behold, hang, cold, sang.' });
       // the same scansion the rhythm panel shows, with its allowances (an inverted first foot, an anapest, a feminine ending)
       const sc = ln.syl >= 8 ? scanMeter(ln.stress, 'iambic') : null;
       if (sc && sc.feet && sc.regularity < 0.75) {
@@ -960,12 +960,12 @@ function margin(result) {
         }
         const on = Math.round(sc.regularity * ln.syl);
         // a five-foot line whose only departures are licensed (inversions, spondees, an anapest) is not marked
-        if (bad.length || sc.feet !== 5) notes.push({ line: ln.n, kind: 'meter', text: `Line ${ln.n} keeps ${on} of ${ln.syl} syllables on the iambic pattern${bad.length ? `; ${bad.map(w => '\u201C' + w + '\u201D').join(', ')} ${bad.length === 1 ? 'pulls' : 'pull'} a stress onto a slack beat` : ''}. Read it aloud: da-DUM five times, or near it.` });
+        if (bad.length || sc.feet !== 5) notes.push({ line: ln.n, kind: 'meter', text: `Line ${ln.n} keeps ${on} of ${ln.syl} syllables on the iambic pattern${bad.length ? `; ${bad.map(w => '\u201C' + w + '\u201D').join(', ')} ${bad.length === 1 ? 'pulls' : 'pull'} a stress onto a slack beat` : ''}. Read it aloud: da-DUM five times, or near it.`, ex: 'Sonnet 18, line 4: “And SUMmer’s LEASE hath ALL too SHORT a DATE.”' });
       }
     });
-    if (lines[8] && !TURN_WORDS.has(lines[8].startLower)) notes.push({ line: lines[8].n, kind: 'turn', text: `Line ${lines[8].n} opens on “${lines[8].pieces[0].tok.core}”. The sonnet turns here; a but, yet, though, still, or so at the head of this line tells the reader the argument has changed direction.` });
-    if (lines[12] && !TURN_WORDS.has(lines[12].startLower) && !(lines[11] && lines[11].end.endPunct === 'stop')) notes.push({ line: lines[12].n, kind: 'turn', text: `The couplet (lines ${lines[12].n} and ${lines[12].n + 1}) runs on from line ${lines[11].n} without a stop. A full stop at the end of line ${lines[11].n}, or a turn word opening line ${lines[12].n}, lets the couplet snap shut.` });
-    if (lines[13] && lines[13].syl >= 10 && lines[13].end.endPunct !== 'stop') notes.push({ line: lines[13].n, kind: 'close', text: `Line ${lines[13].n} ends on ${endWord(lines[13].end)} without a full stop. A sonnet closes; the last word should sound like the last word.` });
+    if (lines[8] && !TURN_WORDS.has(lines[8].startLower)) notes.push({ line: lines[8].n, kind: 'turn', text: `Line ${lines[8].n} opens on “${lines[8].pieces[0].tok.core}”. The sonnet turns here; a but, yet, though, still, or so at the head of this line tells the reader the argument has changed direction.`, ex: 'Sonnet 18, line 9: “But thy eternal summer shall not fade.”' });
+    if (lines[12] && !TURN_WORDS.has(lines[12].startLower) && !(lines[11] && lines[11].end.endPunct === 'stop')) notes.push({ line: lines[12].n, kind: 'turn', text: `The couplet (lines ${lines[12].n} and ${lines[12].n + 1}) runs on from line ${lines[11].n} without a stop. A full stop at the end of line ${lines[11].n}, or a turn word opening line ${lines[12].n}, lets the couplet snap shut.`, ex: 'Sonnet 73 stops at line 12 (“nourish’d by.”) and opens the couplet “This thou perceiv’st”.' });
+    if (lines[13] && lines[13].syl >= 10 && lines[13].end.endPunct !== 'stop') notes.push({ line: lines[13].n, kind: 'close', text: `Line ${lines[13].n} ends on ${endWord(lines[13].end)} without a full stop. A sonnet closes; the last word should sound like the last word.`, ex: 'Sonnet 18 closes: “and this gives life to thee.”' });
   });
   notes.sort((a, b) => (a.at != null ? a.at : a.line) - (b.at != null ? b.at : b.line));
   if (!notes.length) notes.push({ line: 0, kind: 'frame', text: `Nothing to mark: ten syllables a line, the rhymes in their places, a turn at nine, a close at fourteen${multi ? ', in every frame' : ''}. Read it aloud once more and send it.` });
@@ -1000,25 +1000,25 @@ function grade(result) {
   const fem = lines.filter(isFem).length;
   // each line earns its share by how near ten it sits: nine or eleven earn most of it, a two-word fragment none
   const near = lines.reduce((a, l) => a + Math.max(0, 1 - Math.abs((isFem(l) ? 10 : l.syl) - 10) / 5), 0);
-  F.push({ name: 'Measure', got: Math.round(20 * near / n), max: 20, note: `${exact} of ${n} ${n === 1 ? 'line' : 'lines'} at ten syllables${fem ? `, ${fem} at eleven with a feminine ending` : ''}${n < 14 ? `; graded on the ${n === 1 ? 'line' : n + ' lines'} written` : ''}` });
+  F.push({ fix: 'Add or spend a syllable until the line sits at ten; a feminine eleventh is allowed.', ex: 'Sonnet 18: “Shall I compare thee to a summer’s day?” (ten).', name: 'Measure', got: Math.round(20 * near / n), max: 20, note: `${exact} of ${n} ${n === 1 ? 'line' : 'lines'} at ten syllables${fem ? `, ${fem} at eleven with a feminine ending` : ''}${n < 14 ? `; graded on the ${n === 1 ? 'line' : n + ' lines'} written` : ''}` });
   const keptRatio = lines.reduce((a, l) => a + scan(l).filter(Boolean).length / Math.max(1, l.syl), 0) / n;
   const lenFactor = Math.min(1, lines.reduce((a, l) => a + l.syl, 0) / (10 * n));
-  F.push({ name: 'Meter', got: Math.round(25 * clamp((keptRatio - 0.5) / 0.5, 0, 1) * lenFactor), max: 25, note: `${Math.round(keptRatio * 100)}% of syllables keep strict da-DUM alternation (this row allows no inversions or extra syllables; the rhythm panel above does)${lenFactor < 1 ? `; scaled by length, since the ${n === 1 ? 'line has' : 'lines have'} ${lines.reduce((a, l) => a + l.syl, 0)} of ${10 * n} syllables` : ''}` });
+  F.push({ fix: 'Read the line aloud, da-DUM five times; where a stress lands on a slack beat, swap the word or its order.', ex: 'Sonnet 18: “And SUMmer’s LEASE hath ALL too SHORT a DATE.”', name: 'Meter', got: Math.round(25 * clamp((keptRatio - 0.5) / 0.5, 0, 1) * lenFactor), max: 25, note: `${Math.round(keptRatio * 100)}% of syllables keep strict da-DUM alternation (this row allows no inversions or extra syllables; the rhythm panel below does)${lenFactor < 1 ? `; scaled by length, since the ${n === 1 ? 'line has' : 'lines have'} ${lines.reduce((a, l) => a + l.syl, 0)} of ${10 * n} syllables` : ''}` });
   const pairs = [[0, 2], [1, 3], [4, 6], [5, 7], [8, 10], [9, 11], [12, 13]].filter(([x, y]) => lines[x] && lines[y]);
   if (pairs.length) {
     let rh = 0, full = 0, slant = 0;
     for (const [x, y] of pairs) { const rk = rhymeKind(lines[x].end, lines[y].end); if (rk.kind === 'full') { rh += 1; full++; } else if (rk.kind === 'slant') { rh += 0.5; slant++; } else if (rk.kind === 'same') rh += 0.3; }
-    F.push({ name: 'Rhyme', got: Math.round(25 * rh / pairs.length), max: 25, note: `${full} true and ${slant} slant of the ${pairs.length === 7 ? '7 pairs the scheme asks for' : pairs.length === 1 ? 'one pair written so far' : pairs.length + ' pairs written so far'}` });
+    F.push({ fix: 'Change one line end of the pair so the two chime; a slant rhyme counts half.', ex: 'Sonnet 73: behold / cold, hang / sang; and the slant Shakespeare allowed in 18, temperate / date.', name: 'Rhyme', got: Math.round(25 * rh / pairs.length), max: 25, note: `${full} true and ${slant} slant of the ${pairs.length === 7 ? '7 pairs the scheme asks for' : pairs.length === 1 ? 'one pair written so far' : pairs.length + ' pairs written so far'}` });
   } else notYet(F, 'Rhyme', 25, 'not yet: the first rhyme pair is lines 1 and 3');
   const danglers = lines.filter(l => l.end.dangler).length, splits = lines.filter(l => l.end.partial).length;
-  F.push({ name: 'Line ends', got: clamp(12 - 2 * danglers - 3 * splits, 0, 12), max: 12, note: `${danglers} ${danglers === 1 ? 'line ends' : 'lines end'} on a little word; ${splits} ${splits === 1 ? 'word is' : 'words are'} cut at a seam` });
+  F.push({ fix: 'End each line on a noun or a verb, a word a reader can lean on.', ex: 'Sonnet 73 ends its first quatrain on behold, hang, cold, sang.', name: 'Line ends', got: clamp(12 - 2 * danglers - 3 * splits, 0, 12), max: 12, note: `${danglers} ${danglers === 1 ? 'line ends' : 'lines end'} on a little word; ${splits} ${splits === 1 ? 'word is' : 'words are'} cut at a seam` });
   let arch = 0, archMax = 0; const archNotes = [];
   if (n >= 4) { archMax += 1.5; if (endsStop(lines[3]) || endsPause(lines[3])) { arch += 1.5; archNotes.push('the first quatrain closes on a stop or pause'); } else archNotes.push('the first quatrain runs on'); }
   if (n >= 8) { archMax += 1.5; if (endsStop(lines[7]) || endsPause(lines[7])) { arch += 1.5; archNotes.push('the octave closes on a stop or pause'); } else archNotes.push('the octave runs on'); }
   if (n >= 9) { archMax += 5; if (lines[8].turn) { arch += 5; archNotes.push('a turn word opens line 9'); } else if (endsStop(lines[7])) { arch += 2; archNotes.push('line 8 closes a sentence'); } else archNotes.push('no turn at 9'); }
   if (n >= 13) { archMax += 5; if (lines[12].turn || endsStop(lines[11])) { arch += 5; archNotes.push('the couplet is set off'); } else archNotes.push('the couplet runs on'); }
   if (n >= 14) { archMax += 5; if (lines[13].syl >= 10 && endsStop(lines[13])) { arch += 5; archNotes.push('line 14 closes on a stop'); } else archNotes.push('line 14 does not close'); }
-  if (archMax) F.push({ name: 'Architecture', got: Math.round(18 * arch / archMax), max: 18, note: archNotes.join('; ') + (n < 14 ? '; the rest is not written yet' : '') });
+  if (archMax) F.push({ fix: 'Close a sentence where a quatrain closes, open line 9 on a turn word, and set the couplet off with a stop at line 12.', ex: 'Sonnet 73 closes sentences at lines 4, 8, and 12, and the couplet opens “This thou perceiv’st”.', name: 'Architecture', got: Math.round(18 * arch / archMax), max: 18, note: archNotes.join('; ') + (n < 14 ? '; the rest is not written yet' : '') });
   else notYet(F, 'Architecture', 18, 'not yet: the first quatrain ends at line 4');
   // ---- conceptual
   const Q = [lines.slice(0, 4), lines.slice(4, 8), lines.slice(8, 12), lines.slice(12, 14)].map(contentStems);
@@ -1028,7 +1028,7 @@ function grade(result) {
     else if (endsStop(lines[7])) { turn = 12; turnNote = 'line 9 begins a new sentence: a turn by syntax, not by signal'; }
     else if (lines.slice(8, 12).some(l => l.pieces.some(p => p.from === 0 && TURN_WORDS.has(p.tok.lower)))) { turn = 5; turnNote = 'a turn word appears somewhere in the third quatrain, not at its head'; }
     else turnNote = 'no turn: the sestet continues the octave without a pivot';
-    C.push({ name: 'The turn', got: turn, max: 20, note: turnNote });
+    C.push({ fix: 'Open line 9 on but, yet, though, still, or so, and let the thought change direction there.', ex: 'Sonnet 18, line 9: “But thy eternal summer shall not fade.”', name: 'The turn', got: turn, max: 20, note: turnNote });
   } else notYet(C, 'The turn', 20, `not yet: the turn comes at line 9, and the frame has ${n === 1 ? 'one line' : n + ' lines'}`);
   if (n >= 14 && Q[3].length >= 2) {
     const coup = Q[3], before = new Set([...Q[0], ...Q[1], ...Q[2]].map(stemOf)), q1 = new Set(Q[0].map(stemOf));
@@ -1037,7 +1037,7 @@ function grade(result) {
     const fresh = coup.filter(w => !before.has(stemOf(w)));
     if (returns.length) { cp += 10; cpNotes.push(`returns to the opening (${returns.slice(0, 2).map(w => '“' + w + '”').join(', ')})`); } else cpNotes.push('no word of the first quatrain comes back');
     if (fresh.length >= 2) { cp += 10; cpNotes.push(`adds new matter (${fresh.slice(0, 2).map(w => '“' + w + '”').join(', ')})`); } else cpNotes.push('adds little the quatrains had not said');
-    C.push({ name: 'The couplet', got: cp, max: 20, note: cpNotes.join('; ') });
+    C.push({ fix: 'Bring one word back from the first quatrain and add one thing the quatrains never said.', ex: 'Sonnet 18: “So long as men can breathe or eyes can see, / So long lives this, and this gives life to thee”: “this” returns, “life” is new.', name: 'The couplet', got: cp, max: 20, note: cpNotes.join('; ') });
   } else notYet(C, 'The couplet', 20, n === 13 ? 'not yet: the couplet needs line 14' : 'not yet: the couplet is lines 13 and 14');
   const devPairs = [[0, 1, '1 to 2'], [1, 2, '2 to 3']].filter(([a, b]) => Q[a].length && Q[b].length);
   if (devPairs.length) {
@@ -1050,7 +1050,7 @@ function grade(result) {
       else if (j <= 0.4) { dev += 10; devNotes.push(`quatrains ${label} share ${shared.slice(0, 2).map(w => '\u201C' + w + '\u201D').join(' and ')} and move on`); }
       else { dev += 4; devNotes.push(`quatrains ${label} circle the same words (${Math.round(j * 100)}% shared)`); }
     }
-    C.push({ name: 'Development', got: Math.round(20 * dev / (10 * devPairs.length)), max: 20, note: devNotes.join('; ') });
+    C.push({ fix: 'Let each quatrain move the thought on: a new image that shares a word or two with the last and leaves the rest behind.', ex: 'Sonnet 73: a year (leaves, boughs), then a day (twilight, sunset), then a fire (ashes, death-bed).', name: 'Development', got: Math.round(20 * dev / (10 * devPairs.length)), max: 20, note: devNotes.join('; ') });
   } else notYet(C, 'Development', 20, 'not yet: development is measured from one quatrain to the next, starting at line 5');
   if (n >= 4) {
     const text = lines.map(l => l.text).join(' ');
@@ -1060,7 +1060,7 @@ function grade(result) {
     const qEnds = [3, 7, 11].filter(i => i < n);
     const closes = qEnds.filter(i => endsStop(lines[i])).length, pauses = qEnds.filter(i => endsPause(lines[i])).length;
     if (closes) { sa += 6; saNotes.push(closes === 1 ? 'a sentence ends with a quatrain' : `sentences end with ${closes} quatrains`); } else if (pauses) { sa += 3; saNotes.push('a quatrain ends on a pause'); } else saNotes.push('no sentence ends where a quatrain ends');
-    C.push({ name: 'Sentence architecture', got: sa, max: 15, note: saNotes.join('; ') });
+    C.push({ fix: 'Two to six sentences across the frame, and let at least one end where a quatrain ends.', ex: 'Sonnet 73 is four sentences: one per quatrain and one for the couplet.', name: 'Sentence architecture', got: sa, max: 15, note: saNotes.join('; ') });
   } else notYet(C, 'Sentence architecture', 15, 'not yet: read once there is a quatrain');
   // Toward the Why: when you look up from a book you should see the world and yourself differently.
   // Proxies: the poem's orientation shifts between octave and sestet (world to self, or self to world), and the couplet lifts its eyes.
@@ -1076,11 +1076,11 @@ function grade(result) {
     if (coupletWords.length && coupletWords.some(w => WORLD.has(w))) { why += 7; whyNotes.push(`the couplet lifts its eyes (${[...new Set(coupletWords.filter(w => WORLD.has(w)))].slice(0, 2).map(w => '\u201C' + w + '\u201D').join(', ')})`); }
     else if (coupletWords.length) whyNotes.push('the couplet stays inside the poem’s own scene');
     // the couplet's 7 points wait for the couplet: before line 13 the row is out of 8
-    C.push({ name: 'Toward the Why', got: why, max: n >= 13 ? 15 : 8, note: whyNotes.join('; ') + (n < 13 ? '; the couplet part waits for lines 13 and 14' : '') });
+    C.push({ fix: 'Let the sestet face the other way from the octave (the world, then the self, or the self, then the world), and let the couplet say what the poem means past its own scene. Begin that claim as the essay does: “Perhaps…”', ex: 'Sonnet 73: three quatrains of “in me”, then the couplet turns to “thou” and to love: “To love that well which thou must leave ere long.”', name: 'Toward the Why', got: why, max: n >= 13 ? 15 : 8, note: whyNotes.join('; ') + (n < 13 ? '; the couplet part waits for lines 13 and 14' : '') });
   } else notYet(C, 'Toward the Why', 15, 'not yet: the poem looks up in its sestet, lines 9 to 14');
   const content = contentStems(lines), abstract = content.filter(w => ABSTRACT_RE.test(w)).length;
   const ratio = content.length ? abstract / content.length : 0;
-  C.push({ name: 'Concreteness', got: Math.round(10 * (1 - clamp(ratio / 0.25, 0, 1))), max: 10, note: `${abstract} of ${content.length} content ${content.length === 1 ? 'word' : 'words'} ${abstract === 1 ? 'is an abstraction' : 'are abstractions'} (${Math.round(ratio * 100)}%)` });
+  C.push({ fix: 'Trade an abstraction for a thing a reader can see.', ex: 'Sonnet 18 says “the darling buds of May”, not “beauty”.', name: 'Concreteness', got: Math.round(10 * (1 - clamp(ratio / 0.25, 0, 1))), max: 10, note: `${abstract} of ${content.length} content ${content.length === 1 ? 'word' : 'words'} ${abstract === 1 ? 'is an abstraction' : 'are abstractions'} (${Math.round(ratio * 100)}%)` });
   const live = rows => rows.filter(r => !r.na);
   const scoreOf = rows => { const max = live(rows).reduce((a, r) => a + r.max, 0); return max ? Math.round(100 * live(rows).reduce((a, r) => a + r.got, 0) / max) : null; };
   // a partial frame is judged as work in progress: "publishable" waits for all fourteen lines

@@ -257,3 +257,16 @@ test('"and" is not a turn word; "but" and "yet" are', () => {
   assert.equal(turns.includes('but'), true);
   assert.equal(turns.includes('yet'), true);
 });
+
+test('every grade row carries a fix and a line from a master to improve by', () => {
+  const g = L.grade(L.weave(S18, { whole: true }));
+  for (const rows of [g.formal.rows, g.conceptual.rows]) for (const r of rows) {
+    if (r.na) continue;
+    assert.equal(typeof r.fix, 'string', r.name);
+    assert.ok(r.fix.length > 20, r.name);
+    assert.ok(/Sonnet (18|73)/.test(r.ex), `${r.name}: ${r.ex}`);
+  }
+  const notes = L.margin(L.weave(FREE, { whole: true }));
+  assert.ok(notes.some(n => n.kind === 'rhyme' && /Sonnet 73/.test(n.ex)), 'a rhyme note shows a master');
+});
+
