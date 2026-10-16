@@ -224,6 +224,8 @@ a{color:inherit}
 .file-btn{position:relative;overflow:hidden}
 .file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .file-btn:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.file-btn.busy{opacity:.6;pointer-events:none}
+#digitize-status:empty{display:none}
 .pack{display:grid;gap:8px}
 .pack .chip{cursor:pointer}
 .pack .chip.on{border-color:var(--accent);color:var(--accent)}
@@ -301,8 +303,10 @@ a{color:inherit}
           <button class="btn" id="sample-strong">Load a strong sample</button>
           <button class="btn" id="sample-weak">Load a weak sample</button>
           <button class="btn quiet" id="clear">Clear</button>
+          <label class="btn file-btn" id="digitize-btn">Digitize a photo or PDF<input id="digitize" type="file" accept="image/*,.pdf,application/pdf" multiple></label>
           <span class="count" id="count"></span>
         </div>
+        <div class="note" id="digitize-status" role="status"></div>
         <div class="calib">
           <label for="official">Studying a College Board sample? Its official score</label>
           <input id="official" type="number" min="0" max="6" step="1" inputmode="numeric" placeholder="0–6">
@@ -317,7 +321,7 @@ a{color:inherit}
           </div>
           <div class="chips" id="pack-chips"></div>
         </div>
-        <p class="privacy">Nothing leaves your browser. The reading is a set of rules about English sentences, not a reader of meaning: it can be wrong, and when it is, the question it asks is still worth answering.</p>
+        <p class="privacy">Nothing you write or photograph leaves your browser; digitizing downloads an open-source reading engine once and runs it on this device. The reading is a set of rules about English sentences, not a reader of meaning: it can be wrong, and when it is, the question it asks is still worth answering.</p>
       </div>
     </div>
   </div>
@@ -362,6 +366,7 @@ a{color:inherit}
 <script src="clinic.js"></script>
 <script src="aplang.js"></script>
 <script src="library.js"></script>
+<script src="digitize.js"></script>
 <script>
 (function () {
 'use strict';
@@ -669,6 +674,33 @@ $('copy-report').addEventListener('click', async () => {
   setTimeout(() => { $('tool-note').textContent = ''; }, 4000);
 });
 $('src').addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') readNow(); });
+
+/* ---------------- digitize: photographed or scanned student writing becomes text, on this device */
+$('digitize').addEventListener('change', async e => {
+  const files = Array.from(e.target.files || []);
+  e.target.value = '';
+  if (!files.length) return;
+  const st = $('digitize-status');
+  const btn = $('digitize-btn');
+  btn.classList.add('busy'); btn.setAttribute('aria-busy', 'true');
+  st.textContent = 'Loading the reader (first use downloads it once)…';
+  try {
+    const r = await window.Digitize.digitizeFiles(files, p => {
+      if (p.stage === 'render') st.textContent = `Rendering page ${p.page} of ${p.pages}…`;
+      else if (p.stage === 'page') st.textContent = `Reading ${p.name} (${p.page} of ${p.pages})…`;
+      else if (p.stage === 'read' && p.progress != null) st.textContent = `Reading… ${Math.round(p.progress * 100)}%`;
+    });
+    if (r.text) {
+      const cur = $('src').value.trim();
+      $('src').value = cur ? cur + '\n' + r.text : r.text;
+      updateCount(); store('essay', $('src').value);
+    }
+    st.textContent = window.Digitize.summary(r);
+    if (r.text && !r.low) readNow();
+  } catch (err) {
+    st.textContent = 'Could not digitize: ' + (err && err.message ? err.message : err) + '. Check the connection for the first download, or type the essay in.';
+  } finally { btn.classList.remove('busy'); btn.removeAttribute('aria-busy'); }
+});
 
 /* ---------------- classroom pack: private samples with official scores and commentary */
 let pack = null, packPick = null;

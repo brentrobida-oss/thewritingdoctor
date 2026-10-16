@@ -22,6 +22,10 @@ Then the **shape** (introduction, two body paragraphs, conclusion, as blocks), *
 
 The estimate is a reading of shape, not of meaning. A hollow essay in the right shape can score well here and poorly with a reader; a brilliant essay in an odd shape can do the reverse. The calibration field exists so that a class can see where the two diverge and ask why.
 
+## Digitizing student writing (`digitize.js`)
+
+"Digitize a photo or PDF" takes photographs of handwritten pages or scanned PDFs and turns them into text in the essay box. Images are read by Tesseract.js (open-source OCR compiled to WebAssembly) and PDF pages are first drawn to a canvas with pdf.js; both engines are loaded from a CDN on first use and run entirely in the browser, so the pages themselves are never uploaded. `cleanOcr` rebuilds paragraphs from the engine's line-per-line output (hyphenated line ends rejoined, blank or indented lines as paragraph breaks) and the page reports an average confidence; below 70 the result is shown without an automatic reading, because the engine was trained on print and misreads loose handwriting. Typed pages, including College Board's sample-response PDFs, read at high confidence.
+
 ## What it reads
 
 **The spine.** Ten checks, shown as a checklist and a score out of ten:
