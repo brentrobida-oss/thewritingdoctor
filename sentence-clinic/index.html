@@ -206,7 +206,13 @@ a{color:inherit}
 .side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
 @media (max-width:900px){.side{grid-template-columns:1fr}}
 .passage{max-height:30rem;overflow:auto;padding:14px 16px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf);font-family:var(--font-text);font-size:1.02rem;line-height:1.6;white-space:pre-wrap}
+.passage-paste{display:block;width:100%;min-height:14rem;resize:vertical;padding:10px 12px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--paper);font:inherit;line-height:1.55}
 .passage h4{margin:0 0 8px;font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.08em;color:var(--ink-3)}
+.viewer{display:grid;gap:6px}
+.viewer iframe{width:100%;height:36rem;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf)}
+.viewer .vhead{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:var(--t-sm);color:var(--ink-2)}
+.links button{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border:1px solid var(--rule-strong);border-radius:999px;font-size:var(--t-xs);background:var(--leaf)}
+.links button.on{border-color:var(--accent);color:var(--accent)}
 .calib{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:var(--t-sm);color:var(--ink-2)}
 .calib input{width:4.5em;min-height:34px;padding:4px 8px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);text-align:center}
 /* score board */
@@ -284,9 +290,9 @@ a{color:inherit}
           <span class="count" id="count"></span>
         </div>
         <div class="calib">
-          <label for="official">If this is a College Board sample, its official score</label>
+          <label for="official">Studying a College Board sample? Its official score</label>
           <input id="official" type="number" min="0" max="6" step="1" inputmode="numeric" placeholder="0–6">
-          <span class="note">The Clinic's estimate is shown beside it.</span>
+          <span class="note">Open the sample responses beside the essay (⧉ beside), type the sample in, enter its score; the Clinic's estimate appears next to it, with the commentary still open.</span>
         </div>
         <p class="privacy">Nothing leaves your browser. The reading is a set of rules about English sentences, not a reader of meaning: it can be wrong, and when it is, the question it asks is still worth answering.</p>
       </div>
@@ -343,6 +349,7 @@ const $ = id => document.getElementById(id);
 let question = Number(recall('question')) || 2;
 let libYear = recall('year') || '';
 let scored = null;
+let viewerUrl = null;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const slots = s => esc(s).replace(/\[([^\]]+)\]/g, '<span class="slot">[$1]</span>');
 const SAMPLE_STRONG = `When Frederick Douglass addressed the Rochester Ladies' Anti-Slavery Society on July 5, 1852, he spoke to an audience that had come to celebrate. Douglass indicts the hypocrisy of a national holiday celebrated beside slavery by turning the audience's own pronouns against them, shifting from "your" to "we" only when he reaches the future. He does so in order to force his listeners to feel the gap between the nation they praise and the nation they permit, a gap that matters because a celebration which excludes the enslaved is not a celebration of freedom at all.
@@ -548,7 +555,7 @@ function renderQuestions() {
   const Q = A.QUESTIONS;
   const desc = { 1: 'Six sources, one position. Cite at least three.', 2: 'One passage. Name the choices, say what they do, for whom.', 3: 'One claim, your evidence. Qualify it.' };
   $('qcards').innerHTML = [1, 2, 3].map(k => `<button class="qcard ${question === k ? 'on' : ''}" role="radio" aria-checked="${question === k}" data-q="${k}"><span class="q">${Q[k].short}</span><span class="n">${esc(Q[k].name)}</span><span class="d">${esc(desc[k])}</span></button>`).join('');
-  $('qcards').querySelectorAll('.qcard').forEach(b => b.addEventListener('click', () => { question = Number(b.dataset.q); store('question', question); renderQuestions(); renderLibrary(); if (scored) readNow(); }));
+  $('qcards').querySelectorAll('.qcard').forEach(b => b.addEventListener('click', () => { question = Number(b.dataset.q); store('question', question); viewerUrl = null; renderQuestions(); renderLibrary(); if (scored) readNow(); }));
 }
 function libEntries() {
   const years = Object.keys(LIB.years || {}).sort((a, b) => b - a);
@@ -563,17 +570,29 @@ function renderLibrary() {
   const pc = $('prompt-card');
   const pane = $('passage-pane');
   if (!e) { pc.innerHTML = ''; pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; return; }
-  const links = (e.entry.urls || []).map(u => `<a href="${esc(u.url)}" target="_blank" rel="noopener">${esc(u.label)} ↗</a>`).join('');
+  const links = (e.entry.urls || []).map((u, i) => `<a href="${esc(u.url)}" target="_blank" rel="noopener">${esc(u.label)} ↗</a><button type="button" class="${viewerUrl === u.url ? 'on' : ''}" data-view="${i}" title="Open this PDF beside the essay">⧉ beside</button>`).join('');
   const yearNote = (LIB.years[e.year] || {}).note;
   pc.innerHTML = `<div class="prompt-card"><span class="label">${e.year} · ${esc(A.QUESTIONS[question].short)} ${esc(A.QUESTIONS[question].name)}</span><p class="gist">${esc(e.entry.topic || '')}</p>${links ? `<div class="links">${links}</div>` : `<div class="links"><a href="${esc(LIB.index)}" target="_blank" rel="noopener">find this year at College Board ↗</a></div>`}${yearNote ? `<p class="note">${esc(yearNote)}</p>` : ''}${LIB.note && links ? `<p class="note">${esc(LIB.note)}</p>` : ''}</div>`;
-  const passage = (LIB.passages || []).find(p => String(p.year) === String(e.year) && question === 2 && p.pd === true && p.text);
-  if (passage) {
-    pane.style.display = '';
-    $('side').style.gridTemplateColumns = '';
-    pane.innerHTML = `<div class="passage"><h4>The passage · ${esc(passage.author)}${passage.title ? ', ' + esc(passage.title) : ''}${passage.date ? ' (' + esc(passage.date) + ')' : ''} · public domain${passage.text_source ? ` · <a href="${esc(passage.text_source)}" target="_blank" rel="noopener">source</a>` : ''}</h4>${esc(passage.text)}</div>`;
-  } else { pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; }
+  pc.querySelectorAll('button[data-view]').forEach(b => b.addEventListener('click', () => { const u = (e.entry.urls || [])[Number(b.dataset.view)]; viewerUrl = viewerUrl === u.url ? null : u.url; renderLibrary(); }));
+  const passages = question === 2 ? (LIB.passages || []).filter(p => String(p.year) === String(e.year)) : [];
+  const viewing = viewerUrl && (e.entry.urls || []).find(u => u.url === viewerUrl);
+  let html = '';
+  if (viewing) html += `<div class="viewer"><div class="vhead"><span class="label">Beside the essay</span><span>${esc(viewing.label)}, served by College Board.</span><a href="${esc(viewing.url)}" target="_blank" rel="noopener">If the frame stays blank, open it there ↗</a></div><iframe src="${esc(viewing.url)}" title="${esc(viewing.label)}" loading="lazy" referrerpolicy="no-referrer"></iframe></div>`;
+  passages.forEach((passage, k) => {
+    const head = `${esc(passage.author)}${passage.title ? ', ' + esc(passage.title) : ''}${passage.date ? ' (' + esc(passage.date) + ')' : ''}`;
+    if (passage.pd === true) {
+      const key = `passage:${e.year}:${k}`;
+      const pasted = passage.text || recall(key) || '';
+      html += `<div class="passage"><h4>The passage · ${head} · public domain${passage.text_source ? ` · <a href="${esc(passage.text_source)}" target="_blank" rel="noopener">source ↗</a>` : ''}${passage.alt_source ? ` · <a href="${esc(passage.alt_source)}" target="_blank" rel="noopener">alternate ↗</a>` : ''}</h4>${passage.text ? esc(passage.text) : `<p class="note" style="margin:0 0 8px">${esc(passage.reason)}${passage.excerpt ? ' ' + esc(passage.excerpt) : ''} Open the source, copy the passage, paste it here; it stays in this browser.</p><textarea class="passage-paste" data-key="${esc(key)}" spellcheck="false" placeholder="Paste the passage text">${esc(pasted)}</textarea>`}</div>`;
+    } else {
+      html += `<div class="passage"><h4>The passage · ${head} · ${passage.pd === 'unclear' ? 'rights unclear' : 'copyrighted'}, so it stays at College Board</h4><p class="note" style="margin:0">${esc(passage.reason)} Open the questions PDF beside the essay (⧉ beside) to read it there.</p></div>`;
+    }
+  });
+  if (html) { pane.style.display = ''; $('side').style.gridTemplateColumns = ''; pane.innerHTML = html; }
+  else { pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; }
+  pane.querySelectorAll('.passage-paste').forEach(t => t.addEventListener('input', () => store(t.dataset.key, t.value)));
 }
-$('lib-year').addEventListener('change', e => { libYear = e.target.value; store('year', libYear); renderLibrary(); });
+$('lib-year').addEventListener('change', e => { libYear = e.target.value; store('year', libYear); viewerUrl = null; renderLibrary(); });
 $('official').addEventListener('input', () => { if (scored) renderBoard(scored); });
 renderQuestions();
 renderLibrary();

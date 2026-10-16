@@ -6,7 +6,9 @@ Live at `/sentence-clinic/`. The engine is `clinic.js`; the page is `index.html`
 
 ## The AP Language layer (`aplang.js`)
 
-Choose the question (Q1 Synthesis, Q2 Rhetorical Analysis, Q3 Argument); the reading adapts. Optionally choose a year: the library (`library.js`) shows the prompt in one line and links to College Board's official question, scoring guidelines, sample responses, and scoring commentary. For Q2, a passage in the US public domain is shown beside the essay; otherwise the link is the passage.
+Choose the question (Q1 Synthesis, Q2 Rhetorical Analysis, Q3 Argument); the reading adapts. Optionally choose a year: the library (`library.js`) shows the prompt in one line and links to College Board's official question, scoring guidelines, sample responses, and chief reader reports (2019 to 2025 for all three questions; 2014 to 2018 for Q2). Any of those PDFs can be opened **beside the essay** ("⧉ beside"): the page embeds the file served by College Board, so the scored samples and their commentary sit next to the writing without being copied anywhere. Calibration: open the sample responses beside the essay, type a sample in, enter its official score, and the Clinic's estimate appears next to it.
+
+**Passages.** Every Q2 passage from 2014 to 2025 is recorded with its author, date, and US public-domain status: Adams 1780, Gandhi 1930 (public domain since 2026), Albright 1997, Reagan 1985, Obama 2009 and 2013 are public domain (the last four as works of federal officers); the rest are copyrighted or unclear (First Ladies, a judge's lecture) and stay at College Board. For a public-domain passage the pane links to the source and offers a paste box that stays in the browser; the text is not yet bundled because the build sandbox could not reach any source. For the others the pane says why and points to the questions PDF beside the essay.
 
 The score board shows, in this order:
 
