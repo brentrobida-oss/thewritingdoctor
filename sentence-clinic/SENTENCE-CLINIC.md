@@ -10,7 +10,7 @@ Choose the question (Q1 Synthesis, Q2 Rhetorical Analysis, Q3 Argument); the rea
 
 **Classroom pack.** The page loads a private pack from the teacher's own drive: a JSON file with a `samples` array (label, official score, rows, text, commentary). Each sample fills the essay box and the official score, opens its commentary beside the writing, and is read by the Clinic at once, so students see the official reading and the Clinic's side by side. The pack is kept in the browser. "Download the pack template" gives the shape.
 
-**Passages.** Every Q2 passage from 2014 to 2025 is listed with its author, title, and date. A passage whose text is in the library is shown in full; for the others the pane offers the official questions PDF beside the essay and a paste box whose contents stay in the browser. `tools/fetch-passages.mjs` fills the public-domain texts in from their archives.
+**Passages.** Every Q2 passage from 2014 to 2025 is listed with its author, title, and date. The six public-domain passages (Adams 1780, Albright 1997, Gandhi 1930, Reagan 1985, Obama 2009 and 2013) are bundled in full from their archives (Massachusetts Historical Society, the State Department archive, Bucknell's Gandhi archive, the American Presidency Project, the Obama White House archive) and shown in the pane; each entry notes how the exam excerpted the text. For the other years the pane offers the official questions PDF beside the essay and a paste box whose contents stay in the browser. `tools/netcheck2.mjs` and `.github/workflows/sentence-clinic-netcheck.yml` are the network pass that fetched them and that checks the live page, the engines' CDNs, and College Board's links from a GitHub runner.
 
 The score board shows, in this order:
 

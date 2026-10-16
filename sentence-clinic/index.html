@@ -593,7 +593,7 @@ function renderLibrary() {
   const entries = libEntries();
   const sel = $('lib-year');
   sel.innerHTML = '<option value="">choose a year</option>' + entries.map(e => `<option value="${e.year}" ${libYear === e.year ? 'selected' : ''}>${e.year} · ${esc((e.entry.topic || '').slice(0, 70))}</option>`).join('');
-  $('lib-note').innerHTML = (entries.length ? `${entries.length} years of official ${esc(A.QUESTIONS[question].name)} prompts · ` : 'No prompts in the library for this question yet. ') + (LIB.index ? `<a href="${esc(LIB.index)}" target="_blank" rel="noopener">all past questions at College Board ↗</a>` : '');
+  $('lib-note').innerHTML = (entries.length ? `${entries.length} years of official ${esc(A.QUESTIONS[question].name)} prompts · ` : 'No prompts in the library for this question yet. ') + (LIB.index ? `<a href="${esc(LIB.index)}" target="_blank" rel="noopener">all past questions at College Board ↗</a>` : '') + (LIB.rubricPdf ? ` · <a href="${esc(LIB.rubricPdf)}" target="_blank" rel="noopener">current rubrics ↗</a>` : '');
   const e = entries.find(x => x.year === libYear);
   const pc = $('prompt-card');
   const pane = $('passage-pane');

@@ -1,0 +1,86 @@
+name: Sentence Clinic network checks
+
+# Everything here needs hosts the build sandbox cannot reach: College Board (links and exam PDFs),
+# the passage archives, the CDNs that serve Tesseract.js and pdf.js, and the live page. Run it by hand
+# from the Actions tab (workflow_dispatch) when repairing the library.
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Page to drive in the live check
+        default: https://splendorous-druid-db6a7a.netlify.app/sentence-clinic/
+
+jobs:
+  netcheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Unit tests
+        run: node --test sentence-clinic/test/*.test.js
+
+      - name: College Board links in library.js
+        continue-on-error: true
+        run: node sentence-clinic/tools/verify-links.mjs
+
+      - name: Every PDF College Board lists for AP English Language
+        continue-on-error: true
+        run: node sentence-clinic/tools/list-collegeboard-pdfs.mjs
+
+      - name: CDN engines named in digitize.js
+        continue-on-error: true
+        run: |
+          node -e '
+            const D = require("./sentence-clinic/digitize.js");
+            const urls = [...D.TESSERACT, ...D.PDFJS.flatMap(c => [c.lib, c.worker])];
+            require("fs").writeFileSync("cdn-urls.txt", urls.join("\n") + "\n");
+          '
+          while read -r u; do printf "%s  " "$u"; curl -sIL -o /dev/null -w "%{http_code} %{content_type} %{size_download}\n" "$u"; done < cdn-urls.txt
+          echo "--- versions on cdnjs"
+          curl -s "https://api.cdnjs.com/libraries/tesseract.js?fields=version,versions" | head -c 2000; echo
+          curl -s "https://api.cdnjs.com/libraries/pdf.js?fields=version" | head -c 300; echo
+          echo "--- tessdata (the language file Tesseract.js fetches at run time)"
+          curl -sIL -o /dev/null -w "%{http_code} %{content_type}\n" https://tessdata.projectnaptha.com/4.0.0/eng.traineddata.gz
+
+      - name: Public-domain passages from their archives
+        continue-on-error: true
+        run: |
+          node sentence-clinic/tools/fetch-passages.mjs
+          echo "=====PASSAGES-JSON====="
+          cat sentence-clinic/tools/passages.fetched.json
+          echo
+          echo "=====END-PASSAGES-JSON====="
+
+      - name: Second pass, College Board candidates and passage archives
+        continue-on-error: true
+        run: |
+          sudo apt-get install -y -q poppler-utils >/dev/null
+          node sentence-clinic/tools/netcheck2.mjs
+          for f in pdfs/*.pdf; do
+            [ -e "$f" ] || continue
+            pdftotext -layout "$f" "$f.txt" 2>/dev/null || true
+            echo "=====TXT $f pages=$(pdfinfo "$f" 2>/dev/null | awk '/^Pages/{print $2}') bytes=$(wc -c < "$f.txt")"
+            base64 -w0 "$f.txt"; echo
+            echo "=====END-TXT"
+          done
+
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null
+          npm i --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Live check against the deployed page
+        continue-on-error: true
+        run: node sentence-clinic/tools/live-check.mjs "${{ github.event.inputs.url || 'https://splendorous-druid-db6a7a.netlify.app/sentence-clinic/' }}"
+
+      - name: Live check against this branch served locally
+        continue-on-error: true
+        run: |
+          python3 -m http.server 8787 >/dev/null 2>&1 &
+          sleep 1
+          node sentence-clinic/tools/live-check.mjs http://localhost:8787/sentence-clinic/
