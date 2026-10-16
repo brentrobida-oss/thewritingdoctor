@@ -57,34 +57,18 @@ jobs:
           echo
           echo "=====END-PASSAGES-JSON====="
 
-      - name: Q2 passage text as the exam printed it (pdftotext)
+      - name: Second pass, College Board candidates and passage archives
         continue-on-error: true
         run: |
           sudo apt-get install -y -q poppler-utils >/dev/null
-          mkdir -p pdfs
-          node -e '
-            const fs = require("fs");
-            const sandbox = {};
-            new Function("self", fs.readFileSync("sentence-clinic/library.js", "utf8"))(sandbox);
-            const lib = sandbox.APLibrary;
-            const want = [];
-            for (const y of [2014, 2018, 2019, 2020, 2021]) for (const u of (lib.years[y].q2 || {}).urls || []) if (/question|frq|student-samples|scoring-guidelines/i.test(u.label + " " + u.url)) want.push({ y, ...u });
-            fs.writeFileSync("pdf-list.txt", want.map(w => `${w.y}\t${w.url}`).join("\n") + "\n");
-          '
-          cat pdf-list.txt
-          i=0
-          while IFS=$'\t' read -r y u; do
-            i=$((i+1)); f="pdfs/$y-$i.pdf"
-            code=$(curl -sL -A "Mozilla/5.0" -o "$f" -w "%{http_code}" "$u")
-            echo "=====PDF $y $u -> $code"
-            if [ "$code" = "200" ] && head -c 4 "$f" | grep -q PDF; then
-              pdftotext -layout "$f" "$f.txt" 2>/dev/null || true
-              echo "---pages: $(pdfinfo "$f" 2>/dev/null | grep Pages)"
-              echo "---text:"
-              cat "$f.txt" | sed 's/[[:space:]]\+$//' | head -c 60000
-            fi
-            echo "=====END-PDF"
-          done < pdf-list.txt
+          node sentence-clinic/tools/netcheck2.mjs
+          for f in pdfs/*.pdf; do
+            [ -e "$f" ] || continue
+            pdftotext -layout "$f" "$f.txt" 2>/dev/null || true
+            echo "=====TXT $f pages=$(pdfinfo "$f" 2>/dev/null | awk '/^Pages/{print $2}') bytes=$(wc -c < "$f.txt")"
+            base64 -w0 "$f.txt"; echo
+            echo "=====END-TXT"
+          done
 
       - name: Install Playwright
         run: |
