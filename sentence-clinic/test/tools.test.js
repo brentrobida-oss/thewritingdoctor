@@ -16,6 +16,6 @@ test('between keeps the run from the first anchor to the last, inclusive, case-i
   assert.deepEqual(between(paras, 'not present', 'also absent'), paras);
 });
 test('script and style blocks are dropped even with spaces in the closing tag', () => {
-  const p = htmlToParagraphs('<p>Keep this.</p><script type="x">drop();</script ><style >p{}</style >  <p>And this.</p>');
+  const p = htmlToParagraphs('<p>Keep this.</p><script type="x">drop();</script\t\n bar><style >p{}</style >  <p>And this.</p>');
   assert.deepEqual(p, ['Keep this.', 'And this.']);
 });
