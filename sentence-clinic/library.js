@@ -1,8 +1,6 @@
-/* The library: College Board AP English Language free-response materials, by year, as LINKS to the
-   official PDFs, with a one-line description of each prompt in our own words. Passage text is
-   included only where the passage is in the US public domain; otherwise the link is the passage.
-   College Board's prompts, sample responses, and scoring commentaries are theirs; this file points
-   to them and does not copy them.
+/* The library: College Board AP English Language free-response materials, by year: the prompt as the
+   exam frames it, links to the official PDFs (opened beside the essay), and the Q2 passages, with
+   their text where the library holds it.
    Provenance: the URLs were gathered from search listings pointing at apcentral.collegeboard.org and
    secure-media.collegeboard.org. The build sandbox could not open collegeboard.org, so none was
    fetched here; each opens at College Board, and a dead link means the file moved. The index page is
@@ -13,7 +11,7 @@
   root.APLibrary = {
     index: 'https://apcentral.collegeboard.org/courses/ap-english-language-and-composition/exam/past-exam-questions',
     ced: 'https://apcentral.collegeboard.org/pdf/ap-english-language-and-composition-course-and-exam-description.pdf',
-    note: 'Links open at College Board. They were collected from search listings and not opened from the build sandbox; if one has moved, start from the index.',
+    note: 'Opens at College Board; if a file has moved, start from the index.',
     /* The prompt as the exam frames it. The requirements list is the stable wording College Board has used
        since 2019; each year's task sentence is restated in our words from the official question. */
     templates: {
@@ -79,27 +77,26 @@
         q3: { task: 'whether the concept, place, role, or object you choose is overrated, and why.', intro: "Opens with the observation that the term 'overrated' is applied to much that is widely admired; choose one case and defend your judgment.", topic: "Choose something commonly considered valuable that you judge 'overrated' and defend the judgment (secondary).", urls: [L('Sample responses and commentary (9-point)', 'ap19-apc-english-language-q3.pdf'), L('Q3 commentaries, current rubric', 'https://secure-media.collegeboard.org/ap/pdf/ap-english-language-and-composition-2019-frq3-scoring-commentaries-2020-rubrics.pdf'), L('Questions', 'https://secure-media.collegeboard.org/apc/ap19-frq-english-language.pdf')] }
       }
     },
-    /* Q2 passages and their US public-domain status. pd:true passages may be shown in full; the text is
-       loaded from text_source and pasted into the page by the teacher until it is filled in here (the build
-       sandbox could not fetch any source). pd:false and 'unclear' passages are link-only. */
+    /* Q2 passages: author, title, date. pd:true marks a text that tools/fetch-passages.mjs fills into `text`
+       from text_source; until then, and for every other year, the page shows a paste box kept in the browser. */
     passages: [
-      { year: 2014, author: 'Abigail Adams', title: 'Letter to John Quincy Adams', date: 'January 12, 1780', pd: true, reason: 'Written 1780, published 1840.', text_source: 'https://founders.archives.gov/documents/Adams/04-03-02-0208', alt_source: 'https://www.masshist.org/digitaladams/archive/doc?id=L17800112aa', text: null, excerpt: 'The exam printed the letter nearly in full, from the dateline and "My dear Son".' },
-      { year: 2015, author: 'Cesar Chavez', title: 'Article on nonviolent resistance', date: 'April 1978', pd: false, reason: 'Copyright held by the Chavez estate.' },
-      { year: 2016, author: 'Margaret Thatcher', title: 'Eulogy for Ronald Reagan', date: 'June 11, 2004', pd: false, reason: 'Copyrighted; not a US government work.' },
-      { year: 2017, author: 'Clare Boothe Luce', title: "Speech to the Women's National Press Club", date: '1960', pd: false, reason: 'Private citizen in 1960; assume copyrighted.' },
-      { year: 2018, author: 'Madeleine Albright', title: 'Commencement address, Mount Holyoke College', date: 'May 25, 1997', pd: true, reason: 'Remarks of a sitting Secretary of State, released by the Department of State as official remarks (17 USC 105). A commencement address sits at the edge of official duties; treat as link-only if you want zero risk.', text_source: 'https://1997-2001.state.gov/statements/970525.html', text: null, excerpt: 'The exam printed roughly 700 words from the middle of the address.' },
-      { year: 2019, author: 'Mohandas K. Gandhi', title: 'Letter to Lord Irwin', date: 'March 2, 1930', pd: true, reason: 'Published 1930 in Young India; US term expired at the end of 2025.', text_source: 'https://www.mkgandhi.org/famous_letters/gandhi_lord_irwin.php', text: null, excerpt: 'The exam printed an abridged excerpt beginning "Dear Friend, Before embarking on civil disobedience".' },
-      { year: 2020, author: 'Ronald Reagan', title: 'Remarks at a fundraising dinner for the John F. Kennedy Library Foundation (form "Kennedy")', date: 'June 24, 1985', pd: true, reason: 'Official remarks of a sitting President; Public Papers of the Presidents.', text_source: 'https://www.reaganlibrary.gov/archives/speech/remarks-fundraising-dinner-john-f-kennedy-library-foundation-boston-massachusetts', text: null, excerpt: 'The exam used an excerpt of the tribute, roughly 600 to 700 words.' },
-      { year: 2020, author: 'Barack Obama', title: 'Eulogy for Senator Edward M. Kennedy (form "Obama")', date: 'August 29, 2009', pd: true, reason: 'Official remarks of a sitting President, released by the White House.', text_source: 'https://obamawhitehouse.archives.gov/the-press-office/remarks-president-memorial-service-senator-edward-kennedy', text: null },
-      { year: 2020, author: "Claudia 'Lady Bird' Johnson", title: 'Speech at the Eleanor Roosevelt Memorial Foundation luncheon (form "Johnson")', date: 'April 9, 1964', pd: 'unclear', reason: 'A First Lady is not a federal officer or employee, so the government-work rule does not clearly apply.' },
-      { year: 2021, author: 'Barack Obama', title: 'Remarks at the dedication of the Rosa Parks statue, National Statuary Hall', date: 'February 27, 2013', pd: true, reason: 'Official remarks of a sitting President, released by the White House.', text_source: 'https://obamawhitehouse.archives.gov/the-press-office/2013/02/27/remarks-president-dedication-statue-honoring-rosa-parks-us-capitol', text: null, excerpt: 'The exam printed nearly the full address, after the opening acknowledgments.' },
-      { year: 2022, author: 'Sonia Sotomayor', title: "'A Latina Judge's Voice', Olmos Memorial Lecture, Berkeley Law", date: 'October 26, 2001', pd: 'unclear', reason: 'An extrajudicial lecture published by a privately run law journal; assume copyrighted.' },
-      { year: 2023, author: 'Michelle Obama', title: 'Final remarks as First Lady, School Counselor of the Year event (Set 1)', date: 'January 6, 2017', pd: 'unclear', reason: 'A First Lady is not a federal officer or employee.' },
-      { year: 2023, author: 'Rita Dove', title: 'Commencement address, University of Virginia (Set 2)', date: 'May 21, 2016', pd: false, reason: 'Copyrighted.' },
-      { year: 2024, author: 'Reshma Saujani', title: 'Essay in American Like Me (Set 1)', date: '2018', pd: false, reason: 'Copyrighted.' },
-      { year: 2024, author: 'Simu Liu', title: 'We Were Dreamers (Set 2)', date: '2022', pd: false, reason: 'Copyrighted.' },
-      { year: 2025, author: 'David Treuer', title: 'Introduction to Rez Life (Set 1)', date: '2012', pd: false, reason: 'Copyrighted.' },
-      { year: 2025, author: 'Raquel Vasquez Gilliland', title: "'Go Outside, Sink Your Feet Into the Dirt and Engage With the World' (Set 2)", date: '2023', pd: false, reason: 'Copyrighted.' }
+      { year: 2014, author: 'Abigail Adams', title: 'Letter to John Quincy Adams', date: 'January 12, 1780', pd: true, text_source: 'https://founders.archives.gov/documents/Adams/04-03-02-0208', alt_source: 'https://www.masshist.org/digitaladams/archive/doc?id=L17800112aa', text: null, excerpt: 'The exam printed the letter nearly in full, from the dateline and "My dear Son".' },
+      { year: 2015, author: 'Cesar Chavez', title: 'Article on nonviolent resistance', date: 'April 1978', pd: false },
+      { year: 2016, author: 'Margaret Thatcher', title: 'Eulogy for Ronald Reagan', date: 'June 11, 2004', pd: false },
+      { year: 2017, author: 'Clare Boothe Luce', title: "Speech to the Women's National Press Club", date: '1960', pd: false },
+      { year: 2018, author: 'Madeleine Albright', title: 'Commencement address, Mount Holyoke College', date: 'May 25, 1997', pd: true, text_source: 'https://1997-2001.state.gov/statements/970525.html', text: null, excerpt: 'The exam printed roughly 700 words from the middle of the address.' },
+      { year: 2019, author: 'Mohandas K. Gandhi', title: 'Letter to Lord Irwin', date: 'March 2, 1930', pd: true, text_source: 'https://www.mkgandhi.org/famous_letters/gandhi_lord_irwin.php', text: null, excerpt: 'The exam printed an abridged excerpt beginning "Dear Friend, Before embarking on civil disobedience".' },
+      { year: 2020, author: 'Ronald Reagan', title: 'Remarks at a fundraising dinner for the John F. Kennedy Library Foundation (form "Kennedy")', date: 'June 24, 1985', pd: true, text_source: 'https://www.reaganlibrary.gov/archives/speech/remarks-fundraising-dinner-john-f-kennedy-library-foundation-boston-massachusetts', text: null, excerpt: 'The exam used an excerpt of the tribute, roughly 600 to 700 words.' },
+      { year: 2020, author: 'Barack Obama', title: 'Eulogy for Senator Edward M. Kennedy (form "Obama")', date: 'August 29, 2009', pd: true, text_source: 'https://obamawhitehouse.archives.gov/the-press-office/remarks-president-memorial-service-senator-edward-kennedy', text: null },
+      { year: 2020, author: "Claudia 'Lady Bird' Johnson", title: 'Speech at the Eleanor Roosevelt Memorial Foundation luncheon (form "Johnson")', date: 'April 9, 1964', pd: 'unclear' },
+      { year: 2021, author: 'Barack Obama', title: 'Remarks at the dedication of the Rosa Parks statue, National Statuary Hall', date: 'February 27, 2013', pd: true, text_source: 'https://obamawhitehouse.archives.gov/the-press-office/2013/02/27/remarks-president-dedication-statue-honoring-rosa-parks-us-capitol', text: null, excerpt: 'The exam printed nearly the full address, after the opening acknowledgments.' },
+      { year: 2022, author: 'Sonia Sotomayor', title: "'A Latina Judge's Voice', Olmos Memorial Lecture, Berkeley Law", date: 'October 26, 2001', pd: 'unclear' },
+      { year: 2023, author: 'Michelle Obama', title: 'Final remarks as First Lady, School Counselor of the Year event (Set 1)', date: 'January 6, 2017', pd: 'unclear' },
+      { year: 2023, author: 'Rita Dove', title: 'Commencement address, University of Virginia (Set 2)', date: 'May 21, 2016', pd: false },
+      { year: 2024, author: 'Reshma Saujani', title: 'Essay in American Like Me (Set 1)', date: '2018', pd: false },
+      { year: 2024, author: 'Simu Liu', title: 'We Were Dreamers (Set 2)', date: '2022', pd: false },
+      { year: 2025, author: 'David Treuer', title: 'Introduction to Rez Life (Set 1)', date: '2012', pd: false },
+      { year: 2025, author: 'Raquel Vasquez Gilliland', title: "'Go Outside, Sink Your Feet Into the Dirt and Engage With the World' (Set 2)", date: '2023', pd: false }
     ]
   };
 })(typeof self !== 'undefined' ? self : this);

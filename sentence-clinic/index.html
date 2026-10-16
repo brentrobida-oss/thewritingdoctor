@@ -306,14 +306,14 @@ a{color:inherit}
         <div class="calib">
           <label for="official">Studying a College Board sample? Its official score</label>
           <input id="official" type="number" min="0" max="6" step="1" inputmode="numeric" placeholder="0–6">
-          <span class="note">Open the sample responses beside the essay (⧉ beside), type the sample in, enter its score; the Clinic's estimate appears next to it, with the commentary still open.</span>
+          <span class="note">Open the sample beside the essay (⧉ beside), paste it in, enter its score; the estimate appears next to it.</span>
         </div>
         <div class="pack">
           <div class="row">
             <label class="btn small file-btn">Load a classroom pack (.json)<input id="pack-file" type="file" accept="application/json,.json"></label>
             <button class="btn small quiet" id="pack-template">Download the pack template</button>
             <button class="btn small quiet" id="pack-clear" hidden>Forget the pack</button>
-            <span class="note">For face-to-face teaching: samples with their official scores and commentary, kept on your drive and in this browser only, never on the site.</span>
+            <span class="note">Your samples with their scores and commentary, loaded from your drive and kept in this browser.</span>
           </div>
           <div class="chips" id="pack-chips"></div>
         </div>
@@ -605,13 +605,10 @@ function renderLibrary() {
   if (viewing) html += `<div class="viewer"><div class="vhead"><span class="label">Beside the essay</span><span>${esc(viewing.label)}, served by College Board.</span><a href="${esc(viewing.url)}" target="_blank" rel="noopener">If the frame stays blank, open it there ↗</a></div><iframe src="${esc(viewing.url)}" title="${esc(viewing.label)}" loading="lazy" referrerpolicy="no-referrer"></iframe></div>`;
   passages.forEach((passage, k) => {
     const head = `${esc(passage.author)}${passage.title ? ', ' + esc(passage.title) : ''}${passage.date ? ' (' + esc(passage.date) + ')' : ''}`;
-    if (passage.pd === true) {
-      const key = `passage:${e.year}:${k}`;
-      const pasted = passage.text || recall(key) || '';
-      html += `<div class="passage"><h4>The passage · ${head} · public domain${passage.text_source ? ` · <a href="${esc(passage.text_source)}" target="_blank" rel="noopener">source ↗</a>` : ''}${passage.alt_source ? ` · <a href="${esc(passage.alt_source)}" target="_blank" rel="noopener">alternate ↗</a>` : ''}</h4>${passage.text ? esc(passage.text) : `<p class="note" style="margin:0 0 8px">${esc(passage.reason)}${passage.excerpt ? ' ' + esc(passage.excerpt) : ''} Open the source, copy the passage, paste it here; it stays in this browser.</p><textarea class="passage-paste" data-key="${esc(key)}" spellcheck="false" placeholder="Paste the passage text">${esc(pasted)}</textarea>`}</div>`;
-    } else {
-      html += `<div class="passage"><h4>The passage · ${head} · ${passage.pd === 'unclear' ? 'rights unclear' : 'copyrighted'}, so it stays at College Board</h4><p class="note" style="margin:0">${esc(passage.reason)} Open the questions PDF beside the essay (⧉ beside) to read it there.</p></div>`;
-    }
+    const key = `passage:${e.year}:${k}`;
+    const pasted = recall(key) || '';
+    const src = passage.text_source ? ` · <a href="${esc(passage.text_source)}" target="_blank" rel="noopener">source ↗</a>` : '';
+    html += `<div class="passage"><h4>The passage · ${head}${src}</h4>${passage.text ? esc(passage.text) : `<p class="note" style="margin:0 0 8px">${passage.excerpt ? esc(passage.excerpt) + ' ' : ''}Read it beside the essay (⧉ beside) or paste it here; it stays on this device.</p><textarea class="passage-paste" data-key="${esc(key)}" spellcheck="false" placeholder="Paste the passage text">${esc(pasted)}</textarea>`}</div>`;
   });
   if (html) { pane.style.display = ''; $('side').style.gridTemplateColumns = ''; pane.innerHTML = html; }
   else { pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; }
