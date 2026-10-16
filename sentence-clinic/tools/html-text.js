@@ -6,7 +6,7 @@ function decode(s) {
 }
 function htmlToParagraphs(html) {
   let s = String(html);
-  s = s.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<!--[\s\S]*?-->/g, ' ');
+  s = s.replace(/<script\b[\s\S]*?<\/script\s*>/gi, ' ').replace(/<style\b[\s\S]*?<\/style\s*>/gi, ' ').replace(/<!--[\s\S]*?-->/g, ' ');
   s = s.replace(/<(?:br|hr)\s*\/?>/gi, '\n').replace(/<\/(?:p|div|li|h[1-6]|blockquote|tr|section|article)>/gi, '\n\n').replace(/<[^>]+>/g, ' ');
   s = decode(s).replace(/\r/g, '').replace(/[ \t ]+/g, ' ').replace(/ *\n */g, '\n');
   return s.split(/\n{2,}/).map(p => p.replace(/\n/g, ' ').trim()).filter(p => p.length > 0);
