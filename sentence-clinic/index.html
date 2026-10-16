@@ -376,6 +376,12 @@ const LIB = window.APLibrary || { years: {}, passages: [], rubric: null };
 const $ = id => document.getElementById(id);
 let question = Number(recall('question')) || 2;
 let libYear = recall('year') || '';
+/* Deep links: ?q=2&year=2019 opens that prompt and passage directly. */
+try {
+  const qp = new URLSearchParams(location.search);
+  if (/^[123]$/.test(qp.get('q') || '')) { question = Number(qp.get('q')); store('question', question); }
+  if (/^\d{4}$/.test(qp.get('year') || '')) { libYear = qp.get('year'); store('year', libYear); }
+} catch (e) {}
 let scored = null;
 let viewerUrl = null;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -593,7 +599,7 @@ function renderLibrary() {
   const entries = libEntries();
   const sel = $('lib-year');
   sel.innerHTML = '<option value="">choose a year</option>' + entries.map(e => `<option value="${e.year}" ${libYear === e.year ? 'selected' : ''}>${e.year} · ${esc((e.entry.topic || '').slice(0, 70))}</option>`).join('');
-  $('lib-note').innerHTML = (entries.length ? `${entries.length} years of official ${esc(A.QUESTIONS[question].name)} prompts · ` : 'No prompts in the library for this question yet. ') + (LIB.index ? `<a href="${esc(LIB.index)}" target="_blank" rel="noopener">all past questions at College Board ↗</a>` : '') + (LIB.rubricPdf ? ` · <a href="${esc(LIB.rubricPdf)}" target="_blank" rel="noopener">current rubrics ↗</a>` : '');
+  $('lib-note').innerHTML = (entries.length ? `${entries.length} years of official ${esc(A.QUESTIONS[question].name)} prompts · ` : 'No prompts in the library for this question yet. ') + (LIB.index ? `<a href="${esc(LIB.index)}" target="_blank" rel="noopener">all past questions at College Board ↗</a>` : '') + (LIB.rubricPdf ? ` · <a href="${esc(LIB.rubricPdf)}" target="_blank" rel="noopener">current rubrics ↗</a>` : '') + ' · <a href="library.html">every prompt and passage on one page</a>';
   const e = entries.find(x => x.year === libYear);
   const pc = $('prompt-card');
   const pane = $('passage-pane');
