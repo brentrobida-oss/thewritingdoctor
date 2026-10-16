@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Sentence Clinic</title>
+<meta name="description" content="Paste an analytical essay. Every sentence gets a job and a color; the thesis is checked for What, How, and Why; topic sentences for What and How; the conclusion for its return to the Why. Each weak sentence gets a question, a rewrite, and a recommendation. Nothing leaves your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%236e2a2a'/%3E%3Cpath d='M6 22 L16 10 L26 22' fill='none' stroke='%23c0a05c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+Sans+SC:wght@500;700&display=swap">
+<style>
+:root{
+  --paper:#F5F5F2; --leaf:#FCFCFA; --ink:#1B1D23; --ink-2:#4B4F59; --ink-3:#686C76;
+  --rule:#DCDDD7; --rule-strong:#BEC0B9;
+  --accent:#6E2A2A; --accent-ink:#FFFFFF; --accent-soft:#F1E4E1;
+  --rigor:#B3261E; --precision:#B45309; --structure:#1D4ED8; --style:#6B7280;
+  --thesis:#C9A227; --thesis-tint:rgba(201,162,39,.20);
+  --topic:#2F55B5; --topic-tint:rgba(47,85,181,.13);
+  --evidence:#1E6B5C; --evidence-tint:rgba(30,107,92,.13);
+  --analysis:#7C3AED; --analysis-tint:rgba(124,58,237,.11);
+  --summary:#8B6B4A; --summary-tint:rgba(139,107,74,.16);
+  --development:#686C76; --development-tint:rgba(104,108,118,.08);
+  --intro:#686C76; --intro-tint:transparent;
+  --conclusion:#0E7490; --conclusion-tint:rgba(14,116,144,.12);
+  --ok:#1E6B5C; --no:#B3261E; --part:#B45309;
+  --shadow:0 1px 2px rgba(27,29,35,.05),0 6px 18px rgba(27,29,35,.05);
+  --font-text:"Alegreya","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --font-gloss:"Alegreya Sans","Gill Sans","Segoe UI",system-ui,sans-serif;
+  --font-label:"Alegreya Sans SC","Alegreya Sans","Gill Sans",system-ui,sans-serif;
+  --t-xs:.8rem; --t-sm:.9rem; --t-md:1rem; --t-lg:1.14rem; --t-xl:clamp(1.55rem,3vw,2.1rem); --t-2xl:clamp(2rem,4.4vw,2.8rem);
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15171C; --leaf:#1C1F26; --ink:#E8E6E0; --ink-2:#B9B8B2; --ink-3:#8E8E8A;
+    --rule:#2D3139; --rule-strong:#434852;
+    --accent:#C9887F; --accent-ink:#1A0F0E; --accent-soft:#3A2321;
+    --rigor:#F07167; --precision:#F59E0B; --structure:#7FA2FF; --style:#9CA3AF;
+    --thesis:#E3BE4A; --thesis-tint:rgba(227,190,74,.22);
+    --topic:#7F9CF5; --topic-tint:rgba(127,156,245,.20);
+    --evidence:#5FB3A0; --evidence-tint:rgba(95,179,160,.20);
+    --analysis:#B794F6; --analysis-tint:rgba(183,148,246,.18);
+    --summary:#C4A484; --summary-tint:rgba(196,164,132,.22);
+    --development:#9CA3AF; --development-tint:rgba(156,163,175,.10);
+    --conclusion:#5EC2D9; --conclusion-tint:rgba(94,194,217,.18);
+    --ok:#5FB3A0; --no:#F07167; --part:#F59E0B;
+    --shadow:none; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15171C; --leaf:#1C1F26; --ink:#E8E6E0; --ink-2:#B9B8B2; --ink-3:#8E8E8A;
+  --rule:#2D3139; --rule-strong:#434852;
+  --accent:#C9887F; --accent-ink:#1A0F0E; --accent-soft:#3A2321;
+  --rigor:#F07167; --precision:#F59E0B; --structure:#7FA2FF; --style:#9CA3AF;
+  --thesis:#E3BE4A; --thesis-tint:rgba(227,190,74,.22);
+  --topic:#7F9CF5; --topic-tint:rgba(127,156,245,.20);
+  --evidence:#5FB3A0; --evidence-tint:rgba(95,179,160,.20);
+  --analysis:#B794F6; --analysis-tint:rgba(183,148,246,.18);
+  --summary:#C4A484; --summary-tint:rgba(196,164,132,.22);
+  --development:#9CA3AF; --development-tint:rgba(156,163,175,.10);
+  --conclusion:#5EC2D9; --conclusion-tint:rgba(94,194,217,.18);
+  --ok:#5FB3A0; --no:#F07167; --part:#F59E0B;
+  --shadow:none; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-gloss);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 64px}
+.mast{padding:28px 0 18px;border-bottom:1px solid var(--rule);display:grid;gap:8px}
+.mast .home{font-family:var(--font-label);font-weight:700;letter-spacing:.14em;font-size:var(--t-xs);color:var(--ink-3);text-decoration:none}
+.mast h1{margin:0;font-family:var(--font-text);font-style:italic;font-weight:500;font-size:var(--t-2xl);line-height:1.02;letter-spacing:-.01em}
+.mast .tagline{margin:4px 0 0;color:var(--ink-2);max-width:66ch;font-size:var(--t-lg);line-height:1.45}
+.btn{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:6px 13px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);color:var(--ink);font-size:var(--t-sm);font-weight:500;line-height:1.2;text-align:left}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700;padding-inline:18px}
+.btn.small{min-height:30px;padding:4px 10px;font-size:var(--t-xs)}
+.btn.quiet{background:transparent}
+.btn:focus-visible,.sent:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.label{font-family:var(--font-label);font-weight:700;font-size:var(--t-xs);letter-spacing:.07em;color:var(--ink-3);margin:0}
+.note{font-size:var(--t-sm);color:var(--ink-3);margin:0}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+/* composer */
+.composer{display:grid;gap:14px;padding:22px 0}
+.composer h2{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-xl)}
+#src{display:block;width:100%;min-height:14rem;resize:vertical;padding:14px 16px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);font-family:var(--font-text);font-size:1.06rem;line-height:1.55}
+#src::placeholder{color:var(--ink-3)}
+.count{font-variant-numeric:tabular-nums;font-size:var(--t-sm);color:var(--ink-3)}
+.privacy{font-size:var(--t-sm);color:var(--ink-2);margin:0;max-width:75ch}
+/* reading */
+.reading{display:none;gap:26px;padding-top:8px}
+.reading.on{display:grid}
+.summary{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:baseline;padding:14px 18px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
+.summary .big{font-family:var(--font-text);font-size:1.5rem;font-weight:500;line-height:1}
+.summary .stat{display:grid;gap:2px}
+.summary .stat b{font-variant-numeric:tabular-nums;font-size:var(--t-lg)}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:26px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.pane{display:grid;gap:14px}
+.card{background:var(--leaf);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:grid;gap:10px;box-shadow:var(--shadow)}
+.card h3{margin:0;font-family:var(--font-text);font-weight:500;font-size:1.25rem}
+.card h4{margin:0;font-family:var(--font-label);font-weight:700;font-size:var(--t-xs);letter-spacing:.07em;color:var(--ink-3)}
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:var(--t-sm);color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:3px;border:1px solid var(--rule-strong)}
+.ul{display:inline-block;width:22px;height:0;border-bottom:3px solid}
+/* essay */
+.essay{font-family:var(--font-text);font-size:1.12rem;line-height:1.7}
+.para{margin:0 0 18px;position:relative}
+.para .pkind{font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.08em;color:var(--ink-3);display:block;margin-bottom:4px}
+.sent{display:inline;border:0;padding:1px 2px;margin:0;border-radius:3px;background:var(--role-tint,transparent);font:inherit;line-height:inherit;text-align:left;color:inherit;border-bottom:3px solid transparent;cursor:pointer}
+.sent:hover{filter:brightness(.96)}
+.sent.rigor{border-bottom-color:var(--rigor)}
+.sent.precision{border-bottom-color:var(--precision)}
+.sent.structure{border-bottom-color:var(--structure)}
+.sent.style{border-bottom-color:var(--style);border-bottom-style:dotted}
+.sent.open{box-shadow:0 0 0 2px var(--accent)}
+.sent sup{font-family:var(--font-gloss);font-size:.62em;color:var(--ink-3);margin-right:2px;vertical-align:top;line-height:1}
+.sent .n{display:inline-block;min-width:1.2em;padding:0 .3em;margin-left:3px;border-radius:999px;background:var(--ink);color:var(--paper);font-family:var(--font-gloss);font-size:.62em;font-weight:700;vertical-align:middle;line-height:1.5}
+.sent.thesis{--role-tint:var(--thesis-tint)}
+.sent.topic{--role-tint:var(--topic-tint)}
+.sent.evidence{--role-tint:var(--evidence-tint)}
+.sent.analysis{--role-tint:var(--analysis-tint)}
+.sent.summary{--role-tint:var(--summary-tint)}
+.sent.development{--role-tint:var(--development-tint)}
+.sent.conclusion{--role-tint:var(--conclusion-tint)}
+.sent.echo{text-decoration:underline;text-decoration-color:var(--thesis);text-decoration-thickness:2px;text-underline-offset:3px}
+/* detail cards */
+.detail{display:none;margin:10px 0 18px;font-family:var(--font-gloss);font-size:var(--t-md);line-height:1.5}
+.detail.on,.show-all .detail{display:grid}
+.detail .role{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-label);font-weight:700;letter-spacing:.07em;font-size:var(--t-xs)}
+.detail .role i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;border:1px solid var(--rule-strong);font-size:var(--t-xs);font-weight:700;font-family:var(--font-label);letter-spacing:.05em}
+.chip.ok{border-color:var(--ok);color:var(--ok)}
+.chip.no{border-color:var(--no);color:var(--no)}
+.chip.part{border-color:var(--part);color:var(--part)}
+.chip small{font-family:var(--font-gloss);font-weight:400;letter-spacing:0;color:var(--ink-2);text-transform:none}
+.flag{display:grid;gap:6px;padding:10px 12px 12px;border-left:3px solid var(--sev);border-radius:0 var(--radius) var(--radius) 0;background:var(--paper)}
+.flag .fh{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.flag .fh b{color:var(--sev)}
+.flag .fh .sev{font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.06em;color:var(--ink-3)}
+.flag .fnote{margin:0;color:var(--ink-2)}
+.qrr{display:grid;gap:6px;margin:0;padding:0}
+.qrr div{display:grid;grid-template-columns:5.2em minmax(0,1fr);gap:8px;align-items:start}
+.qrr dt{font-family:var(--font-label);font-weight:700;letter-spacing:.06em;font-size:var(--t-xs);color:var(--ink-3);padding-top:3px}
+.qrr dd{margin:0}
+.qrr dd.rw{font-family:var(--font-text);font-size:1.05rem}
+.slot{background:var(--thesis-tint);border-radius:3px;padding:0 3px;font-style:italic}
+.fine{margin:0;color:var(--ok);font-weight:500}
+/* spine */
+.spine .th{font-family:var(--font-text);font-size:1.08rem;line-height:1.55;margin:0;padding:10px 12px;border-radius:var(--radius);background:var(--thesis-tint)}
+.check{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.check li{display:grid;grid-template-columns:1.4em minmax(0,1fr);gap:8px;align-items:baseline}
+.check li b{font-weight:700;font-family:var(--font-gloss)}
+.check li.ok b{color:var(--ok)} .check li.no b{color:var(--no)} .check li.part b{color:var(--part)}
+.topics{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.topics li{display:grid;gap:6px;padding:10px 12px;border-radius:var(--radius);background:var(--topic-tint)}
+.topics li p{margin:0;font-family:var(--font-text);font-size:1.02rem}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px;align-items:center;font-size:var(--t-sm)}
+.bar .track{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--rule)}
+.bar .track span{display:block;height:100%}
+.bar .track .ev{background:var(--evidence)} .bar .track .an{background:var(--analysis)} .bar .track .su{background:var(--summary)} .bar .track .de{background:var(--development)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tools select{min-height:30px;padding:3px 8px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);font-size:var(--t-xs)}
+.copy-fallback{width:100%;min-height:8rem;font-family:ui-monospace,Menlo,monospace;font-size:.8rem;padding:8px;border:1px solid var(--rule-strong);border-radius:6px;background:var(--paper)}
+.status{display:none;padding:10px 14px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf);font-size:var(--t-sm)}
+.status.on{display:block}
+.foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--rule);color:var(--ink-3);font-size:var(--t-sm);display:grid;gap:4px}
+@media print{
+  .composer,.tools,.mast .home,.foot .noprint{display:none!important}
+  .reading{display:grid!important}
+  .detail{display:grid!important}
+  .grid{grid-template-columns:1fr}
+  .sent{border-bottom-width:2px}
+  body{background:#fff;color:#000}
+}
+
+/* AP layer */
+.steps{display:grid;gap:18px;padding:22px 0}
+.step{display:grid;gap:10px}
+.step .step-h{display:flex;align-items:baseline;gap:10px}
+.step .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:var(--t-sm)}
+.step h2{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-xl)}
+.qcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.qcards{grid-template-columns:1fr}}
+.qcard{display:grid;gap:4px;padding:12px 14px;border:1px solid var(--rule-strong);border-radius:12px;background:var(--leaf);cursor:pointer;text-align:left}
+.qcard:hover{border-color:var(--ink-3)}
+.qcard.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.qcard .q{font-family:var(--font-label);font-weight:700;letter-spacing:.1em;font-size:var(--t-xs);color:var(--accent)}
+.qcard .n{font-family:var(--font-text);font-size:1.2rem}
+.qcard .d{font-size:var(--t-sm);color:var(--ink-2)}
+.lib{display:grid;gap:10px}
+.lib .pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lib select{min-height:36px;padding:6px 10px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);max-width:100%}
+.prompt-card{display:grid;gap:8px;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
+.prompt-card .gist{font-family:var(--font-text);font-size:1.08rem;margin:0}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.links a{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;font-size:var(--t-xs);text-decoration:none;background:var(--paper)}
+.links a:hover{border-color:var(--ink-3)}
+.side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.side{grid-template-columns:1fr}}
+.passage{max-height:30rem;overflow:auto;padding:14px 16px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf);font-family:var(--font-text);font-size:1.02rem;line-height:1.6;white-space:pre-wrap}
+.passage-paste{display:block;width:100%;min-height:14rem;resize:vertical;padding:10px 12px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--paper);font:inherit;line-height:1.55}
+.passage h4{margin:0 0 8px;font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.08em;color:var(--ink-3)}
+.viewer{display:grid;gap:6px}
+.viewer iframe{width:100%;height:36rem;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf)}
+.viewer .vhead{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:var(--t-sm);color:var(--ink-2)}
+.links button{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border:1px solid var(--rule-strong);border-radius:999px;font-size:var(--t-xs);background:var(--leaf)}
+.links button.on{border-color:var(--accent);color:var(--accent)}
+.calib{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:var(--t-sm);color:var(--ink-2)}
+.calib input{width:4.5em;min-height:34px;padding:4px 8px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);text-align:center}
+.file-btn{position:relative;overflow:hidden}
+.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-btn:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.pack{display:grid;gap:8px}
+.pack .chip{cursor:pointer}
+.pack .chip.on{border-color:var(--accent);color:var(--accent)}
+.commentary{padding:14px 16px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf);font-family:var(--font-text);font-size:1.02rem;line-height:1.6;white-space:pre-wrap;max-height:30rem;overflow:auto}
+.commentary h4{margin:0 0 8px;font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.08em;color:var(--ink-3)}
+/* score board */
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:820px){.board{grid-template-columns:1fr}}
+.dial{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:center;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
+.dial svg{width:92px;height:92px;grid-row:span 3}
+.dial .ring{fill:none;stroke:var(--rule);stroke-width:9}
+.dial .arc{fill:none;stroke:var(--c);stroke-width:9;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray .6s ease}
+.dial .val{font-family:var(--font-text);font-size:1.9rem;font-weight:500;line-height:1}
+.dial .val small{font-size:.5em;color:var(--ink-3);font-weight:400}
+.dial .ttl{font-family:var(--font-label);font-weight:700;letter-spacing:.08em;font-size:var(--t-xs);color:var(--ink-3)}
+.dial .lvl{font-size:var(--t-md);color:var(--c);font-weight:700}
+.dial .why{grid-column:1 / -1;margin:6px 0 0;font-size:var(--t-sm);color:var(--ink-2)}
+.rows{display:grid;gap:6px;grid-column:1 / -1;margin-top:6px}
+.rowb{display:grid;grid-template-columns:7.5em minmax(0,1fr) 2.6em;gap:8px;align-items:center;font-size:var(--t-sm)}
+.rowb .track{height:10px;border-radius:5px;background:var(--rule);overflow:hidden}
+.rowb .track span{display:block;height:100%;background:var(--c)}
+.rowb .pts{font-variant-numeric:tabular-nums;text-align:right}
+.rowb.possible .track span{background:repeating-linear-gradient(45deg,var(--c) 0 4px,transparent 4px 8px)}
+.good{display:grid;gap:8px;padding:16px 18px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf);border-left:4px solid var(--ok)}
+.good h3,.moves h3{margin:0;font-family:var(--font-text);font-weight:500;font-size:1.25rem}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--evidence-tint);color:var(--ink);font-size:var(--t-sm);font-weight:500}
+.badge i{width:18px;height:18px;border-radius:50%;background:var(--ok);display:inline-grid;place-items:center;color:#fff;font-size:11px;font-style:normal;font-weight:700}
+.moves{display:grid;gap:8px;padding:16px 18px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf);border-left:4px solid var(--precision)}
+.moves ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+.moves li{font-size:var(--t-md)}
+.moves li b{font-family:var(--font-label);font-weight:700;letter-spacing:.06em;font-size:var(--t-xs);color:var(--ink-3);margin-right:6px;text-transform:uppercase}
+.just{display:grid;gap:4px;margin:0;padding:0;list-style:none;font-size:var(--t-sm);color:var(--ink-2)}
+.just li{display:grid;grid-template-columns:1.2em minmax(0,1fr);gap:6px}
+.just li.plus b{color:var(--ok)} .just li.minus b{color:var(--precision)}
+.shape{display:flex;align-items:center;gap:10px;font-size:var(--t-sm);color:var(--ink-2)}
+.shape .blocks{display:flex;gap:4px}
+.shape .blocks span{width:22px;height:14px;border-radius:3px;background:var(--rule)}
+.shape .blocks span.on{background:var(--structure)}
+.shape .blocks span.extra{background:var(--precision)}
+.shape .blocks span.missing{border:1px dashed var(--rule-strong);background:transparent}
+.cal-note{font-size:var(--t-sm);color:var(--ink-2);margin:0}
+.cal-note b{color:var(--structure)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast">
+  <a class="home" href="../">THE WRITING DOCTOR</a>
+  <h1>The Sentence Clinic</h1>
+  <p class="tagline">For AP English Language: Synthesis, Rhetorical Analysis, Argument. Choose the question, set the prompt beside the writing, read the essay. Every sentence gets a job and a color. Quotation integration and evidentiary support are each scored 1 to 6 with their reasons shown; the College Board rows are estimated; what is working comes first.</p>
+</header>
+
+<section class="steps" aria-label="Setup">
+  <div class="step">
+    <div class="step-h"><span class="num">1</span><h2>Which essay?</h2></div>
+    <div class="qcards" id="qcards" role="radiogroup" aria-label="Question"></div>
+  </div>
+  <div class="step lib">
+    <div class="step-h"><span class="num">2</span><h2>Which prompt?</h2><span class="note">Optional. The official materials open at College Board.</span></div>
+    <div class="pick">
+      <select id="lib-year" aria-label="Year"></select>
+      <span class="note" id="lib-note"></span>
+    </div>
+    <div id="prompt-card"></div>
+  </div>
+  <div class="step">
+    <div class="step-h"><span class="num">3</span><h2>The writing</h2></div>
+    <div class="side" id="side">
+      <div id="passage-pane"></div>
+      <div style="display:grid;gap:10px">
+        <textarea id="src" spellcheck="false" placeholder="Paste the essay here. Introduction, two body paragraphs, conclusion. One paragraph per line is fine."></textarea>
+        <div class="row">
+          <button class="btn primary" id="read">Read the essay</button>
+          <button class="btn" id="sample-strong">Load a strong sample</button>
+          <button class="btn" id="sample-weak">Load a weak sample</button>
+          <button class="btn quiet" id="clear">Clear</button>
+          <span class="count" id="count"></span>
+        </div>
+        <div class="calib">
+          <label for="official">Studying a College Board sample? Its official score</label>
+          <input id="official" type="number" min="0" max="6" step="1" inputmode="numeric" placeholder="0–6">
+          <span class="note">Open the sample responses beside the essay (⧉ beside), type the sample in, enter its score; the Clinic's estimate appears next to it, with the commentary still open.</span>
+        </div>
+        <div class="pack">
+          <div class="row">
+            <label class="btn small file-btn">Load a classroom pack (.json)<input id="pack-file" type="file" accept="application/json,.json"></label>
+            <button class="btn small quiet" id="pack-template">Download the pack template</button>
+            <button class="btn small quiet" id="pack-clear" hidden>Forget the pack</button>
+            <span class="note">For face-to-face teaching: samples with their official scores and commentary, kept on your drive and in this browser only, never on the site.</span>
+          </div>
+          <div class="chips" id="pack-chips"></div>
+        </div>
+        <p class="privacy">Nothing leaves your browser. The reading is a set of rules about English sentences, not a reader of meaning: it can be wrong, and when it is, the question it asks is still worth answering.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="status" id="status" role="status"></div>
+
+<section class="reading" id="reading" aria-live="polite">
+  <div class="board" id="board"></div>
+  <div class="shape" id="shape"></div>
+  <div class="good" id="good"></div>
+  <div class="moves" id="moves"></div>
+  <div class="summary" id="summary"></div>
+  <div class="tools">
+    <label class="label" for="th-pick">Thesis</label>
+    <select id="th-pick"></select>
+    <select id="th-len"><option value="">one or two sentences, as read</option><option value="1">one sentence</option><option value="2">two sentences</option></select>
+    <button class="btn small" id="toggle-all">Open every card</button>
+    <button class="btn small" id="copy-report">Copy the report</button>
+    <button class="btn small" id="print">Print</button>
+    <span class="note" id="tool-note"></span>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="grid">
+    <div class="pane">
+      <div class="card">
+        <h3>The essay, sentence by sentence</h3>
+        <p class="note">Click any sentence for its card. The tint is the sentence's job; the underline is the kind of trouble; the number is how many flags.</p>
+        <div class="essay" id="essay"></div>
+      </div>
+    </div>
+    <div class="pane spine" id="spine"></div>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>The Sentence Clinic is one of The Writing Doctor's tools, beside <a href="../claims-reader/">The Claims Reader</a>. AP® is a trademark registered by the College Board, which is not affiliated with and does not endorse this tool. Prompts, sample responses, and scoring commentaries are College Board's; this page links to them.</span>
+  <span class="noprint">Brent Robida, PhD &middot; <a href="../">thewritingdoctor</a></span>
+</footer>
+</div>
+
+<script src="clinic.js"></script>
+<script src="aplang.js"></script>
+<script src="library.js"></script>
+<script>
+(function () {
+'use strict';
+const C = window.SentenceClinic;
+const A = window.APLang;
+const LIB = window.APLibrary || { years: {}, passages: [], rubric: null };
+const $ = id => document.getElementById(id);
+let question = Number(recall('question')) || 2;
+let libYear = recall('year') || '';
+let scored = null;
+let viewerUrl = null;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const slots = s => esc(s).replace(/\[([^\]]+)\]/g, '<span class="slot">[$1]</span>');
+const SAMPLE_STRONG = `When Frederick Douglass addressed the Rochester Ladies' Anti-Slavery Society on July 5, 1852, he spoke to an audience that had come to celebrate. Douglass indicts the hypocrisy of a national holiday celebrated beside slavery by turning the audience's own pronouns against them, shifting from "your" to "we" only when he reaches the future. He does so in order to force his listeners to feel the gap between the nation they praise and the nation they permit, a gap that matters because a celebration which excludes the enslaved is not a celebration of freedom at all.
+
+Douglass's pronouns indict his audience before any argument does, through the relentless repetition of "your" across the speech's first movement. "This Fourth of July is yours, not mine," he tells them, insisting that "you may rejoice, I must mourn." The possessive "yours" hands the holiday back to the people who own it and refuses the fiction that the day belongs to everyone. The repetition is the argument: each "your" is a small eviction, and the audience, hearing itself addressed as the owners of the nation's freedom, is made to hear who has been left outside it.
+
+The speech exposes the audience's complacency through its contrast between the Founders' revolutionary courage and the audience's inherited comfort. Douglass praises the men of 1776 as "brave" and "great," and the praise is a trap, since the listeners who applaud it must then ask what they have risked. The contrast positions the audience as heirs who have spent an inheritance they did not earn. By honoring the Founders more lavishly than the audience would, Douglass makes their descendants' silence on slavery read as betrayal rather than neutrality.
+
+Douglass's turn to "we" in the final pages insists that the nation can still be shared, and the shift is where the speech's stakes become visible. The gap between the praised nation and the permitted one is not a rhetorical flourish but the moral condition of his listeners, who have been made to feel it in their own pronouns. A celebration of freedom that leaves the enslaved outside the room is, the speech has shown, a celebration of ownership. Douglass's pronouns force the Rochester audience, and every audience since, to decide which of the two they are willing to be.`;
+const SAMPLE_WEAK = `Since the dawn of time, people have always wanted things they can't have. In today's society this is very relatable. The Great Gatsby by F. Scott Fitzgerald is about a man named Gatsby who wants Daisy. In this essay I will discuss how the book shows that the American dream is bad.
+
+Gatsby throws huge parties. He bought a big house across from Daisy and then he waited for her to show up. One day he finally meets her again through Nick. "He stretched out his arms toward the dark water in a curious way" (20). This shows that he really wants something. I think this proves that the American dream is unattainable because people can't attain it.
+
+Society tells us that money brings happiness. Gatsby is seen as a successful man. He has a lot of money and stuff but he is not happy. Myrtle dies and then Gatsby dies. Isn't it ironic that he had everything? This leads to his downfall.
+
+In conclusion, the book shows that the American dream is bad. People should be happy with what they have. Fitzgerald clearly shows that wanting things is bad and everyone should learn from Gatsby.`;
+
+const ROLE_ORDER = ['thesis', 'topic', 'evidence', 'analysis', 'summary', 'development', 'conclusion'];
+let current = null;
+let opts = {};
+
+function store(k, v) { try { localStorage.setItem('sentence-clinic:' + k, v); } catch (e) {} }
+function recall(k) { try { return localStorage.getItem('sentence-clinic:' + k); } catch (e) { return null; } }
+
+function updateCount() {
+  const t = $('src').value;
+  const w = (t.match(/[A-Za-z][A-Za-z'’-]*/g) || []).length;
+  $('count').textContent = w ? `${w} words` : '';
+}
+
+function worst(flags) {
+  const order = ['rigor', 'structure', 'precision', 'style'];
+  let w = null;
+  flags.forEach(f => { if (w == null || order.indexOf(f.severity) < order.indexOf(w)) w = f.severity; });
+  return w;
+}
+
+function chip(label, ok, detail, partial) {
+  return `<span class="chip ${ok ? 'ok' : (partial ? 'part' : 'no')}">${ok ? '✓' : (partial ? '~' : '✗')} ${esc(label)}${detail ? ` <small>${esc(detail)}</small>` : ''}</span>`;
+}
+
+function flagHtml(f) {
+  const sev = C.SEVERITIES[f.severity];
+  return `<div class="flag" style="--sev:var(--${f.severity})">
+    <div class="fh"><b>${esc(f.label)}</b><span class="sev">${esc(sev ? sev.label : f.severity)}</span></div>
+    <p class="fnote">${esc(f.note)}</p>
+    <dl class="qrr">
+      ${f.question ? `<div><dt>Ask</dt><dd>${esc(f.question)}</dd></div>` : ''}
+      ${f.rewrite ? `<div><dt>Rewrite</dt><dd class="rw">${slots(f.rewrite)}</dd></div>` : ''}
+      ${f.recommend ? `<div><dt>Do</dt><dd>${esc(f.recommend)}</dd></div>` : ''}
+    </dl>
+  </div>`;
+}
+
+function sentenceCard(s, r) {
+  const role = C.ROLES[s.role] || C.ROLES.development;
+  let chips = '';
+  if (s.role === 'thesis' && r.thesis) {
+    const th = r.thesis;
+    chips = `<div class="chips">${chip('What', th.what.ok && th.what.strong, th.what.verbs && th.what.verbs[0] ? `verb: ${th.what.verbs[0]}` : (th.what.about ? 'topic, not claim' : ''), th.what.ok)}${chip('How', th.how.ok, th.how.devices.length ? th.how.devices.slice(0, 3).join(', ') : (th.how.byReason ? 'by reasons' : (th.how.means || '')))}${chip('Why', th.why.ok, th.why.marker ? `"${th.why.marker}"` : '')}${chip('Two sentences', th.twoSentence)}</div>`;
+  }
+  if (s.topic) {
+    const t = s.topic;
+    chips = `<div class="chips">${chip('What', t.what.ok && t.what.strong, t.what.verbs && t.what.verbs[0] ? `verb: ${t.what.verbs[0]}` : '', t.what.ok)}${chip('How', t.how.ok, t.how.devices.length ? t.how.devices.slice(0, 3).join(', ') : (t.how.means || ''))}${chip('Tied to thesis', t.link.length > 0, t.link.length ? `shares: ${t.link.slice(0, 3).join(', ')}` : '')}</div>`;
+  }
+  const flags = (s.role === 'thesis' && r.thesis && r.thesis.indexes[0] === s.index) ? r.thesis.flags.concat(s.flags) : s.flags;
+  const extra = (s.role === 'thesis' && r.thesis && r.thesis.indexes[0] === s.index && r.thesis.flags.length) ? `<div class="flag" style="--sev:var(--structure)"><div class="fh"><b>Thesis, rebuilt</b><span class="sev">Spine</span></div><dl class="qrr"><div><dt>Rewrite</dt><dd class="rw">${slots(r.thesis.rewrite)}</dd></div></dl></div>` : '';
+  const echo = s.echoesWhy ? `<p class="fine">This sentence returns to the Why${r.conclusion.bestEcho && r.conclusion.bestEcho.length ? ` (shared terms: ${esc(r.conclusion.bestEcho.join(', '))})` : ''}.</p>` : '';
+  return `<div class="detail card" id="d${s.index}" style="--c:var(--${s.role})">
+    <div class="role"><i></i>${esc(role.label)} <span class="note">${esc(role.note)}</span></div>
+    ${chips}${echo}
+    ${flags.length ? flags.map(flagHtml).join('') + extra : '<p class="fine">Nothing to flag in this sentence.</p>'}
+  </div>`;
+}
+
+function render(r) {
+  current = r;
+  const reading = $('reading');
+  reading.classList.add('on');
+  // summary
+  $('summary').innerHTML = `
+    <div class="stat"><span class="label">Spine</span><span class="big">${r.passed}<span class="note">/10</span></span></div>
+    <div class="stat"><span class="label">Sentences</span><b>${r.totals.sentences}</b></div>
+    <div class="stat"><span class="label">Analysis</span><b style="color:var(--analysis)">${r.totals.analysis}</b></div>
+    <div class="stat"><span class="label">Evidence</span><b style="color:var(--evidence)">${r.totals.evidence}</b></div>
+    <div class="stat"><span class="label">Summary</span><b style="color:var(--summary)">${r.totals.summary}</b></div>
+    <div class="stat"><span class="label">Rigor flags</span><b style="color:var(--rigor)">${r.totals.rigor}</b></div>
+    <div class="stat"><span class="label">Precision flags</span><b style="color:var(--precision)">${r.totals.precision}</b></div>
+    <div class="stat"><span class="label">All flags</span><b>${r.totals.flags}</b></div>`;
+  // legend
+  $('legend').innerHTML = ROLE_ORDER.map(k => `<span><i class="sw" style="background:var(--${k}-tint);border-color:var(--${k})"></i>${esc(C.ROLES[k].label)}</span>`).join('') +
+    ['rigor', 'precision', 'structure', 'style'].map(k => `<span><i class="ul" style="border-color:var(--${k});${k === 'style' ? 'border-bottom-style:dotted' : ''}"></i>${esc(C.SEVERITIES[k].label)}</span>`).join('');
+  // thesis picker
+  const pick = $('th-pick');
+  pick.innerHTML = '<option value="">as read</option>' + r.sentences.filter(s => s.para === 0).map(s => `<option value="${s.index}" ${opts.thesisIndex === s.index ? 'selected' : ''}>sentence ${s.index + 1}: ${esc(s.text.slice(0, 48))}${s.text.length > 48 ? '…' : ''}</option>`).join('');
+  $('th-len').value = opts.thesisLength ? String(opts.thesisLength) : '';
+  // essay
+  const essay = $('essay');
+  essay.innerHTML = r.paragraphs.map(pg => {
+    const ss = pg.sentences.map(i => r.sentences[i]);
+    const kind = pg.kind === 'intro' ? 'Introduction' : (pg.kind === 'conclusion' ? 'Conclusion' : `Body paragraph ${pg.index}`);
+    const spans = ss.map(s => {
+      const n = s.flags.length + ((s.role === 'thesis' && r.thesis && r.thesis.indexes[0] === s.index) ? r.thesis.flags.length : 0);
+      const w = worst(s.flags.concat((s.role === 'thesis' && r.thesis && r.thesis.indexes[0] === s.index) ? r.thesis.flags : []));
+      return `<button class="sent ${s.role} ${w || ''} ${s.echoesWhy ? 'echo' : ''}" data-i="${s.index}" aria-expanded="false" aria-controls="d${s.index}" title="${esc(C.ROLES[s.role].label)}${n ? `, ${n} flag${n === 1 ? '' : 's'}` : ''}"><sup>${s.index + 1}</sup>${esc(s.text)}${n ? `<span class="n">${n}</span>` : ''}</button>`;
+    }).join(' ');
+    const cards = ss.map(s => sentenceCard(s, r)).join('');
+    const pgNote = pg.kind === 'body' ? [pg.summaryHeavy ? 'summary-heavy' : '', pg.noEvidence ? 'no evidence quoted' : '', pg.closesLoop === false ? 'does not close the loop' : ''].filter(Boolean).join(' · ') : '';
+    return `<div class="para"><span class="pkind">${esc(kind)}${pgNote ? ` · <span style="color:var(--rigor)">${esc(pgNote)}</span>` : ''}</span><p style="margin:0">${spans}</p>${cards}</div>`;
+  }).join('');
+  essay.querySelectorAll('.sent').forEach(b => b.addEventListener('click', () => {
+    const d = $('d' + b.dataset.i);
+    const on = d.classList.toggle('on');
+    b.classList.toggle('open', on);
+    b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }));
+  // spine
+  const th = r.thesis;
+  const topics = r.paragraphs.filter(p => p.kind === 'body');
+  $('spine').innerHTML = `
+    <div class="card">
+      <h3>The spine</h3>
+      <ul class="check">${r.checklist.map(c => `<li class="${c.ok ? 'ok' : (c.partial ? 'part' : 'no')}"><b>${c.ok ? '✓' : (c.partial ? '~' : '✗')}</b><span>${esc(c.label)}</span></li>`).join('')}</ul>
+    </div>
+    <div class="card">
+      <h3>Thesis</h3>
+      ${th ? `<p class="th">${th.sentences.map(s => esc(s.text)).join(' ')}</p>
+      <div class="chips">${chip('What', th.what.ok && th.what.strong, th.what.verbs && th.what.verbs[0] ? `verb: ${th.what.verbs[0]}` : (th.what.about ? 'topic, not claim' : ''), th.what.ok)}${chip('How', th.how.ok, th.how.devices.length ? th.how.devices.slice(0, 3).join(', ') : (th.how.byReason ? 'by reasons' : (th.how.means || '')))}${chip('Why', th.why.ok, th.why.marker ? `"${th.why.marker}"` : '')}${chip('Two sentences', th.twoSentence)}</div>
+      ${th.flags.length ? th.flags.map(flagHtml).join('') + `<div class="flag" style="--sev:var(--structure)"><div class="fh"><b>Thesis, rebuilt</b><span class="sev">Spine</span></div><dl class="qrr"><div><dt>Rewrite</dt><dd class="rw">${slots(th.rewrite)}</dd></div></dl></div>` : `<p class="fine">What, How, and Why are all present.</p><dl class="qrr"><div><dt>Ask</dt><dd>${esc(th.question)}</dd></div><div><dt>Do</dt><dd>${esc(th.recommend)}</dd></div></dl>`}` : '<p class="note">No introduction found.</p>'}
+    </div>
+    <div class="card">
+      <h3>Topic sentences</h3>
+      ${topics.length ? `<ul class="topics">${topics.map(p => { const s = r.sentences[p.sentences[0]]; const t = p.topic; return `<li><span class="label">Body paragraph ${p.index}</span><p>${esc(s.text)}</p><div class="chips">${chip('What', t.what.ok && t.what.strong, '', t.what.ok)}${chip('How', t.how.ok, t.how.devices.length ? t.how.devices.slice(0, 2).join(', ') : '')}${chip('Tied', t.link.length > 0, t.link.length ? t.link.slice(0, 2).join(', ') : '')}</div></li>`; }).join('')}</ul>` : '<p class="note">No body paragraphs found. Separate paragraphs with a line break.</p>'}
+    </div>
+    <div class="card">
+      <h3>Conclusion and the return to the Why</h3>
+      ${r.conclusion.sentences.length ? (r.conclusion.returns && !r.conclusion.copied ? `<p class="fine">The conclusion returns to the Why in new words${r.conclusion.bestEcho.length ? ` (shared terms: ${esc(r.conclusion.bestEcho.join(', '))})` : ''}. The echoing sentence is underlined in gold in the essay.</p>` : '') : ''}
+      ${r.conclusion.flags.length ? r.conclusion.flags.map(flagHtml).join('') : (r.conclusion.sentences.length ? '' : '<p class="note">No conclusion paragraph.</p>')}
+    </div>
+    <div class="card">
+      <h3>Paragraph balance</h3>
+      <p class="note">Evidence, analysis, summary, and development, as shares of each body paragraph.</p>
+      <div class="bars">${topics.map(p => { const c = p.counts; const tot = c.total || 1; const pct = n => (100 * n / tot).toFixed(1) + '%'; return `<div class="bar"><span>Paragraph ${p.index}</span><div class="track" title="evidence ${c.evidence}, analysis ${c.analysis}, summary ${c.summary}, other ${c.development}"><span class="ev" style="width:${pct(c.evidence)}"></span><span class="an" style="width:${pct(c.analysis)}"></span><span class="su" style="width:${pct(c.summary)}"></span><span class="de" style="width:${pct(c.development)}"></span></div></div>`; }).join('')}</div>
+      <div class="legend"><span><i class="sw" style="background:var(--evidence)"></i>Evidence</span><span><i class="sw" style="background:var(--analysis)"></i>Analysis</span><span><i class="sw" style="background:var(--summary)"></i>Summary</span><span><i class="sw" style="background:var(--development)"></i>Development</span></div>
+    </div>`;
+  reading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function readNow() {
+  const text = $('src').value;
+  const st = $('status');
+  if (!text.trim()) { st.textContent = 'Paste an essay first.'; st.classList.add('on'); return; }
+  st.classList.remove('on');
+  store('essay', text);
+  scored = A.score(text, Object.assign({ question }, opts));
+  const r = scored.read;
+  if (!r.sentences.length) { st.textContent = 'No sentences found.'; st.classList.add('on'); return; }
+  renderBoard(scored);
+  render(r);
+}
+
+/* ---------------- AP layer rendering: image over utterance */
+const SCORE_COLOR = n => n >= 5 ? 'var(--ok)' : n >= 3 ? 'var(--structure)' : 'var(--precision)';
+function dial(title, value, max, levelText, color, whyHtml, rowsHtml) {
+  const r = 38, c = 2 * Math.PI * r, frac = Math.max(0, Math.min(1, value / max));
+  return `<div class="dial" style="--c:${color}">
+    <svg viewBox="0 0 92 92" aria-hidden="true"><circle class="ring" cx="46" cy="46" r="${r}"></circle><circle class="arc" cx="46" cy="46" r="${r}" stroke-dasharray="${(frac * c).toFixed(1)} ${c.toFixed(1)}"></circle></svg>
+    <span class="ttl">${esc(title)}</span>
+    <span class="val">${value}<small> / ${max}</small></span>
+    <span class="lvl">${esc(levelText)}</span>
+    ${rowsHtml || ''}
+    ${whyHtml || ''}
+  </div>`;
+}
+function justList(good, just) {
+  return `<ul class="just">${good.map(g => `<li class="plus"><b>+</b><span>${esc(g)}</span></li>`).join('')}${just.map(j => `<li class="minus"><b>→</b><span>${esc(j)}</span></li>`).join('')}</ul>`;
+}
+function renderBoard(sc) {
+  const rub = sc.rubric;
+  const official = $('official').value === '' ? null : Number($('official').value);
+  const est = rub.rowC.possible ? `${rub.total}–${rub.total + 1}` : String(rub.total);
+  const rows = `<div class="rows">
+    <div class="rowb" style="--c:var(--structure)"><span>Thesis</span><div class="track"><span style="width:${rub.rowA.points * 100}%"></span></div><span class="pts">${rub.rowA.points}/1</span></div>
+    <div class="rowb" style="--c:var(--structure)"><span>Evidence &amp; commentary</span><div class="track"><span style="width:${rub.rowB.points * 25}%"></span></div><span class="pts">${rub.rowB.points}/4</span></div>
+    <div class="rowb ${rub.rowC.possible ? 'possible' : ''}" style="--c:var(--structure)"><span>Sophistication</span><div class="track"><span style="width:${rub.rowC.possible ? 100 : 0}%"></span></div><span class="pts">${rub.rowC.possible ? '?' : '0'}/1</span></div>
+  </div>`;
+  const calib = official == null ? '' : `<p class="cal-note">Official score <b>${official}</b> · Clinic estimate <b>${est}</b>${Math.abs(official - rub.total) <= (rub.rowC.possible ? 1 : 0) ? ' · in agreement' : (official > rub.total ? ' · the readers saw more than the rules can: look for what the shape misses' : ' · the readers saw less: the shape is there but the meaning did not carry')}</p>`;
+  $('board').innerHTML =
+    dial('Quotation integration', sc.integration.score, 6, sc.integration.level, SCORE_COLOR(sc.integration.score), `<div class="why">${justList(sc.integration.good, sc.integration.just)}</div>`) +
+    dial('Evidentiary support', sc.support.score, 6, sc.support.level, SCORE_COLOR(sc.support.score), `<div class="why">${justList(sc.support.good, sc.support.just)}</div>`) +
+    dial(`AP estimate · ${sc.question.short} ${sc.question.name}`, rub.total, 6, rub.rowC.possible ? `${rub.total}, possibly ${rub.total + 1}` : A.LEVELS[Math.max(1, rub.total)], SCORE_COLOR(rub.total), `<div class="why">${justList([], [rub.rowA.why[0], rub.rowB.why[0], rub.rowC.why[0]].filter(Boolean))}${calib}</div>`, rows);
+  const sh = sc.shape;
+  const blocks = ['intro', 'body', 'body', 'conclusion'];
+  const have = [sh.intro, sh.body >= 1, sh.body >= 2, sh.conclusion];
+  const extra = Math.max(0, sh.body - 2);
+  $('shape').innerHTML = `<span class="label">Shape</span><div class="blocks">${blocks.map((b, i) => `<span class="${have[i] ? 'on' : 'missing'}" title="${b}"></span>`).join('')}${Array.from({ length: extra }, () => '<span class="extra" title="extra body paragraph"></span>').join('')}</div><span>${esc(sh.note)}</span>`;
+  $('good').innerHTML = `<h3>What is working</h3>${sc.strengths.length ? `<div class="badges">${sc.strengths.map(x => `<span class="badge"><i>✓</i>${esc(x.text)}</span>`).join('')}</div>` : '<p class="note">Not yet: the moves below are where the good begins.</p>'}`;
+  $('moves').innerHTML = `<h3>Next moves</h3><ol>${sc.moves.map(m => `<li><b>${esc(m.area)}</b>${esc(m.text)}</li>`).join('')}</ol>`;
+}
+
+/* ---------------- question cards and library */
+function renderQuestions() {
+  const Q = A.QUESTIONS;
+  const desc = { 1: 'Six sources, one position. Cite at least three.', 2: 'One passage. Name the choices, say what they do, for whom.', 3: 'One claim, your evidence. Qualify it.' };
+  $('qcards').innerHTML = [1, 2, 3].map(k => `<button class="qcard ${question === k ? 'on' : ''}" role="radio" aria-checked="${question === k}" data-q="${k}"><span class="q">${Q[k].short}</span><span class="n">${esc(Q[k].name)}</span><span class="d">${esc(desc[k])}</span></button>`).join('');
+  $('qcards').querySelectorAll('.qcard').forEach(b => b.addEventListener('click', () => { question = Number(b.dataset.q); store('question', question); viewerUrl = null; renderQuestions(); renderLibrary(); if (scored) readNow(); }));
+}
+function libEntries() {
+  const years = Object.keys(LIB.years || {}).sort((a, b) => b - a);
+  return years.map(y => ({ year: y, entry: (LIB.years[y] || {})['q' + question] })).filter(x => x.entry);
+}
+function renderLibrary() {
+  const entries = libEntries();
+  const sel = $('lib-year');
+  sel.innerHTML = '<option value="">choose a year</option>' + entries.map(e => `<option value="${e.year}" ${libYear === e.year ? 'selected' : ''}>${e.year} · ${esc((e.entry.topic || '').slice(0, 70))}</option>`).join('');
+  $('lib-note').innerHTML = (entries.length ? `${entries.length} years of official ${esc(A.QUESTIONS[question].name)} prompts · ` : 'No prompts in the library for this question yet. ') + (LIB.index ? `<a href="${esc(LIB.index)}" target="_blank" rel="noopener">all past questions at College Board ↗</a>` : '');
+  const e = entries.find(x => x.year === libYear);
+  const pc = $('prompt-card');
+  const pane = $('passage-pane');
+  if (!e) { pc.innerHTML = ''; pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; return; }
+  const links = (e.entry.urls || []).map((u, i) => `<a href="${esc(u.url)}" target="_blank" rel="noopener">${esc(u.label)} ↗</a><button type="button" class="${viewerUrl === u.url ? 'on' : ''}" data-view="${i}" title="Open this PDF beside the essay">⧉ beside</button>`).join('');
+  const yearNote = (LIB.years[e.year] || {}).note;
+  pc.innerHTML = `<div class="prompt-card"><span class="label">${e.year} · ${esc(A.QUESTIONS[question].short)} ${esc(A.QUESTIONS[question].name)}</span><p class="gist">${esc(e.entry.topic || '')}</p>${links ? `<div class="links">${links}</div>` : `<div class="links"><a href="${esc(LIB.index)}" target="_blank" rel="noopener">find this year at College Board ↗</a></div>`}${yearNote ? `<p class="note">${esc(yearNote)}</p>` : ''}${LIB.note && links ? `<p class="note">${esc(LIB.note)}</p>` : ''}</div>`;
+  pc.querySelectorAll('button[data-view]').forEach(b => b.addEventListener('click', () => { const u = (e.entry.urls || [])[Number(b.dataset.view)]; viewerUrl = viewerUrl === u.url ? null : u.url; renderLibrary(); }));
+  const passages = question === 2 ? (LIB.passages || []).filter(p => String(p.year) === String(e.year)) : [];
+  const viewing = viewerUrl && (e.entry.urls || []).find(u => u.url === viewerUrl);
+  let html = '';
+  if (viewing) html += `<div class="viewer"><div class="vhead"><span class="label">Beside the essay</span><span>${esc(viewing.label)}, served by College Board.</span><a href="${esc(viewing.url)}" target="_blank" rel="noopener">If the frame stays blank, open it there ↗</a></div><iframe src="${esc(viewing.url)}" title="${esc(viewing.label)}" loading="lazy" referrerpolicy="no-referrer"></iframe></div>`;
+  passages.forEach((passage, k) => {
+    const head = `${esc(passage.author)}${passage.title ? ', ' + esc(passage.title) : ''}${passage.date ? ' (' + esc(passage.date) + ')' : ''}`;
+    if (passage.pd === true) {
+      const key = `passage:${e.year}:${k}`;
+      const pasted = passage.text || recall(key) || '';
+      html += `<div class="passage"><h4>The passage · ${head} · public domain${passage.text_source ? ` · <a href="${esc(passage.text_source)}" target="_blank" rel="noopener">source ↗</a>` : ''}${passage.alt_source ? ` · <a href="${esc(passage.alt_source)}" target="_blank" rel="noopener">alternate ↗</a>` : ''}</h4>${passage.text ? esc(passage.text) : `<p class="note" style="margin:0 0 8px">${esc(passage.reason)}${passage.excerpt ? ' ' + esc(passage.excerpt) : ''} Open the source, copy the passage, paste it here; it stays in this browser.</p><textarea class="passage-paste" data-key="${esc(key)}" spellcheck="false" placeholder="Paste the passage text">${esc(pasted)}</textarea>`}</div>`;
+    } else {
+      html += `<div class="passage"><h4>The passage · ${head} · ${passage.pd === 'unclear' ? 'rights unclear' : 'copyrighted'}, so it stays at College Board</h4><p class="note" style="margin:0">${esc(passage.reason)} Open the questions PDF beside the essay (⧉ beside) to read it there.</p></div>`;
+    }
+  });
+  if (html) { pane.style.display = ''; $('side').style.gridTemplateColumns = ''; pane.innerHTML = html; }
+  else { pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; }
+  pane.querySelectorAll('.passage-paste').forEach(t => t.addEventListener('input', () => store(t.dataset.key, t.value)));
+}
+$('lib-year').addEventListener('change', e => { libYear = e.target.value; store('year', libYear); viewerUrl = null; renderLibrary(); });
+$('official').addEventListener('input', () => { if (scored) renderBoard(scored); });
+renderQuestions();
+renderLibrary();
+
+function report(r) {
+  const lines = [];
+  lines.push(`THE SENTENCE CLINIC · ${scored ? scored.question.short + ' ' + scored.question.name + ' · ' : ''}spine ${r.passed}/10 · ${r.totals.sentences} sentences · ${r.totals.flags} flags (${r.totals.rigor} rigor, ${r.totals.precision} precision)`);
+  if (scored) {
+    lines.push(`Quotation integration ${scored.integration.score}/6 (${scored.integration.level}) · Evidentiary support ${scored.support.score}/6 (${scored.support.level}) · AP estimate ${scored.rubric.total}/6 (thesis ${scored.rubric.rowA.points}, evidence and commentary ${scored.rubric.rowB.points}, sophistication ${scored.rubric.rowC.possible ? 'possible' : '0'})`);
+    lines.push('What is working: ' + scored.strengths.map(x => x.text).join('; '));
+    lines.push('Next moves:'); scored.moves.forEach((m, i) => lines.push(`  ${i + 1}. [${m.area}] ${m.text}`));
+    lines.push('Quotation integration, reasons:'); scored.integration.good.forEach(g => lines.push('  + ' + g)); scored.integration.just.forEach(j => lines.push('  - ' + j));
+    lines.push('Evidentiary support, reasons:'); scored.support.good.forEach(g => lines.push('  + ' + g)); scored.support.just.forEach(j => lines.push('  - ' + j));
+  }
+  lines.push('');
+  r.checklist.forEach(c => lines.push(`${c.ok ? '[x]' : (c.partial ? '[~]' : '[ ]')} ${c.label}`));
+  lines.push('');
+  if (r.thesis) {
+    lines.push('THESIS: ' + r.thesis.sentences.map(s => s.text).join(' '));
+    lines.push(`  What ${r.thesis.what.ok ? (r.thesis.what.strong ? 'yes' : 'weak verb') : 'no'} · How ${r.thesis.how.ok ? 'yes' : 'no'} · Why ${r.thesis.why.ok ? 'yes' : 'no'} · ${r.thesis.twoSentence ? 'two sentences' : 'one sentence'}`);
+    r.thesis.flags.forEach(f => { lines.push(`  - ${f.label}: ${f.note}`); lines.push(`      Ask: ${f.question}`); lines.push(`      Do: ${f.recommend}`); });
+    if (r.thesis.flags.length) lines.push('  Rewrite: ' + r.thesis.rewrite);
+    lines.push('');
+  }
+  r.sentences.forEach(s => {
+    if (!s.flags.length) return;
+    lines.push(`${s.index + 1}. [${C.ROLES[s.role].label}] ${s.text}`);
+    s.flags.forEach(f => { lines.push(`  - ${f.label} (${C.SEVERITIES[f.severity].label}): ${f.note}`); if (f.question) lines.push(`      Ask: ${f.question}`); if (f.rewrite) lines.push(`      Rewrite: ${f.rewrite}`); if (f.recommend) lines.push(`      Do: ${f.recommend}`); });
+  });
+  if (r.conclusion.flags.length) { lines.push(''); lines.push('CONCLUSION'); r.conclusion.flags.forEach(f => { lines.push(`  - ${f.label}: ${f.note}`); lines.push(`      Ask: ${f.question}`); if (f.rewrite) lines.push(`      Rewrite: ${f.rewrite}`); lines.push(`      Do: ${f.recommend}`); }); }
+  return lines.join('\n');
+}
+
+$('read').addEventListener('click', readNow);
+$('src').addEventListener('input', updateCount);
+$('sample-strong').addEventListener('click', () => { $('src').value = SAMPLE_STRONG; opts = {}; question = 2; store('question', 2); renderQuestions(); renderLibrary(); updateCount(); readNow(); });
+$('sample-weak').addEventListener('click', () => { $('src').value = SAMPLE_WEAK; opts = {}; question = 2; store('question', 2); renderQuestions(); renderLibrary(); updateCount(); readNow(); });
+$('clear').addEventListener('click', () => { $('src').value = ''; opts = {}; updateCount(); $('reading').classList.remove('on'); store('essay', ''); $('src').focus(); });
+$('th-pick').addEventListener('change', e => { const v = e.target.value; opts.thesisIndex = v === '' ? undefined : Number(v); readNow(); });
+$('th-len').addEventListener('change', e => { const v = e.target.value; opts.thesisLength = v === '' ? undefined : Number(v); readNow(); });
+$('toggle-all').addEventListener('click', e => { const on = $('essay').classList.toggle('show-all'); e.target.textContent = on ? 'Close every card' : 'Open every card'; });
+$('print').addEventListener('click', () => { $('essay').classList.add('show-all'); window.print(); });
+$('copy-report').addEventListener('click', async () => {
+  if (!current) return;
+  const txt = report(current);
+  try { await navigator.clipboard.writeText(txt); $('tool-note').textContent = 'Report copied.'; }
+  catch (e) {
+    let ta = document.getElementById('copy-fallback');
+    if (!ta) { ta = document.createElement('textarea'); ta.id = 'copy-fallback'; ta.className = 'copy-fallback'; ta.readOnly = true; $('reading').insertBefore(ta, $('legend')); }
+    ta.value = txt; ta.select(); $('tool-note').textContent = 'Copy from the box below.';
+  }
+  setTimeout(() => { $('tool-note').textContent = ''; }, 4000);
+});
+$('src').addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') readNow(); });
+
+/* ---------------- classroom pack: private samples with official scores and commentary */
+let pack = null, packPick = null;
+try { pack = JSON.parse(recall('pack') || 'null'); } catch (e) { pack = null; }
+function renderPack() {
+  const chips = $('pack-chips');
+  $('pack-clear').hidden = !pack;
+  if (!pack || !Array.isArray(pack.samples)) { chips.innerHTML = ''; $('commentary-pane') && $('commentary-pane').remove(); return; }
+  chips.innerHTML = `<span class="note" style="align-self:center">${esc(pack.title || 'Classroom pack')}${pack.year ? ' · ' + esc(String(pack.year)) : ''}${pack.question ? ' · Q' + esc(String(pack.question)) : ''}:</span>` + pack.samples.map((x, i) => `<button type="button" class="chip ${packPick === i ? 'on' : ''}" data-i="${i}">${esc(x.label || 'Sample ' + (i + 1))}${x.score != null ? ` <small>score ${esc(String(x.score))}</small>` : ''}</button>`).join('');
+  chips.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => loadSample(Number(b.dataset.i))));
+}
+function loadSample(i) {
+  const x = pack.samples[i]; if (!x) return;
+  packPick = i;
+  if (pack.question && [1, 2, 3].includes(Number(pack.question))) { question = Number(pack.question); store('question', question); renderQuestions(); }
+  if (pack.year && LIB.years[pack.year]) { libYear = String(pack.year); store('year', libYear); }
+  renderLibrary();
+  $('src').value = x.text || ''; updateCount();
+  $('official').value = x.score != null ? String(x.score) : '';
+  const pane = $('passage-pane');
+  pane.style.display = ''; $('side').style.gridTemplateColumns = '';
+  let c = $('commentary-pane');
+  if (!c) { c = document.createElement('div'); c.id = 'commentary-pane'; c.className = 'commentary'; pane.prepend(c); }
+  c.innerHTML = `<h4>Official commentary · ${esc(x.label || 'Sample ' + (i + 1))}${x.score != null ? ` · score ${esc(String(x.score))}` : ''}${x.rows ? ` · rows ${esc(String(x.rows))}` : ''}</h4>${esc(x.commentary || 'No commentary in this pack for this sample.')}`;
+  renderPack();
+  if (x.text) readNow();
+}
+$('pack-file').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (!data || !Array.isArray(data.samples)) throw new Error('no samples array');
+    pack = { title: String(data.title || f.name), year: data.year, question: data.question, samples: data.samples.slice(0, 40).map(x => ({ label: String(x.label || ''), score: x.score, rows: x.rows, text: String(x.text || ''), commentary: String(x.commentary || '') })) };
+    store('pack', JSON.stringify(pack)); packPick = null; renderPack();
+    $('status').textContent = `Pack loaded: ${pack.samples.length} sample${pack.samples.length === 1 ? '' : 's'}. Click one.`; $('status').classList.add('on');
+  } catch (err) { $('status').textContent = 'That file is not a pack: it needs a "samples" array. Download the template to see the shape.'; $('status').classList.add('on'); }
+  e.target.value = '';
+});
+$('pack-template').addEventListener('click', () => {
+  const tpl = { title: 'Period C · 2021 Q2 · Obama, Rosa Parks statue', year: 2021, question: 2, samples: [{ label: 'Sample A', score: 6, rows: '1-4-1', text: 'Paste the sample response here.', commentary: 'Paste the official scoring commentary for this sample here.' }, { label: 'Sample B', score: 3, rows: '1-2-0', text: '', commentary: '' }] };
+  const blob = new Blob([JSON.stringify(tpl, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'classroom-pack-template.json'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+});
+$('pack-clear').addEventListener('click', () => { pack = null; packPick = null; store('pack', ''); renderPack(); const c = $('commentary-pane'); if (c) c.remove(); renderLibrary(); });
+renderPack();
+
+const saved = recall('essay');
+if (saved) { $('src').value = saved; updateCount(); }
+$('passage-pane').style.display = 'none';
+})();
+</script>
+</body>
+</html>
