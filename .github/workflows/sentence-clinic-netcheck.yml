@@ -2,15 +2,13 @@ name: Sentence Clinic network checks
 
 # Everything here needs hosts the build sandbox cannot reach: College Board (links and exam PDFs),
 # the passage archives, the CDNs that serve Tesseract.js and pdf.js, and the live page. Run it by hand
-# from the Actions tab, or push to the branch named below while repairing the library.
+# from the Actions tab (workflow_dispatch) when repairing the library.
 on:
   workflow_dispatch:
     inputs:
       url:
         description: Page to drive in the live check
         default: https://splendorous-druid-db6a7a.netlify.app/sentence-clinic/
-  push:
-    branches: [claude/sentence-clinic-passages]
 
 jobs:
   netcheck:
