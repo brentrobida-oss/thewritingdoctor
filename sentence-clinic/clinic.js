@@ -251,29 +251,31 @@ function splitSentences(para, offset) {
 function flag(code, severity, label, note, extra) {
   return Object.assign({ code, severity, label, note }, extra || {});
 }
+/* These rewrite helpers turn a phrase into a space and then collapse whitespace. They rewrite prose for
+   display; they are not sanitizers, and every rewrite is HTML-escaped by the page before it reaches the DOM. */
 function stripHedges(s) {
   let out = s;
-  HEDGES.forEach(re => { out = out.replace(re, ''); });
+  HEDGES.forEach(re => { out = out.replace(re, ' '); });
   out = out.replace(/\s{2,}/g, ' ').replace(/\s+([,.;:!?])/g, '$1').trim();
   return cap(out);
 }
 function stripAnnouncement(s) {
   let out = s;
-  ANNOUNCE.forEach(re => { out = out.replace(re, ''); });
+  ANNOUNCE.forEach(re => { out = out.replace(re, ' '); });
   return cap(out.trim());
 }
 function stripOverclaims(s) {
-  return s.replace(/\b(?:clearly|obviously|undeniably|undoubtedly|unquestionably|definitely|absolutely|completely|totally|perfectly)\s+/gi, '')
-    .replace(/\bwithout\s+a\s+doubt,?\s*/gi, '').replace(/\bit\s+is\s+a\s+fact\s+that\s+/gi, '').replace(/\beveryone\s+knows\s+(?:that\s+)?/gi, '')
-    .replace(/\bno\s+one\s+can\s+deny\s+(?:that\s+)?/gi, '').replace(/\bproves\b/gi, 'suggests').replace(/\bproved\b/gi, 'suggested').replace(/\bproven\b/gi, 'suggested').replace(/\bprove\b/gi, 'suggest')
+  return s.replace(/\b(?:clearly|obviously|undeniably|undoubtedly|unquestionably|definitely|absolutely|completely|totally|perfectly)\s+/gi, ' ')
+    .replace(/\bwithout\s+a\s+doubt,?\s*/gi, ' ').replace(/\bit\s+is\s+a\s+fact\s+that\s+/gi, ' ').replace(/\beveryone\s+knows\s+(?:that\s+)?/gi, ' ')
+    .replace(/\bno\s+one\s+can\s+deny\s+(?:that\s+)?/gi, ' ').replace(/\bproves\b/gi, 'suggests').replace(/\bproved\b/gi, 'suggested').replace(/\bproven\b/gi, 'suggested').replace(/\bprove\b/gi, 'suggest')
     .replace(/\balways\b/gi, '[always? name the cases you can show]').replace(/\bnever\b/gi, '[never? name the cases you can show]')
     .replace(/\b(?:everyone|everybody|all\s+people|every\s+person)\b/gi, '[which people, exactly?]').replace(/\b(?:no\s+one|nobody)\b/gi, '[who, exactly, does not?]')
-    .replace(/\b(?:throughout\s+(?:all\s+of\s+)?history|since\s+the\s+(?:dawn|beginning)\s+of\s+(?:time|history|man(?:kind)?|humanity))\b,?\s*/gi, '')
+    .replace(/\b(?:throughout\s+(?:all\s+of\s+)?history|since\s+the\s+(?:dawn|beginning)\s+of\s+(?:time|history|man(?:kind)?|humanity))\b,?\s*/gi, ' ')
     .replace(/\s{2,}/g, ' ').replace(/\s+([,.;:!?])/g, '$1').trim();
 }
 function replaceVague(s) {
   return s.replace(/\b(?:a\s+lot\s+of|lots\s+of)\b/gi, '[how many? which?]').replace(/\bthings\b/gi, '[name them]').replace(/\bthing\b/gi, '[name it]').replace(/\bstuff\b/gi, '[name it]')
-    .replace(/\b(?:very|really|extremely|incredibly)\s+/gi, '').replace(/\b(?:today'?s\s+society|modern\s+society|in\s+today'?s\s+world|society)\b/gi, '[which group, institution, or era?]')
+    .replace(/\b(?:very|really|extremely|incredibly)\s+/gi, ' ').replace(/\b(?:today'?s\s+society|modern\s+society|in\s+today'?s\s+world|society)\b/gi, '[which group, institution, or era?]')
     .replace(/\b(?:many|some|most)\s+people\b/gi, '[who, specifically?]').replace(/\bpeople\b/gi, '[which people?]')
     .replace(/\b(?:huge|big)\b/gi, '[how large? give the measure]').replace(/\b(?:creates?\s+)?a\s+(?:sense|feeling|mood|tone)\s+of\b/gi, '[name the exact effect, not "a sense of"]')
     .replace(/\b(good|bad|great|interesting|important|powerful|effective|unique|relatable|impactful|meaningful)\b/gi, (m) => `[${m.toLowerCase()} in what precise respect?]`)
