@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Sentence Clinic</title>
+<meta name="description" content="Paste an analytical essay. Every sentence gets a job and a color; the thesis is checked for What, How, and Why; topic sentences for What and How; the conclusion for its return to the Why. Each weak sentence gets a question, a rewrite, and a recommendation. Nothing leaves your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%236e2a2a'/%3E%3Cpath d='M6 22 L16 10 L26 22' fill='none' stroke='%23c0a05c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+Sans+SC:wght@500;700&display=swap">
+<style>
+:root{
+  --paper:#F5F5F2; --leaf:#FCFCFA; --ink:#1B1D23; --ink-2:#4B4F59; --ink-3:#686C76;
+  --rule:#DCDDD7; --rule-strong:#BEC0B9;
+  --accent:#6E2A2A; --accent-ink:#FFFFFF; --accent-soft:#F1E4E1;
+  --rigor:#B3261E; --precision:#B45309; --structure:#1D4ED8; --style:#6B7280;
+  --thesis:#C9A227; --thesis-tint:rgba(201,162,39,.20);
+  --topic:#2F55B5; --topic-tint:rgba(47,85,181,.13);
+  --evidence:#1E6B5C; --evidence-tint:rgba(30,107,92,.13);
+  --analysis:#7C3AED; --analysis-tint:rgba(124,58,237,.11);
+  --summary:#8B6B4A; --summary-tint:rgba(139,107,74,.16);
+  --development:#686C76; --development-tint:rgba(104,108,118,.08);
+  --intro:#686C76; --intro-tint:transparent;
+  --conclusion:#0E7490; --conclusion-tint:rgba(14,116,144,.12);
+  --ok:#1E6B5C; --no:#B3261E; --part:#B45309;
+  --shadow:0 1px 2px rgba(27,29,35,.05),0 6px 18px rgba(27,29,35,.05);
+  --font-text:"Alegreya","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --font-gloss:"Alegreya Sans","Gill Sans","Segoe UI",system-ui,sans-serif;
+  --font-label:"Alegreya Sans SC","Alegreya Sans","Gill Sans",system-ui,sans-serif;
+  --t-xs:.8rem; --t-sm:.9rem; --t-md:1rem; --t-lg:1.14rem; --t-xl:clamp(1.55rem,3vw,2.1rem); --t-2xl:clamp(2rem,4.4vw,2.8rem);
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15171C; --leaf:#1C1F26; --ink:#E8E6E0; --ink-2:#B9B8B2; --ink-3:#8E8E8A;
+    --rule:#2D3139; --rule-strong:#434852;
+    --accent:#C9887F; --accent-ink:#1A0F0E; --accent-soft:#3A2321;
+    --rigor:#F07167; --precision:#F59E0B; --structure:#7FA2FF; --style:#9CA3AF;
+    --thesis:#E3BE4A; --thesis-tint:rgba(227,190,74,.22);
+    --topic:#7F9CF5; --topic-tint:rgba(127,156,245,.20);
+    --evidence:#5FB3A0; --evidence-tint:rgba(95,179,160,.20);
+    --analysis:#B794F6; --analysis-tint:rgba(183,148,246,.18);
+    --summary:#C4A484; --summary-tint:rgba(196,164,132,.22);
+    --development:#9CA3AF; --development-tint:rgba(156,163,175,.10);
+    --conclusion:#5EC2D9; --conclusion-tint:rgba(94,194,217,.18);
+    --ok:#5FB3A0; --no:#F07167; --part:#F59E0B;
+    --shadow:none; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15171C; --leaf:#1C1F26; --ink:#E8E6E0; --ink-2:#B9B8B2; --ink-3:#8E8E8A;
+  --rule:#2D3139; --rule-strong:#434852;
+  --accent:#C9887F; --accent-ink:#1A0F0E; --accent-soft:#3A2321;
+  --rigor:#F07167; --precision:#F59E0B; --structure:#7FA2FF; --style:#9CA3AF;
+  --thesis:#E3BE4A; --thesis-tint:rgba(227,190,74,.22);
+  --topic:#7F9CF5; --topic-tint:rgba(127,156,245,.20);
+  --evidence:#5FB3A0; --evidence-tint:rgba(95,179,160,.20);
+  --analysis:#B794F6; --analysis-tint:rgba(183,148,246,.18);
+  --summary:#C4A484; --summary-tint:rgba(196,164,132,.22);
+  --development:#9CA3AF; --development-tint:rgba(156,163,175,.10);
+  --conclusion:#5EC2D9; --conclusion-tint:rgba(94,194,217,.18);
+  --ok:#5FB3A0; --no:#F07167; --part:#F59E0B;
+  --shadow:none; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-gloss);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 64px}
+.mast{padding:28px 0 18px;border-bottom:1px solid var(--rule);display:grid;gap:8px}
+.mast .home{font-family:var(--font-label);font-weight:700;letter-spacing:.14em;font-size:var(--t-xs);color:var(--ink-3);text-decoration:none}
+.mast h1{margin:0;font-family:var(--font-text);font-style:italic;font-weight:500;font-size:var(--t-2xl);line-height:1.02;letter-spacing:-.01em}
+.mast .tagline{margin:4px 0 0;color:var(--ink-2);max-width:66ch;font-size:var(--t-lg);line-height:1.45}
+.btn{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:6px 13px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);color:var(--ink);font-size:var(--t-sm);font-weight:500;line-height:1.2;text-align:left}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700;padding-inline:18px}
+.btn.small{min-height:30px;padding:4px 10px;font-size:var(--t-xs)}
+.btn.quiet{background:transparent}
+.btn:focus-visible,.sent:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.label{font-family:var(--font-label);font-weight:700;font-size:var(--t-xs);letter-spacing:.07em;color:var(--ink-3);margin:0}
+.note{font-size:var(--t-sm);color:var(--ink-3);margin:0}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+/* composer */
+.composer{display:grid;gap:14px;padding:22px 0}
+.composer h2{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-xl)}
+#src{display:block;width:100%;min-height:14rem;resize:vertical;padding:14px 16px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);font-family:var(--font-text);font-size:1.06rem;line-height:1.55}
+#src::placeholder{color:var(--ink-3)}
+.count{font-variant-numeric:tabular-nums;font-size:var(--t-sm);color:var(--ink-3)}
+.privacy{font-size:var(--t-sm);color:var(--ink-2);margin:0;max-width:75ch}
+/* reading */
+.reading{display:none;gap:26px;padding-top:8px}
+.reading.on{display:grid}
+.summary{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:baseline;padding:14px 18px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
+.summary .big{font-family:var(--font-text);font-size:1.5rem;font-weight:500;line-height:1}
+.summary .stat{display:grid;gap:2px}
+.summary .stat b{font-variant-numeric:tabular-nums;font-size:var(--t-lg)}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:26px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.pane{display:grid;gap:14px}
+.card{background:var(--leaf);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:grid;gap:10px;box-shadow:var(--shadow)}
+.card h3{margin:0;font-family:var(--font-text);font-weight:500;font-size:1.25rem}
+.card h4{margin:0;font-family:var(--font-label);font-weight:700;font-size:var(--t-xs);letter-spacing:.07em;color:var(--ink-3)}
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:var(--t-sm);color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:3px;border:1px solid var(--rule-strong)}
+.ul{display:inline-block;width:22px;height:0;border-bottom:3px solid}
+/* essay */
+.essay{font-family:var(--font-text);font-size:1.12rem;line-height:1.7}
+.para{margin:0 0 18px;position:relative}
+.para .pkind{font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.08em;color:var(--ink-3);display:block;margin-bottom:4px}
+.sent{display:inline;border:0;padding:1px 2px;margin:0;border-radius:3px;background:var(--role-tint,transparent);font:inherit;line-height:inherit;text-align:left;color:inherit;border-bottom:3px solid transparent;cursor:pointer}
+.sent:hover{filter:brightness(.96)}
+.sent.rigor{border-bottom-color:var(--rigor)}
+.sent.precision{border-bottom-color:var(--precision)}
+.sent.structure{border-bottom-color:var(--structure)}
+.sent.style{border-bottom-color:var(--style);border-bottom-style:dotted}
+.sent.open{box-shadow:0 0 0 2px var(--accent)}
+.sent sup{font-family:var(--font-gloss);font-size:.62em;color:var(--ink-3);margin-right:2px;vertical-align:top;line-height:1}
+.sent .n{display:inline-block;min-width:1.2em;padding:0 .3em;margin-left:3px;border-radius:999px;background:var(--ink);color:var(--paper);font-family:var(--font-gloss);font-size:.62em;font-weight:700;vertical-align:middle;line-height:1.5}
+.sent.thesis{--role-tint:var(--thesis-tint)}
+.sent.topic{--role-tint:var(--topic-tint)}
+.sent.evidence{--role-tint:var(--evidence-tint)}
+.sent.analysis{--role-tint:var(--analysis-tint)}
+.sent.summary{--role-tint:var(--summary-tint)}
+.sent.development{--role-tint:var(--development-tint)}
+.sent.conclusion{--role-tint:var(--conclusion-tint)}
+.sent.echo{text-decoration:underline;text-decoration-color:var(--thesis);text-decoration-thickness:2px;text-underline-offset:3px}
+/* detail cards */
+.detail{display:none;margin:10px 0 18px;font-family:var(--font-gloss);font-size:var(--t-md);line-height:1.5}
+.detail.on,.show-all .detail{display:grid}
+.detail .role{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-label);font-weight:700;letter-spacing:.07em;font-size:var(--t-xs)}
+.detail .role i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;border:1px solid var(--rule-strong);font-size:var(--t-xs);font-weight:700;font-family:var(--font-label);letter-spacing:.05em}
+.chip.ok{border-color:var(--ok);color:var(--ok)}
+.chip.no{border-color:var(--no);color:var(--no)}
+.chip.part{border-color:var(--part);color:var(--part)}
+.chip small{font-family:var(--font-gloss);font-weight:400;letter-spacing:0;color:var(--ink-2);text-transform:none}
+.flag{display:grid;gap:6px;padding:10px 12px 12px;border-left:3px solid var(--sev);border-radius:0 var(--radius) var(--radius) 0;background:var(--paper)}
+.flag .fh{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.flag .fh b{color:var(--sev)}
+.flag .fh .sev{font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.06em;color:var(--ink-3)}
+.flag .fnote{margin:0;color:var(--ink-2)}
+.qrr{display:grid;gap:6px;margin:0;padding:0}
+.qrr div{display:grid;grid-template-columns:5.2em minmax(0,1fr);gap:8px;align-items:start}
+.qrr dt{font-family:var(--font-label);font-weight:700;letter-spacing:.06em;font-size:var(--t-xs);color:var(--ink-3);padding-top:3px}
+.qrr dd{margin:0}
+.qrr dd.rw{font-family:var(--font-text);font-size:1.05rem}
+.slot{background:var(--thesis-tint);border-radius:3px;padding:0 3px;font-style:italic}
+.fine{margin:0;color:var(--ok);font-weight:500}
+/* spine */
+.spine .th{font-family:var(--font-text);font-size:1.08rem;line-height:1.55;margin:0;padding:10px 12px;border-radius:var(--radius);background:var(--thesis-tint)}
+.check{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.check li{display:grid;grid-template-columns:1.4em minmax(0,1fr);gap:8px;align-items:baseline}
+.check li b{font-weight:700;font-family:var(--font-gloss)}
+.check li.ok b{color:var(--ok)} .check li.no b{color:var(--no)} .check li.part b{color:var(--part)}
+.topics{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.topics li{display:grid;gap:6px;padding:10px 12px;border-radius:var(--radius);background:var(--topic-tint)}
+.topics li p{margin:0;font-family:var(--font-text);font-size:1.02rem}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px;align-items:center;font-size:var(--t-sm)}
+.bar .track{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--rule)}
+.bar .track span{display:block;height:100%}
+.bar .track .ev{background:var(--evidence)} .bar .track .an{background:var(--analysis)} .bar .track .su{background:var(--summary)} .bar .track .de{background:var(--development)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tools select{min-height:30px;padding:3px 8px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);font-size:var(--t-xs)}
+.copy-fallback{width:100%;min-height:8rem;font-family:ui-monospace,Menlo,monospace;font-size:.8rem;padding:8px;border:1px solid var(--rule-strong);border-radius:6px;background:var(--paper)}
+.status{display:none;padding:10px 14px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf);font-size:var(--t-sm)}
+.status.on{display:block}
+.foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--rule);color:var(--ink-3);font-size:var(--t-sm);display:grid;gap:4px}
+@media print{
+  .composer,.tools,.mast .home,.foot .noprint{display:none!important}
+  .reading{display:grid!important}
+  .detail{display:grid!important}
+  .grid{grid-template-columns:1fr}
+  .sent{border-bottom-width:2px}
+  body{background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast">
+  <a class="home" href="../">THE WRITING DOCTOR</a>
+  <h1>The Sentence Clinic</h1>
+  <p class="tagline">Paste an analytical essay. Every sentence gets a job and a color. The thesis is read for its <b>What</b>, <b>How</b>, and <b>Why</b>; every topic sentence for its What and How; the conclusion for its return to the Why. Each sentence that falls short gets a question, a rewrite with the blanks left for you, and one recommendation.</p>
+</header>
+
+<section class="composer" aria-labelledby="composer-h">
+  <h2 id="composer-h">The essay</h2>
+  <textarea id="src" spellcheck="false" placeholder="Paste the whole essay here. One paragraph per line is fine; blank lines between paragraphs are fine too."></textarea>
+  <div class="row">
+    <button class="btn primary" id="read">Read the essay</button>
+    <button class="btn" id="sample-strong">Load a strong sample</button>
+    <button class="btn" id="sample-weak">Load a weak sample</button>
+    <button class="btn quiet" id="clear">Clear</button>
+    <span class="count" id="count"></span>
+  </div>
+  <p class="privacy">Nothing leaves your browser. The reading is a set of rules about English sentences, not a judge: it can be wrong, and when it is, the question it asks is still worth answering.</p>
+</section>
+
+<div class="status" id="status" role="status"></div>
+
+<section class="reading" id="reading" aria-live="polite">
+  <div class="summary" id="summary"></div>
+  <div class="tools">
+    <label class="label" for="th-pick">Thesis</label>
+    <select id="th-pick"></select>
+    <select id="th-len"><option value="">one or two sentences, as read</option><option value="1">one sentence</option><option value="2">two sentences</option></select>
+    <button class="btn small" id="toggle-all">Open every card</button>
+    <button class="btn small" id="copy-report">Copy the report</button>
+    <button class="btn small" id="print">Print</button>
+    <span class="note" id="tool-note"></span>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="grid">
+    <div class="pane">
+      <div class="card">
+        <h3>The essay, sentence by sentence</h3>
+        <p class="note">Click any sentence for its card. The tint is the sentence's job; the underline is the kind of trouble; the number is how many flags.</p>
+        <div class="essay" id="essay"></div>
+      </div>
+    </div>
+    <div class="pane spine" id="spine"></div>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>The Sentence Clinic is one of The Writing Doctor's tools, beside <a href="../claims-reader/">The Claims Reader</a>.</span>
+  <span class="noprint">Brent Robida, PhD &middot; <a href="../">thewritingdoctor</a></span>
+</footer>
+</div>
+
+<script src="clinic.js"></script>
+<script>
+(function () {
+'use strict';
+const C = window.SentenceClinic;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const slots = s => esc(s).replace(/\[([^\]]+)\]/g, '<span class="slot">[$1]</span>');
+const SAMPLE_STRONG = `In the closing scene of The Great Gatsby, Nick Carraway stands on the lawn where Gatsby once reached toward a green light. Fitzgerald's final page insists that the American dream is a form of nostalgia rather than a form of hope, exposing this reversal through the novel's shifting tenses and its recurring image of the receding light. The novel does so in order to warn that a nation which looks forward only by looking back cannot see the people it tramples in the present.
+
+Fitzgerald's tenses carry the reversal before any character names it, since the narration slides from the past of Gatsby's death into a future that is grammatically already gone. Nick describes a dream "already behind him, somewhere back in that vast obscurity beyond the city" (180). The word "already" does the work: the future Gatsby strains toward has been placed in the past before he can reach it. Hope that is already behind a man is memory wearing hope's clothes, and the sentence makes the reader feel the substitution in its grammar. Nostalgia, in this novel, is not a mood but a tense.
+
+The green light exposes the same reversal through its steady retreat from the man who watches it. When Nick first sees Gatsby, the light is a destination; by the final page it is "the orgastic future that year by year recedes before us" (180). The pronoun "us" widens Gatsby's private longing into a national one, and the verb "recedes" denies the pursuit any end. A light that moves away as fast as one approaches is not a goal but a horizon, and Fitzgerald's syntax, which postpones the verb to the end of the clause, enacts the delay it describes. The dream's receding is the novel's final word on the American promise.
+
+What the novel finally asks is whether a nation can afford a dream that faces backward. Gatsby's longing trampled Myrtle, used Daisy, and erased his own father, and the final page implies that a country which worships a receding light will keep producing such wreckage. Nostalgia dressed as hope is dangerous precisely because it feels like virtue. If the American dream is memory rather than promise, then the people in the present are the cost, and Fitzgerald's reversed tenses are the warning we are still too hopeful to hear.`;
+const SAMPLE_WEAK = `Since the dawn of time, people have always wanted things they can't have. In today's society this is very relatable. The Great Gatsby by F. Scott Fitzgerald is about a man named Gatsby who wants Daisy. In this essay I will discuss how the book shows that the American dream is bad.
+
+Gatsby throws huge parties. He bought a big house across from Daisy and then he waited for her to show up. One day he finally meets her again through Nick. "He stretched out his arms toward the dark water in a curious way" (20). This shows that he really wants something. I think this proves that the American dream is unattainable because people can't attain it.
+
+Society tells us that money brings happiness. Gatsby is seen as a successful man. He has a lot of money and stuff but he is not happy. Myrtle dies and then Gatsby dies. Isn't it ironic that he had everything? This leads to his downfall.
+
+In conclusion, the book shows that the American dream is bad. People should be happy with what they have. Fitzgerald clearly shows that wanting things is bad and everyone should learn from Gatsby.`;
+
+const ROLE_ORDER = ['thesis', 'topic', 'evidence', 'analysis', 'summary', 'development', 'conclusion'];
+let current = null;
+let opts = {};
+
+function store(k, v) { try { localStorage.setItem('sentence-clinic:' + k, v); } catch (e) {} }
+function recall(k) { try { return localStorage.getItem('sentence-clinic:' + k); } catch (e) { return null; } }
+
+function updateCount() {
+  const t = $('src').value;
+  const w = (t.match(/[A-Za-z][A-Za-z'’-]*/g) || []).length;
+  $('count').textContent = w ? `${w} words` : '';
+}
+
+function worst(flags) {
+  const order = ['rigor', 'structure', 'precision', 'style'];
+  let w = null;
+  flags.forEach(f => { if (w == null || order.indexOf(f.severity) < order.indexOf(w)) w = f.severity; });
+  return w;
+}
+
+function chip(label, ok, detail, partial) {
+  return `<span class="chip ${ok ? 'ok' : (partial ? 'part' : 'no')}">${ok ? '✓' : (partial ? '~' : '✗')} ${esc(label)}${detail ? ` <small>${esc(detail)}</small>` : ''}</span>`;
+}
+
+function flagHtml(f) {
+  const sev = C.SEVERITIES[f.severity];
+  return `<div class="flag" style="--sev:var(--${f.severity})">
+    <div class="fh"><b>${esc(f.label)}</b><span class="sev">${esc(sev ? sev.label : f.severity)}</span></div>
+    <p class="fnote">${esc(f.note)}</p>
+    <dl class="qrr">
+      ${f.question ? `<div><dt>Ask</dt><dd>${esc(f.question)}</dd></div>` : ''}
+      ${f.rewrite ? `<div><dt>Rewrite</dt><dd class="rw">${slots(f.rewrite)}</dd></div>` : ''}
+      ${f.recommend ? `<div><dt>Do</dt><dd>${esc(f.recommend)}</dd></div>` : ''}
+    </dl>
+  </div>`;
+}
+
+function sentenceCard(s, r) {
+  const role = C.ROLES[s.role] || C.ROLES.development;
+  let chips = '';
+  if (s.role === 'thesis' && r.thesis) {
+    const th = r.thesis;
+    chips = `<div class="chips">${chip('What', th.what.ok && th.what.strong, th.what.verbs && th.what.verbs[0] ? `verb: ${th.what.verbs[0]}` : (th.what.about ? 'topic, not claim' : ''), th.what.ok)}${chip('How', th.how.ok, th.how.devices.length ? th.how.devices.slice(0, 3).join(', ') : (th.how.byReason ? 'by reasons' : (th.how.means || '')))}${chip('Why', th.why.ok, th.why.marker ? `"${th.why.marker}"` : '')}${chip('Two sentences', th.twoSentence)}</div>`;
+  }
+  if (s.topic) {
+    const t = s.topic;
+    chips = `<div class="chips">${chip('What', t.what.ok && t.what.strong, t.what.verbs && t.what.verbs[0] ? `verb: ${t.what.verbs[0]}` : '', t.what.ok)}${chip('How', t.how.ok, t.how.devices.length ? t.how.devices.slice(0, 3).join(', ') : (t.how.means || ''))}${chip('Tied to thesis', t.link.length > 0, t.link.length ? `shares: ${t.link.slice(0, 3).join(', ')}` : '')}</div>`;
+  }
+  const flags = (s.role === 'thesis' && r.thesis && r.thesis.indexes[0] === s.index) ? r.thesis.flags.concat(s.flags) : s.flags;
+  const extra = (s.role === 'thesis' && r.thesis && r.thesis.indexes[0] === s.index && r.thesis.flags.length) ? `<div class="flag" style="--sev:var(--structure)"><div class="fh"><b>Thesis, rebuilt</b><span class="sev">Spine</span></div><dl class="qrr"><div><dt>Rewrite</dt><dd class="rw">${slots(r.thesis.rewrite)}</dd></div></dl></div>` : '';
+  const echo = s.echoesWhy ? `<p class="fine">This sentence returns to the Why${r.conclusion.bestEcho && r.conclusion.bestEcho.length ? ` (shared terms: ${esc(r.conclusion.bestEcho.join(', '))})` : ''}.</p>` : '';
+  return `<div class="detail card" id="d${s.index}" style="--c:var(--${s.role})">
+    <div class="role"><i></i>${esc(role.label)} <span class="note">${esc(role.note)}</span></div>
+    ${chips}${echo}
+    ${flags.length ? flags.map(flagHtml).join('') + extra : '<p class="fine">Nothing to flag in this sentence.</p>'}
+  </div>`;
+}
+
+function render(r) {
+  current = r;
+  const reading = $('reading');
+  reading.classList.add('on');
+  // summary
+  $('summary').innerHTML = `
+    <div class="stat"><span class="label">Spine</span><span class="big">${r.passed}<span class="note">/10</span></span></div>
+    <div class="stat"><span class="label">Sentences</span><b>${r.totals.sentences}</b></div>
+    <div class="stat"><span class="label">Analysis</span><b style="color:var(--analysis)">${r.totals.analysis}</b></div>
+    <div class="stat"><span class="label">Evidence</span><b style="color:var(--evidence)">${r.totals.evidence}</b></div>
+    <div class="stat"><span class="label">Summary</span><b style="color:var(--summary)">${r.totals.summary}</b></div>
+    <div class="stat"><span class="label">Rigor flags</span><b style="color:var(--rigor)">${r.totals.rigor}</b></div>
+    <div class="stat"><span class="label">Precision flags</span><b style="color:var(--precision)">${r.totals.precision}</b></div>
+    <div class="stat"><span class="label">All flags</span><b>${r.totals.flags}</b></div>`;
+  // legend
+  $('legend').innerHTML = ROLE_ORDER.map(k => `<span><i class="sw" style="background:var(--${k}-tint);border-color:var(--${k})"></i>${esc(C.ROLES[k].label)}</span>`).join('') +
+    ['rigor', 'precision', 'structure', 'style'].map(k => `<span><i class="ul" style="border-color:var(--${k});${k === 'style' ? 'border-bottom-style:dotted' : ''}"></i>${esc(C.SEVERITIES[k].label)}</span>`).join('');
+  // thesis picker
+  const pick = $('th-pick');
+  pick.innerHTML = '<option value="">as read</option>' + r.sentences.filter(s => s.para === 0).map(s => `<option value="${s.index}" ${opts.thesisIndex === s.index ? 'selected' : ''}>sentence ${s.index + 1}: ${esc(s.text.slice(0, 48))}${s.text.length > 48 ? '…' : ''}</option>`).join('');
+  $('th-len').value = opts.thesisLength ? String(opts.thesisLength) : '';
+  // essay
+  const essay = $('essay');
+  essay.innerHTML = r.paragraphs.map(pg => {
+    const ss = pg.sentences.map(i => r.sentences[i]);
+    const kind = pg.kind === 'intro' ? 'Introduction' : (pg.kind === 'conclusion' ? 'Conclusion' : `Body paragraph ${pg.index}`);
+    const spans = ss.map(s => {
+      const n = s.flags.length + ((s.role === 'thesis' && r.thesis && r.thesis.indexes[0] === s.index) ? r.thesis.flags.length : 0);
+      const w = worst(s.flags.concat((s.role === 'thesis' && r.thesis && r.thesis.indexes[0] === s.index) ? r.thesis.flags : []));
+      return `<button class="sent ${s.role} ${w || ''} ${s.echoesWhy ? 'echo' : ''}" data-i="${s.index}" aria-expanded="false" aria-controls="d${s.index}" title="${esc(C.ROLES[s.role].label)}${n ? `, ${n} flag${n === 1 ? '' : 's'}` : ''}"><sup>${s.index + 1}</sup>${esc(s.text)}${n ? `<span class="n">${n}</span>` : ''}</button>`;
+    }).join(' ');
+    const cards = ss.map(s => sentenceCard(s, r)).join('');
+    const pgNote = pg.kind === 'body' ? [pg.summaryHeavy ? 'summary-heavy' : '', pg.noEvidence ? 'no evidence quoted' : '', pg.closesLoop === false ? 'does not close the loop' : ''].filter(Boolean).join(' · ') : '';
+    return `<div class="para"><span class="pkind">${esc(kind)}${pgNote ? ` · <span style="color:var(--rigor)">${esc(pgNote)}</span>` : ''}</span><p style="margin:0">${spans}</p>${cards}</div>`;
+  }).join('');
+  essay.querySelectorAll('.sent').forEach(b => b.addEventListener('click', () => {
+    const d = $('d' + b.dataset.i);
+    const on = d.classList.toggle('on');
+    b.classList.toggle('open', on);
+    b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }));
+  // spine
+  const th = r.thesis;
+  const topics = r.paragraphs.filter(p => p.kind === 'body');
+  $('spine').innerHTML = `
+    <div class="card">
+      <h3>The spine</h3>
+      <ul class="check">${r.checklist.map(c => `<li class="${c.ok ? 'ok' : (c.partial ? 'part' : 'no')}"><b>${c.ok ? '✓' : (c.partial ? '~' : '✗')}</b><span>${esc(c.label)}</span></li>`).join('')}</ul>
+    </div>
+    <div class="card">
+      <h3>Thesis</h3>
+      ${th ? `<p class="th">${th.sentences.map(s => esc(s.text)).join(' ')}</p>
+      <div class="chips">${chip('What', th.what.ok && th.what.strong, th.what.verbs && th.what.verbs[0] ? `verb: ${th.what.verbs[0]}` : (th.what.about ? 'topic, not claim' : ''), th.what.ok)}${chip('How', th.how.ok, th.how.devices.length ? th.how.devices.slice(0, 3).join(', ') : (th.how.byReason ? 'by reasons' : (th.how.means || '')))}${chip('Why', th.why.ok, th.why.marker ? `"${th.why.marker}"` : '')}${chip('Two sentences', th.twoSentence)}</div>
+      ${th.flags.length ? th.flags.map(flagHtml).join('') + `<div class="flag" style="--sev:var(--structure)"><div class="fh"><b>Thesis, rebuilt</b><span class="sev">Spine</span></div><dl class="qrr"><div><dt>Rewrite</dt><dd class="rw">${slots(th.rewrite)}</dd></div></dl></div>` : `<p class="fine">What, How, and Why are all present.</p><dl class="qrr"><div><dt>Ask</dt><dd>${esc(th.question)}</dd></div><div><dt>Do</dt><dd>${esc(th.recommend)}</dd></div></dl>`}` : '<p class="note">No introduction found.</p>'}
+    </div>
+    <div class="card">
+      <h3>Topic sentences</h3>
+      ${topics.length ? `<ul class="topics">${topics.map(p => { const s = r.sentences[p.sentences[0]]; const t = p.topic; return `<li><span class="label">Body paragraph ${p.index}</span><p>${esc(s.text)}</p><div class="chips">${chip('What', t.what.ok && t.what.strong, '', t.what.ok)}${chip('How', t.how.ok, t.how.devices.length ? t.how.devices.slice(0, 2).join(', ') : '')}${chip('Tied', t.link.length > 0, t.link.length ? t.link.slice(0, 2).join(', ') : '')}</div></li>`; }).join('')}</ul>` : '<p class="note">No body paragraphs found. Separate paragraphs with a line break.</p>'}
+    </div>
+    <div class="card">
+      <h3>Conclusion and the return to the Why</h3>
+      ${r.conclusion.sentences.length ? (r.conclusion.returns && !r.conclusion.copied ? `<p class="fine">The conclusion returns to the Why in new words${r.conclusion.bestEcho.length ? ` (shared terms: ${esc(r.conclusion.bestEcho.join(', '))})` : ''}. The echoing sentence is underlined in gold in the essay.</p>` : '') : ''}
+      ${r.conclusion.flags.length ? r.conclusion.flags.map(flagHtml).join('') : (r.conclusion.sentences.length ? '' : '<p class="note">No conclusion paragraph.</p>')}
+    </div>
+    <div class="card">
+      <h3>Paragraph balance</h3>
+      <p class="note">Evidence, analysis, summary, and development, as shares of each body paragraph.</p>
+      <div class="bars">${topics.map(p => { const c = p.counts; const tot = c.total || 1; const pct = n => (100 * n / tot).toFixed(1) + '%'; return `<div class="bar"><span>Paragraph ${p.index}</span><div class="track" title="evidence ${c.evidence}, analysis ${c.analysis}, summary ${c.summary}, other ${c.development}"><span class="ev" style="width:${pct(c.evidence)}"></span><span class="an" style="width:${pct(c.analysis)}"></span><span class="su" style="width:${pct(c.summary)}"></span><span class="de" style="width:${pct(c.development)}"></span></div></div>`; }).join('')}</div>
+      <div class="legend"><span><i class="sw" style="background:var(--evidence)"></i>Evidence</span><span><i class="sw" style="background:var(--analysis)"></i>Analysis</span><span><i class="sw" style="background:var(--summary)"></i>Summary</span><span><i class="sw" style="background:var(--development)"></i>Development</span></div>
+    </div>`;
+  reading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function readNow() {
+  const text = $('src').value;
+  const st = $('status');
+  if (!text.trim()) { st.textContent = 'Paste an essay first.'; st.classList.add('on'); return; }
+  st.classList.remove('on');
+  store('essay', text);
+  const r = C.read(text, opts);
+  if (!r.sentences.length) { st.textContent = 'No sentences found.'; st.classList.add('on'); return; }
+  render(r);
+}
+
+function report(r) {
+  const lines = [];
+  lines.push(`THE SENTENCE CLINIC · spine ${r.passed}/10 · ${r.totals.sentences} sentences · ${r.totals.flags} flags (${r.totals.rigor} rigor, ${r.totals.precision} precision)`);
+  lines.push('');
+  r.checklist.forEach(c => lines.push(`${c.ok ? '[x]' : (c.partial ? '[~]' : '[ ]')} ${c.label}`));
+  lines.push('');
+  if (r.thesis) {
+    lines.push('THESIS: ' + r.thesis.sentences.map(s => s.text).join(' '));
+    lines.push(`  What ${r.thesis.what.ok ? (r.thesis.what.strong ? 'yes' : 'weak verb') : 'no'} · How ${r.thesis.how.ok ? 'yes' : 'no'} · Why ${r.thesis.why.ok ? 'yes' : 'no'} · ${r.thesis.twoSentence ? 'two sentences' : 'one sentence'}`);
+    r.thesis.flags.forEach(f => { lines.push(`  - ${f.label}: ${f.note}`); lines.push(`      Ask: ${f.question}`); lines.push(`      Do: ${f.recommend}`); });
+    if (r.thesis.flags.length) lines.push('  Rewrite: ' + r.thesis.rewrite);
+    lines.push('');
+  }
+  r.sentences.forEach(s => {
+    if (!s.flags.length) return;
+    lines.push(`${s.index + 1}. [${C.ROLES[s.role].label}] ${s.text}`);
+    s.flags.forEach(f => { lines.push(`  - ${f.label} (${C.SEVERITIES[f.severity].label}): ${f.note}`); if (f.question) lines.push(`      Ask: ${f.question}`); if (f.rewrite) lines.push(`      Rewrite: ${f.rewrite}`); if (f.recommend) lines.push(`      Do: ${f.recommend}`); });
+  });
+  if (r.conclusion.flags.length) { lines.push(''); lines.push('CONCLUSION'); r.conclusion.flags.forEach(f => { lines.push(`  - ${f.label}: ${f.note}`); lines.push(`      Ask: ${f.question}`); if (f.rewrite) lines.push(`      Rewrite: ${f.rewrite}`); lines.push(`      Do: ${f.recommend}`); }); }
+  return lines.join('\n');
+}
+
+$('read').addEventListener('click', readNow);
+$('src').addEventListener('input', updateCount);
+$('sample-strong').addEventListener('click', () => { $('src').value = SAMPLE_STRONG; opts = {}; updateCount(); readNow(); });
+$('sample-weak').addEventListener('click', () => { $('src').value = SAMPLE_WEAK; opts = {}; updateCount(); readNow(); });
+$('clear').addEventListener('click', () => { $('src').value = ''; opts = {}; updateCount(); $('reading').classList.remove('on'); store('essay', ''); $('src').focus(); });
+$('th-pick').addEventListener('change', e => { const v = e.target.value; opts.thesisIndex = v === '' ? undefined : Number(v); readNow(); });
+$('th-len').addEventListener('change', e => { const v = e.target.value; opts.thesisLength = v === '' ? undefined : Number(v); readNow(); });
+$('toggle-all').addEventListener('click', e => { const on = $('essay').classList.toggle('show-all'); e.target.textContent = on ? 'Close every card' : 'Open every card'; });
+$('print').addEventListener('click', () => { $('essay').classList.add('show-all'); window.print(); });
+$('copy-report').addEventListener('click', async () => {
+  if (!current) return;
+  const txt = report(current);
+  try { await navigator.clipboard.writeText(txt); $('tool-note').textContent = 'Report copied.'; }
+  catch (e) {
+    let ta = document.getElementById('copy-fallback');
+    if (!ta) { ta = document.createElement('textarea'); ta.id = 'copy-fallback'; ta.className = 'copy-fallback'; ta.readOnly = true; $('reading').insertBefore(ta, $('legend')); }
+    ta.value = txt; ta.select(); $('tool-note').textContent = 'Copy from the box below.';
+  }
+  setTimeout(() => { $('tool-note').textContent = ''; }, 4000);
+});
+$('src').addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') readNow(); });
+
+const saved = recall('essay');
+if (saved) { $('src').value = saved; updateCount(); }
+})();
+</script>
+</body>
+</html>
