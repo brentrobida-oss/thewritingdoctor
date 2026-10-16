@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Reading Room</title>
+<meta name="description" content="Every AP English Language free-response prompt from 2014 to 2025, with the public-domain passages in full and links to College Board's released files, on one page.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%236e2a2a'/%3E%3Cpath d='M6 22 L16 10 L26 22' fill='none' stroke='%23c0a05c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --paper:#F5F5F2; --leaf:#FCFCFA; --ink:#1B1D23; --ink-2:#4B4F59; --ink-3:#686C76;
+  --rule:#DCDDD7; --rule-strong:#BEC0B9;
+  --accent:#6E2A2A; --accent-ink:#FFFFFF; --accent-soft:#F1E4E1;
+  --font-text:"Alegreya","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --font-gloss:"Alegreya Sans","Gill Sans","Segoe UI",system-ui,sans-serif;
+  --font-label:"Alegreya Sans SC","Alegreya Sans","Gill Sans",system-ui,sans-serif;
+  --t-xs:.8rem; --t-sm:.9rem; --t-lg:1.14rem; --t-xl:clamp(1.55rem,3vw,2.1rem);
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --paper:#15171C; --leaf:#1C1F26; --ink:#ECEDEA; --ink-2:#B9BCC4; --ink-3:#8C9099; --rule:#2B2F38; --rule-strong:#3B404B; --accent:#D99A8B; --accent-ink:#1B1D23; --accent-soft:#3A2A2A; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-gloss);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 64px}
+header{padding:28px 0 10px;border-bottom:1px solid var(--rule)}
+header h1{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-xl)}
+header p{margin:6px 0 0;color:var(--ink-2);max-width:70ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 16px;margin:12px 0 0;font-size:var(--t-sm);color:var(--ink-2)}
+nav.years{display:flex;flex-wrap:wrap;gap:6px;padding:16px 0}
+nav.years a{display:inline-block;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;text-decoration:none;color:var(--ink);background:var(--leaf);font-size:var(--t-sm)}
+section.year{padding:22px 0 6px;border-top:1px solid var(--rule)}
+section.year h2{margin:0 0 4px;font-family:var(--font-text);font-weight:500;font-size:1.6rem}
+section.year .note{margin:0 0 10px;color:var(--ink-3);font-size:var(--t-sm)}
+article.q{margin:14px 0 22px;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
+article.q h3{margin:0 0 8px;font-family:var(--font-label);font-weight:700;letter-spacing:.08em;font-size:var(--t-sm);color:var(--accent)}
+.prompt{font-family:var(--font-text);font-size:1.05rem;line-height:1.55}
+.prompt p{margin:0 0 8px}
+.prompt .intro{font-style:italic;color:var(--ink-2)}
+.prompt ul{margin:0 0 8px;padding-left:1.3em}
+.prompt .restated{font-family:var(--font-gloss);font-size:var(--t-xs);color:var(--ink-3)}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.links a{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;font-size:var(--t-xs);text-decoration:none;background:var(--paper);color:var(--ink)}
+.links a.clinic{border-color:var(--accent);color:var(--accent)}
+.passage{margin-top:14px;padding:14px 16px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--paper);font-family:var(--font-text);font-size:1.02rem;line-height:1.6;white-space:pre-wrap}
+.passage h4{margin:0 0 8px;font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.08em;color:var(--ink-3);white-space:normal}
+.passage .how{margin:0 0 10px;font-family:var(--font-gloss);font-size:var(--t-xs);color:var(--ink-3);white-space:normal}
+.passage.pending{font-family:var(--font-gloss);font-size:var(--t-sm);color:var(--ink-2)}
+footer{padding:24px 0 0;color:var(--ink-3);font-size:var(--t-sm)}
+@media print{ nav.years, .links a.clinic{display:none} article.q{break-inside:avoid} body{background:#fff;color:#000} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>The Reading Room</h1>
+  <p>Every AP English Language free-response prompt in the Sentence Clinic's library, year by year, with the passages that are in the public domain printed in full. Open any prompt in the Clinic to read an essay against it.</p>
+  <div class="meta" id="meta"></div>
+</header>
+<nav class="years" id="years" aria-label="Years"></nav>
+<main id="main"></main>
+<footer>Prompts are restated from College Board's released questions; the requirement list is College Board's standard wording. Passage texts come from the archives named beside each one. <a href="./">Back to the Sentence Clinic</a>.</footer>
+</div>
+<script src="aplang.js"></script>
+<script src="library.js"></script>
+<script>
+const LIB = window.APLibrary, Q = window.APLang.QUESTIONS;
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const years = Object.keys(LIB.years).map(Number).sort((a, b) => b - a);
+let prompts = 0, withText = 0;
+const tpl = LIB.templates || {};
+const main = document.getElementById('main');
+let html = '';
+for (const y of years) {
+  const Y = LIB.years[y];
+  html += `<section class="year" id="y${y}"><h2>${y}</h2>${Y.note ? `<p class="note">${esc(Y.note)}</p>` : ''}`;
+  for (const k of [1, 2, 3]) {
+    const e = Y['q' + k]; if (!e) continue;
+    prompts++;
+    const t = tpl[k];
+    const links = (e.urls || []).map(u => `<a href="${esc(u.url)}" target="_blank" rel="noopener">${esc(u.label)} ↗</a>`).join('');
+    html += `<article class="q" id="y${y}-q${k}"><h3>Q${k} ${esc(Q[k].name)}</h3><div class="prompt">${e.intro ? `<p class="intro">${esc(e.intro)}</p>` : ''}${t ? `<p>${esc(t.lead)} <b>${esc(e.task || e.topic || '')}</b></p><p>In your response you should do the following:</p><ul>${t.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul><p class="restated">Task sentence restated from the official question; the requirement list is College Board's wording.</p>` : `<p><b>${esc(e.task || e.topic || '')}</b></p>`}</div><div class="links"><a class="clinic" href="./?q=${k}&year=${y}">Open in the Clinic</a>${links || `<a href="${esc(LIB.index)}" target="_blank" rel="noopener">find this year at College Board ↗</a>`}</div>`;
+    if (k === 2) {
+      for (const p of (LIB.passages || []).filter(p => String(p.year) === String(y))) {
+        const head = `${esc(p.author)}${p.title ? ', ' + esc(p.title) : ''}${p.date ? ' (' + esc(p.date) + ')' : ''}`;
+        if (p.text) { withText++; html += `<div class="passage"><h4>The passage · ${head}${p.text_source ? ` · <a href="${esc(p.text_source)}" target="_blank" rel="noopener">source ↗</a>` : ''}</h4>${p.excerpt ? `<p class="how">${esc(p.excerpt)}</p>` : ''}${esc(p.text)}</div>`; }
+        else html += `<div class="passage pending"><h4>The passage · ${head}</h4>Not in the public domain, so not printed here. Read it in College Board's questions PDF through the links above, or paste it into the Clinic, where it stays on your device.</div>`;
+      }
+    }
+    html += '</article>';
+  }
+  html += '</section>';
+}
+main.innerHTML = html;
+document.getElementById('years').innerHTML = years.map(y => `<a href="#y${y}">${y}</a>`).join('');
+document.getElementById('meta').innerHTML = `<span>${prompts} prompts, ${years[years.length - 1]} to ${years[0]}</span><span>${withText} passages printed in full</span>${LIB.index ? `<a href="${esc(LIB.index)}" target="_blank" rel="noopener">all past questions at College Board ↗</a>` : ''}${LIB.rubricPdf ? `<a href="${esc(LIB.rubricPdf)}" target="_blank" rel="noopener">current rubrics ↗</a>` : ''}${LIB.ced ? `<a href="${esc(LIB.ced)}" target="_blank" rel="noopener">course and exam description ↗</a>` : ''}`;
+</script>
+</body>
+</html>
