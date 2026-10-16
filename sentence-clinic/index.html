@@ -182,8 +182,8 @@ a{color:inherit}
 }
 
 /* AP layer */
-.steps{display:grid;gap:18px;padding:22px 0}
-.step{display:grid;gap:10px}
+.steps{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;padding:22px 0}
+.step{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .step .step-h{display:flex;align-items:baseline;gap:10px}
 .step .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:var(--t-sm)}
 .step h2{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-xl)}
@@ -195,9 +195,9 @@ a{color:inherit}
 .qcard .q{font-family:var(--font-label);font-weight:700;letter-spacing:.1em;font-size:var(--t-xs);color:var(--accent)}
 .qcard .n{font-family:var(--font-text);font-size:1.2rem}
 .qcard .d{font-size:var(--t-sm);color:var(--ink-2)}
-.lib{display:grid;gap:10px}
+.lib{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .lib .pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.lib select{min-height:36px;padding:6px 10px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);max-width:100%}
+.lib select{flex:1 1 12rem;min-width:0;max-width:100%;min-height:36px;padding:6px 10px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);text-overflow:ellipsis}
 .prompt-card{display:grid;gap:8px;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
 .prompt-card .gist{font-family:var(--font-text);font-size:1.08rem;margin:0}
 .prompt-full{display:grid;gap:8px;font-family:var(--font-text);font-size:1.05rem;line-height:1.55}
