@@ -200,6 +200,12 @@ a{color:inherit}
 .lib select{min-height:36px;padding:6px 10px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);max-width:100%}
 .prompt-card{display:grid;gap:8px;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
 .prompt-card .gist{font-family:var(--font-text);font-size:1.08rem;margin:0}
+.prompt-full{display:grid;gap:8px;font-family:var(--font-text);font-size:1.05rem;line-height:1.55}
+.prompt-full p{margin:0}
+.prompt-full .pintro{font-style:italic;color:var(--ink-2)}
+.prompt-full .preq{margin-top:4px}
+.prompt-full ul{margin:0;padding-left:1.3em;display:grid;gap:3px}
+.prompt-full .note{font-family:var(--font-gloss)}
 .links{display:flex;flex-wrap:wrap;gap:6px}
 .links a{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;font-size:var(--t-xs);text-decoration:none;background:var(--paper)}
 .links a:hover{border-color:var(--ink-3)}
@@ -589,7 +595,9 @@ function renderLibrary() {
   if (!e) { pc.innerHTML = ''; pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; return; }
   const links = (e.entry.urls || []).map((u, i) => `<a href="${esc(u.url)}" target="_blank" rel="noopener">${esc(u.label)} ↗</a><button type="button" class="${viewerUrl === u.url ? 'on' : ''}" data-view="${i}" title="Open this PDF beside the essay">⧉ beside</button>`).join('');
   const yearNote = (LIB.years[e.year] || {}).note;
-  pc.innerHTML = `<div class="prompt-card"><span class="label">${e.year} · ${esc(A.QUESTIONS[question].short)} ${esc(A.QUESTIONS[question].name)}</span><p class="gist">${esc(e.entry.topic || '')}</p>${links ? `<div class="links">${links}</div>` : `<div class="links"><a href="${esc(LIB.index)}" target="_blank" rel="noopener">find this year at College Board ↗</a></div>`}${yearNote ? `<p class="note">${esc(yearNote)}</p>` : ''}${LIB.note && links ? `<p class="note">${esc(LIB.note)}</p>` : ''}</div>`;
+  const tpl = (LIB.templates || {})[question];
+  const promptHtml = tpl ? `<div class="prompt-full">${e.entry.intro ? `<p class="pintro">${esc(e.entry.intro)}</p>` : ''}<p class="ptask">${esc(tpl.lead)} <b>${esc(e.entry.task || e.entry.topic || '')}</b></p><p class="preq">In your response you should do the following:</p><ul>${tpl.bullets.map(x => `<li>${esc(x)}</li>`).join('')}</ul><p class="note">Task sentence restated from the official question; requirements as College Board words them. The exact prompt is in the Questions PDF.</p></div>` : `<p class="gist">${esc(e.entry.topic || '')}</p>`;
+  pc.innerHTML = `<div class="prompt-card"><span class="label">${e.year} · ${esc(A.QUESTIONS[question].short)} ${esc(A.QUESTIONS[question].name)}</span>${promptHtml}${links ? `<div class="links">${links}</div>` : `<div class="links"><a href="${esc(LIB.index)}" target="_blank" rel="noopener">find this year at College Board ↗</a></div>`}${yearNote ? `<p class="note">${esc(yearNote)}</p>` : ''}${LIB.note && links ? `<p class="note">${esc(LIB.note)}</p>` : ''}</div>`;
   pc.querySelectorAll('button[data-view]').forEach(b => b.addEventListener('click', () => { const u = (e.entry.urls || [])[Number(b.dataset.view)]; viewerUrl = viewerUrl === u.url ? null : u.url; renderLibrary(); }));
   const passages = question === 2 ? (LIB.passages || []).filter(p => String(p.year) === String(e.year)) : [];
   const viewing = viewerUrl && (e.entry.urls || []).find(u => u.url === viewerUrl);
