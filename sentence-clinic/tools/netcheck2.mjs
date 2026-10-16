@@ -11,6 +11,7 @@
         result survives a CI log that prefixes every line.
    Run from the repository root:  node sentence-clinic/tools/netcheck2.mjs */
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { htmlToParagraphs } = require('./html-text.js');
@@ -22,57 +23,48 @@ mkdirSync('pdfs', { recursive: true });
 async function get(url, attempt = 0) {
   try {
     const res = await fetch(url, { headers: UA, redirect: 'follow' });
-    if (res.status === 429 && attempt < 3) { await sleep([15000, 45000, 90000][attempt]); return get(url, attempt + 1); }
+    if (res.status === 429 && attempt < 2) { await sleep([12000, 30000][attempt]); return get(url, attempt + 1); }
     const buf = Buffer.from(await res.arrayBuffer());
     return { status: res.status, type: (res.headers.get('content-type') || '').split(';')[0], final: res.url, buf };
   } catch (e) { return { status: 0, type: '', final: url, buf: Buffer.alloc(0), error: e.message }; }
 }
 const isPdf = buf => buf.subarray(0, 5).toString('latin1') === '%PDF-';
+/* Print a PDF's text at once (base64, one line) so a run that is later killed still leaves it in the log. */
+function dumpPdfText(file) {
+  try {
+    const txt = execFileSync('pdftotext', ['-layout', file, '-'], { maxBuffer: 64 * 1024 * 1024 }).toString('utf8');
+    console.log(`=====TXT ${file} pages=? bytes=${Buffer.byteLength(txt)}`);
+    console.log(Buffer.from(txt).toString('base64'));
+    console.log('=====END-TXT');
+  } catch (e) { console.log(`(pdftotext unavailable or failed for ${file}: ${e.message.split('\n')[0]})`); }
+}
 
-/* ---- 1. College Board candidates */
-const CB = 'https://apcentral.collegeboard.org/media/pdf/';
+/* ---- 1. College Board candidates. The current index lists 2023 onward; older free-response booklets
+   live on apstudents.collegeboard.org and older sample packets on secure-media.collegeboard.org/ap/pdf. */
 const candidates = [];
+const AS = 'https://apstudents.collegeboard.org/ap/pdf/';
+const SM = 'https://secure-media.collegeboard.org/ap/pdf/';
+const DS = 'https://secure-media.collegeboard.org/digitalServices/pdf/ap/';
+const AC = 'https://apcentral.collegeboard.org/media/pdf/';
 for (let y = 14; y <= 22; y++) {
-  const yy = String(y);
-  for (const f of [
-    `ap${yy}-frq-english-language.pdf`,
-    `ap${yy}-sg-english-language.pdf`,
-    `ap${yy}-english-language-scoring-guidelines.pdf`,
-    `ap${yy}-apc-english-language-q1.pdf`, `ap${yy}-apc-english-language-q2.pdf`, `ap${yy}-apc-english-language-q3.pdf`,
-    `ap${yy}-english-language-q1.pdf`, `ap${yy}-english-language-q2.pdf`, `ap${yy}-english-language-q3.pdf`,
-    `ap${yy}-chief-reader-report-english-language.pdf`, `ap${yy}-cr-report-english-language.pdf`,
-    `ap${yy}-english-language-score-distributions.pdf`
-  ]) candidates.push({ year: 2000 + y, url: CB + f });
+  const yy = String(y), year = 2000 + y;
+  candidates.push({ year, url: AS + `ap${yy}-frq-english-language.pdf` });
+  candidates.push({ year, url: SM + `ap${yy}-frq-english-language.pdf` });
+  for (const n of [1, 2, 3]) {
+    candidates.push({ year, url: SM + `ap${yy}-english-language-q${n}.pdf` });
+    candidates.push({ year, url: SM + `ap-english-language-and-composition-${year}-frq${n}-samples-2020-rubrics.pdf` });
+    candidates.push({ year, url: SM + `ap-english-language-and-composition-${year}-frq${n}-scoring-commentaries-2020-rubrics.pdf` });
+    if (y <= 16) { candidates.push({ year, url: DS + `apcentral/ap${yy}_english_lang_q${n}.pdf` }); candidates.push({ year, url: DS + `apcentral/ap${yy}_english_language_q${n}.pdf` }); }
+  }
+  if (y <= 16) { candidates.push({ year, url: DS + `ap${yy}_english_language_scoring_guidelines.pdf` }); candidates.push({ year, url: DS + `ap${yy}_frq_english_language.pdf` }); }
+  candidates.push({ year, url: SM + `ap${yy}-english-language-scoring-guidelines.pdf` });
+  candidates.push({ year, url: SM + `ap${yy}-sg-english-language.pdf` });
+  if (y >= 21) for (const f of [`ap${yy}-apc-english-language-q1.pdf`, `ap${yy}-apc-english-language-q2.pdf`, `ap${yy}-apc-english-language-q3.pdf`, `ap${yy}-sg-english-language.pdf`, `ap${yy}-chief-reader-report-english-language.pdf`, `ap${yy}-cr-report-english-language.pdf`, `ap${yy}-frq-english-language.pdf`]) candidates.push({ year, url: AC + f });
 }
-for (const form of ['kennedy', 'obama', 'johnson']) {
-  for (const f of [
-    `ap20-english-language-and-composition-frq-${form}.pdf`,
-    `ap20-english-language-and-composition-question-${form}.pdf`,
-    `ap20-english-language-and-composition-student-samples-${form}.pdf`,
-    `ap20-english-language-and-composition-scoring-commentary-${form}.pdf`
-  ]) candidates.push({ year: 2020, url: CB + f });
-}
-for (const f of ['ap20-english-language-and-composition-scoring-guidelines-I1-kennedy.pdf', 'ap20-english-language-and-composition-scoring-guidelines-I2-obama.pdf', 'ap20-english-language-and-composition-scoring-guidelines-D2-johnson.pdf', 'ap-2020exam-sample-questions-english-language-and-composition.pdf']) candidates.push({ year: 2020, url: CB + f });
-/* older hosts, for the record */
-for (const u of [
-  'https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap14_frq_english_language.pdf',
-  'https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap15_frq_english_language.pdf',
-  'https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap16_frq_english_language.pdf',
-  'https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-english-language-and-composition-frq-2017.pdf',
-  'https://apcentral.collegeboard.org/pdf/ap18-frq-english-language.pdf',
-  'https://secure-media.collegeboard.org/apc/ap19-frq-english-language.pdf'
-]) candidates.push({ year: Number('20' + (u.match(/ap(\d\d)[_-]/) || [, '00'])[1]) || (u.includes('2017') ? 2017 : 0), url: u });
-
-const probe = [];
-for (const c of candidates) {
-  const r = await get(c.url);
-  const pdf = isPdf(r.buf);
-  const name = 'pdfs/' + c.url.split('/').pop().replace(/[^A-Za-z0-9._-]/g, '_');
-  if (pdf) writeFileSync(name, r.buf);
-  probe.push({ year: c.year, url: c.url, status: r.status, type: r.type, pdf, bytes: r.buf.length, final: r.final !== c.url ? r.final : undefined, file: pdf ? name : undefined });
-  console.log(`${pdf ? 'PDF ' : '    '} ${String(r.status).padEnd(3)} ${r.type.padEnd(16)} ${c.year} ${c.url}`);
-  await sleep(1500);
-}
+for (const form of ['kennedy', 'obama', 'johnson']) for (const host of [AS, SM]) for (const f of [`ap20-english-language-and-composition-student-samples-${form}.pdf`, `ap20-english-language-and-composition-scoring-commentary-${form}.pdf`, `ap20-english-language-and-composition-frq-${form}.pdf`]) candidates.push({ year: 2020, url: host + f });
+for (const u of [AS + 'ap-2020exam-sample-questions-english-language-and-composition.pdf', SM + 'ap-2020exam-sample-questions-english-language-and-composition.pdf', 'https://apcentral.collegeboard.org/media/pdf/ap-english-language-and-composition-frqs-1-2-3-scoring-rubrics.pdf']) candidates.push({ year: 2020, url: u });
+/* third-party copies of the question booklets, used only to read where each printed passage begins and ends */
+for (const u of ['https://teamtownsel.edublogs.org/files/2020/05/AP-Lang-FRQ-2-Prompts-2005-2019.pdf', 'https://www.jacksonsd.org/cms/lib/NJ01912744/Centricity/Domain/808/2014%20AAdams%20prompt.pdf']) candidates.push({ year: 0, url: u });
 
 /* ---- 3. public-domain passage sources */
 const SOURCES = [
@@ -92,7 +84,7 @@ for (const s of SOURCES) {
   const entry = { ...s, status: r.status, type: r.type, final: r.final };
   if (isPdf(r.buf)) {
     entry.file = 'pdfs/passage-' + s.year + '-' + s.author.split(' ').pop().toLowerCase() + '.pdf';
-    writeFileSync(entry.file, r.buf);
+    writeFileSync(entry.file, r.buf); dumpPdfText(entry.file);
   } else if (r.status === 200) {
     const paras = htmlToParagraphs(r.buf.toString('utf8')).filter(p => p.split(/\s+/).length >= 3);
     entry.paragraphs = paras;
@@ -101,6 +93,21 @@ for (const s of SOURCES) {
   passages.push(entry);
   console.log(`${String(r.status).padEnd(3)} ${r.type.padEnd(16)} ${s.year} ${s.author}: ${entry.file ? 'pdf saved ' + entry.file : (entry.words || 0) + ' words'} ${s.url}`);
   await sleep(1000);
+}
+
+console.log('=====PASSAGES2-B64=====');
+console.log(Buffer.from(JSON.stringify(passages)).toString('base64'));
+console.log('=====END-PASSAGES2-B64=====');
+
+const probe = [];
+for (const c of candidates) {
+  const r = await get(c.url);
+  const pdf = isPdf(r.buf);
+  const name = 'pdfs/' + c.url.split('/').pop().replace(/[^A-Za-z0-9._-]/g, '_');
+  if (pdf) { writeFileSync(name, r.buf); dumpPdfText(name); }
+  probe.push({ year: c.year, url: c.url, status: r.status, type: r.type, pdf, bytes: r.buf.length, final: r.final !== c.url ? r.final : undefined, file: pdf ? name : undefined });
+  console.log(`${pdf ? 'PDF ' : '    '} ${String(r.status).padEnd(3)} ${r.type.padEnd(16)} ${c.year} ${c.url}`);
+  await sleep(1500);
 }
 
 const out = { probe, passages };
