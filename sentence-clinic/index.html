@@ -215,6 +215,14 @@ a{color:inherit}
 .links button.on{border-color:var(--accent);color:var(--accent)}
 .calib{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:var(--t-sm);color:var(--ink-2)}
 .calib input{width:4.5em;min-height:34px;padding:4px 8px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);text-align:center}
+.file-btn{position:relative;overflow:hidden}
+.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-btn:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.pack{display:grid;gap:8px}
+.pack .chip{cursor:pointer}
+.pack .chip.on{border-color:var(--accent);color:var(--accent)}
+.commentary{padding:14px 16px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf);font-family:var(--font-text);font-size:1.02rem;line-height:1.6;white-space:pre-wrap;max-height:30rem;overflow:auto}
+.commentary h4{margin:0 0 8px;font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.08em;color:var(--ink-3)}
 /* score board */
 .board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 @media (max-width:820px){.board{grid-template-columns:1fr}}
@@ -293,6 +301,15 @@ a{color:inherit}
           <label for="official">Studying a College Board sample? Its official score</label>
           <input id="official" type="number" min="0" max="6" step="1" inputmode="numeric" placeholder="0–6">
           <span class="note">Open the sample responses beside the essay (⧉ beside), type the sample in, enter its score; the Clinic's estimate appears next to it, with the commentary still open.</span>
+        </div>
+        <div class="pack">
+          <div class="row">
+            <label class="btn small file-btn">Load a classroom pack (.json)<input id="pack-file" type="file" accept="application/json,.json"></label>
+            <button class="btn small quiet" id="pack-template">Download the pack template</button>
+            <button class="btn small quiet" id="pack-clear" hidden>Forget the pack</button>
+            <span class="note">For face-to-face teaching: samples with their official scores and commentary, kept on your drive and in this browser only, never on the site.</span>
+          </div>
+          <div class="chips" id="pack-chips"></div>
         </div>
         <p class="privacy">Nothing leaves your browser. The reading is a set of rules about English sentences, not a reader of meaning: it can be wrong, and when it is, the question it asks is still worth answering.</p>
       </div>
@@ -647,6 +664,51 @@ $('copy-report').addEventListener('click', async () => {
   setTimeout(() => { $('tool-note').textContent = ''; }, 4000);
 });
 $('src').addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') readNow(); });
+
+/* ---------------- classroom pack: private samples with official scores and commentary */
+let pack = null, packPick = null;
+try { pack = JSON.parse(recall('pack') || 'null'); } catch (e) { pack = null; }
+function renderPack() {
+  const chips = $('pack-chips');
+  $('pack-clear').hidden = !pack;
+  if (!pack || !Array.isArray(pack.samples)) { chips.innerHTML = ''; $('commentary-pane') && $('commentary-pane').remove(); return; }
+  chips.innerHTML = `<span class="note" style="align-self:center">${esc(pack.title || 'Classroom pack')}${pack.year ? ' · ' + esc(String(pack.year)) : ''}${pack.question ? ' · Q' + esc(String(pack.question)) : ''}:</span>` + pack.samples.map((x, i) => `<button type="button" class="chip ${packPick === i ? 'on' : ''}" data-i="${i}">${esc(x.label || 'Sample ' + (i + 1))}${x.score != null ? ` <small>score ${esc(String(x.score))}</small>` : ''}</button>`).join('');
+  chips.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => loadSample(Number(b.dataset.i))));
+}
+function loadSample(i) {
+  const x = pack.samples[i]; if (!x) return;
+  packPick = i;
+  if (pack.question && [1, 2, 3].includes(Number(pack.question))) { question = Number(pack.question); store('question', question); renderQuestions(); }
+  if (pack.year && LIB.years[pack.year]) { libYear = String(pack.year); store('year', libYear); }
+  renderLibrary();
+  $('src').value = x.text || ''; updateCount();
+  $('official').value = x.score != null ? String(x.score) : '';
+  const pane = $('passage-pane');
+  pane.style.display = ''; $('side').style.gridTemplateColumns = '';
+  let c = $('commentary-pane');
+  if (!c) { c = document.createElement('div'); c.id = 'commentary-pane'; c.className = 'commentary'; pane.prepend(c); }
+  c.innerHTML = `<h4>Official commentary · ${esc(x.label || 'Sample ' + (i + 1))}${x.score != null ? ` · score ${esc(String(x.score))}` : ''}${x.rows ? ` · rows ${esc(String(x.rows))}` : ''}</h4>${esc(x.commentary || 'No commentary in this pack for this sample.')}`;
+  renderPack();
+  if (x.text) readNow();
+}
+$('pack-file').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (!data || !Array.isArray(data.samples)) throw new Error('no samples array');
+    pack = { title: String(data.title || f.name), year: data.year, question: data.question, samples: data.samples.slice(0, 40).map(x => ({ label: String(x.label || ''), score: x.score, rows: x.rows, text: String(x.text || ''), commentary: String(x.commentary || '') })) };
+    store('pack', JSON.stringify(pack)); packPick = null; renderPack();
+    $('status').textContent = `Pack loaded: ${pack.samples.length} sample${pack.samples.length === 1 ? '' : 's'}. Click one.`; $('status').classList.add('on');
+  } catch (err) { $('status').textContent = 'That file is not a pack: it needs a "samples" array. Download the template to see the shape.'; $('status').classList.add('on'); }
+  e.target.value = '';
+});
+$('pack-template').addEventListener('click', () => {
+  const tpl = { title: 'Period C · 2021 Q2 · Obama, Rosa Parks statue', year: 2021, question: 2, samples: [{ label: 'Sample A', score: 6, rows: '1-4-1', text: 'Paste the sample response here.', commentary: 'Paste the official scoring commentary for this sample here.' }, { label: 'Sample B', score: 3, rows: '1-2-0', text: '', commentary: '' }] };
+  const blob = new Blob([JSON.stringify(tpl, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'classroom-pack-template.json'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+});
+$('pack-clear').addEventListener('click', () => { pack = null; packPick = null; store('pack', ''); renderPack(); const c = $('commentary-pane'); if (c) c.remove(); renderLibrary(); });
+renderPack();
 
 const saved = recall('essay');
 if (saved) { $('src').value = saved; updateCount(); }
