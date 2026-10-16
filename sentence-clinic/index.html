@@ -558,13 +558,14 @@ function renderLibrary() {
   const entries = libEntries();
   const sel = $('lib-year');
   sel.innerHTML = '<option value="">choose a year</option>' + entries.map(e => `<option value="${e.year}" ${libYear === e.year ? 'selected' : ''}>${e.year} · ${esc((e.entry.topic || '').slice(0, 70))}</option>`).join('');
-  $('lib-note').textContent = entries.length ? `${entries.length} official ${A.QUESTIONS[question].name} prompts` : 'No prompts in the library for this question yet.';
+  $('lib-note').innerHTML = (entries.length ? `${entries.length} years of official ${esc(A.QUESTIONS[question].name)} prompts · ` : 'No prompts in the library for this question yet. ') + (LIB.index ? `<a href="${esc(LIB.index)}" target="_blank" rel="noopener">all past questions at College Board ↗</a>` : '');
   const e = entries.find(x => x.year === libYear);
   const pc = $('prompt-card');
   const pane = $('passage-pane');
   if (!e) { pc.innerHTML = ''; pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; return; }
   const links = (e.entry.urls || []).map(u => `<a href="${esc(u.url)}" target="_blank" rel="noopener">${esc(u.label)} ↗</a>`).join('');
-  pc.innerHTML = `<div class="prompt-card"><span class="label">${e.year} · ${esc(A.QUESTIONS[question].short)} ${esc(A.QUESTIONS[question].name)}</span><p class="gist">${esc(e.entry.topic || '')}</p>${links ? `<div class="links">${links}</div>` : ''}${e.entry.note ? `<p class="note">${esc(e.entry.note)}</p>` : ''}</div>`;
+  const yearNote = (LIB.years[e.year] || {}).note;
+  pc.innerHTML = `<div class="prompt-card"><span class="label">${e.year} · ${esc(A.QUESTIONS[question].short)} ${esc(A.QUESTIONS[question].name)}</span><p class="gist">${esc(e.entry.topic || '')}</p>${links ? `<div class="links">${links}</div>` : `<div class="links"><a href="${esc(LIB.index)}" target="_blank" rel="noopener">find this year at College Board ↗</a></div>`}${yearNote ? `<p class="note">${esc(yearNote)}</p>` : ''}${LIB.note && links ? `<p class="note">${esc(LIB.note)}</p>` : ''}</div>`;
   const passage = (LIB.passages || []).find(p => String(p.year) === String(e.year) && question === 2 && p.pd === true && p.text);
   if (passage) {
     pane.style.display = '';
