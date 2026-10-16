@@ -180,6 +180,73 @@ a{color:inherit}
   .sent{border-bottom-width:2px}
   body{background:#fff;color:#000}
 }
+
+/* AP layer */
+.steps{display:grid;gap:18px;padding:22px 0}
+.step{display:grid;gap:10px}
+.step .step-h{display:flex;align-items:baseline;gap:10px}
+.step .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:var(--t-sm)}
+.step h2{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-xl)}
+.qcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.qcards{grid-template-columns:1fr}}
+.qcard{display:grid;gap:4px;padding:12px 14px;border:1px solid var(--rule-strong);border-radius:12px;background:var(--leaf);cursor:pointer;text-align:left}
+.qcard:hover{border-color:var(--ink-3)}
+.qcard.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.qcard .q{font-family:var(--font-label);font-weight:700;letter-spacing:.1em;font-size:var(--t-xs);color:var(--accent)}
+.qcard .n{font-family:var(--font-text);font-size:1.2rem}
+.qcard .d{font-size:var(--t-sm);color:var(--ink-2)}
+.lib{display:grid;gap:10px}
+.lib .pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lib select{min-height:36px;padding:6px 10px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);max-width:100%}
+.prompt-card{display:grid;gap:8px;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
+.prompt-card .gist{font-family:var(--font-text);font-size:1.08rem;margin:0}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.links a{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;font-size:var(--t-xs);text-decoration:none;background:var(--paper)}
+.links a:hover{border-color:var(--ink-3)}
+.side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.side{grid-template-columns:1fr}}
+.passage{max-height:30rem;overflow:auto;padding:14px 16px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--leaf);font-family:var(--font-text);font-size:1.02rem;line-height:1.6;white-space:pre-wrap}
+.passage h4{margin:0 0 8px;font-family:var(--font-label);font-size:var(--t-xs);letter-spacing:.08em;color:var(--ink-3)}
+.calib{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:var(--t-sm);color:var(--ink-2)}
+.calib input{width:4.5em;min-height:34px;padding:4px 8px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--leaf);text-align:center}
+/* score board */
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:820px){.board{grid-template-columns:1fr}}
+.dial{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:center;padding:14px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf)}
+.dial svg{width:92px;height:92px;grid-row:span 3}
+.dial .ring{fill:none;stroke:var(--rule);stroke-width:9}
+.dial .arc{fill:none;stroke:var(--c);stroke-width:9;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray .6s ease}
+.dial .val{font-family:var(--font-text);font-size:1.9rem;font-weight:500;line-height:1}
+.dial .val small{font-size:.5em;color:var(--ink-3);font-weight:400}
+.dial .ttl{font-family:var(--font-label);font-weight:700;letter-spacing:.08em;font-size:var(--t-xs);color:var(--ink-3)}
+.dial .lvl{font-size:var(--t-md);color:var(--c);font-weight:700}
+.dial .why{grid-column:1 / -1;margin:6px 0 0;font-size:var(--t-sm);color:var(--ink-2)}
+.rows{display:grid;gap:6px;grid-column:1 / -1;margin-top:6px}
+.rowb{display:grid;grid-template-columns:7.5em minmax(0,1fr) 2.6em;gap:8px;align-items:center;font-size:var(--t-sm)}
+.rowb .track{height:10px;border-radius:5px;background:var(--rule);overflow:hidden}
+.rowb .track span{display:block;height:100%;background:var(--c)}
+.rowb .pts{font-variant-numeric:tabular-nums;text-align:right}
+.rowb.possible .track span{background:repeating-linear-gradient(45deg,var(--c) 0 4px,transparent 4px 8px)}
+.good{display:grid;gap:8px;padding:16px 18px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf);border-left:4px solid var(--ok)}
+.good h3,.moves h3{margin:0;font-family:var(--font-text);font-weight:500;font-size:1.25rem}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--evidence-tint);color:var(--ink);font-size:var(--t-sm);font-weight:500}
+.badge i{width:18px;height:18px;border-radius:50%;background:var(--ok);display:inline-grid;place-items:center;color:#fff;font-size:11px;font-style:normal;font-weight:700}
+.moves{display:grid;gap:8px;padding:16px 18px;border:1px solid var(--rule);border-radius:12px;background:var(--leaf);border-left:4px solid var(--precision)}
+.moves ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+.moves li{font-size:var(--t-md)}
+.moves li b{font-family:var(--font-label);font-weight:700;letter-spacing:.06em;font-size:var(--t-xs);color:var(--ink-3);margin-right:6px;text-transform:uppercase}
+.just{display:grid;gap:4px;margin:0;padding:0;list-style:none;font-size:var(--t-sm);color:var(--ink-2)}
+.just li{display:grid;grid-template-columns:1.2em minmax(0,1fr);gap:6px}
+.just li.plus b{color:var(--ok)} .just li.minus b{color:var(--precision)}
+.shape{display:flex;align-items:center;gap:10px;font-size:var(--t-sm);color:var(--ink-2)}
+.shape .blocks{display:flex;gap:4px}
+.shape .blocks span{width:22px;height:14px;border-radius:3px;background:var(--rule)}
+.shape .blocks span.on{background:var(--structure)}
+.shape .blocks span.extra{background:var(--precision)}
+.shape .blocks span.missing{border:1px dashed var(--rule-strong);background:transparent}
+.cal-note{font-size:var(--t-sm);color:var(--ink-2);margin:0}
+.cal-note b{color:var(--structure)}
 </style>
 </head>
 <body>
@@ -187,25 +254,53 @@ a{color:inherit}
 <header class="mast">
   <a class="home" href="../">THE WRITING DOCTOR</a>
   <h1>The Sentence Clinic</h1>
-  <p class="tagline">Paste an analytical essay. Every sentence gets a job and a color. The thesis is read for its <b>What</b>, <b>How</b>, and <b>Why</b>; every topic sentence for its What and How; the conclusion for its return to the Why. Each sentence that falls short gets a question, a rewrite with the blanks left for you, and one recommendation.</p>
+  <p class="tagline">For AP English Language: Synthesis, Rhetorical Analysis, Argument. Choose the question, set the prompt beside the writing, read the essay. Every sentence gets a job and a color. Quotation integration and evidentiary support are each scored 1 to 6 with their reasons shown; the College Board rows are estimated; what is working comes first.</p>
 </header>
 
-<section class="composer" aria-labelledby="composer-h">
-  <h2 id="composer-h">The essay</h2>
-  <textarea id="src" spellcheck="false" placeholder="Paste the whole essay here. One paragraph per line is fine; blank lines between paragraphs are fine too."></textarea>
-  <div class="row">
-    <button class="btn primary" id="read">Read the essay</button>
-    <button class="btn" id="sample-strong">Load a strong sample</button>
-    <button class="btn" id="sample-weak">Load a weak sample</button>
-    <button class="btn quiet" id="clear">Clear</button>
-    <span class="count" id="count"></span>
+<section class="steps" aria-label="Setup">
+  <div class="step">
+    <div class="step-h"><span class="num">1</span><h2>Which essay?</h2></div>
+    <div class="qcards" id="qcards" role="radiogroup" aria-label="Question"></div>
   </div>
-  <p class="privacy">Nothing leaves your browser. The reading is a set of rules about English sentences, not a judge: it can be wrong, and when it is, the question it asks is still worth answering.</p>
+  <div class="step lib">
+    <div class="step-h"><span class="num">2</span><h2>Which prompt?</h2><span class="note">Optional. The official materials open at College Board.</span></div>
+    <div class="pick">
+      <select id="lib-year" aria-label="Year"></select>
+      <span class="note" id="lib-note"></span>
+    </div>
+    <div id="prompt-card"></div>
+  </div>
+  <div class="step">
+    <div class="step-h"><span class="num">3</span><h2>The writing</h2></div>
+    <div class="side" id="side">
+      <div id="passage-pane"></div>
+      <div style="display:grid;gap:10px">
+        <textarea id="src" spellcheck="false" placeholder="Paste the essay here. Introduction, two body paragraphs, conclusion. One paragraph per line is fine."></textarea>
+        <div class="row">
+          <button class="btn primary" id="read">Read the essay</button>
+          <button class="btn" id="sample-strong">Load a strong sample</button>
+          <button class="btn" id="sample-weak">Load a weak sample</button>
+          <button class="btn quiet" id="clear">Clear</button>
+          <span class="count" id="count"></span>
+        </div>
+        <div class="calib">
+          <label for="official">If this is a College Board sample, its official score</label>
+          <input id="official" type="number" min="0" max="6" step="1" inputmode="numeric" placeholder="0–6">
+          <span class="note">The Clinic's estimate is shown beside it.</span>
+        </div>
+        <p class="privacy">Nothing leaves your browser. The reading is a set of rules about English sentences, not a reader of meaning: it can be wrong, and when it is, the question it asks is still worth answering.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <div class="status" id="status" role="status"></div>
 
 <section class="reading" id="reading" aria-live="polite">
+  <div class="board" id="board"></div>
+  <div class="shape" id="shape"></div>
+  <div class="good" id="good"></div>
+  <div class="moves" id="moves"></div>
   <div class="summary" id="summary"></div>
   <div class="tools">
     <label class="label" for="th-pick">Thesis</label>
@@ -230,26 +325,33 @@ a{color:inherit}
 </section>
 
 <footer class="foot">
-  <span>The Sentence Clinic is one of The Writing Doctor's tools, beside <a href="../claims-reader/">The Claims Reader</a>.</span>
+  <span>The Sentence Clinic is one of The Writing Doctor's tools, beside <a href="../claims-reader/">The Claims Reader</a>. AP® is a trademark registered by the College Board, which is not affiliated with and does not endorse this tool. Prompts, sample responses, and scoring commentaries are College Board's; this page links to them.</span>
   <span class="noprint">Brent Robida, PhD &middot; <a href="../">thewritingdoctor</a></span>
 </footer>
 </div>
 
 <script src="clinic.js"></script>
+<script src="aplang.js"></script>
+<script src="library.js"></script>
 <script>
 (function () {
 'use strict';
 const C = window.SentenceClinic;
+const A = window.APLang;
+const LIB = window.APLibrary || { years: {}, passages: [], rubric: null };
 const $ = id => document.getElementById(id);
+let question = Number(recall('question')) || 2;
+let libYear = recall('year') || '';
+let scored = null;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const slots = s => esc(s).replace(/\[([^\]]+)\]/g, '<span class="slot">[$1]</span>');
-const SAMPLE_STRONG = `In the closing scene of The Great Gatsby, Nick Carraway stands on the lawn where Gatsby once reached toward a green light. Fitzgerald's final page insists that the American dream is a form of nostalgia rather than a form of hope, exposing this reversal through the novel's shifting tenses and its recurring image of the receding light. The novel does so in order to warn that a nation which looks forward only by looking back cannot see the people it tramples in the present.
+const SAMPLE_STRONG = `When Frederick Douglass addressed the Rochester Ladies' Anti-Slavery Society on July 5, 1852, he spoke to an audience that had come to celebrate. Douglass indicts the hypocrisy of a national holiday celebrated beside slavery by turning the audience's own pronouns against them, shifting from "your" to "we" only when he reaches the future. He does so in order to force his listeners to feel the gap between the nation they praise and the nation they permit, a gap that matters because a celebration which excludes the enslaved is not a celebration of freedom at all.
 
-Fitzgerald's tenses carry the reversal before any character names it, since the narration slides from the past of Gatsby's death into a future that is grammatically already gone. Nick describes a dream "already behind him, somewhere back in that vast obscurity beyond the city" (180). The word "already" does the work: the future Gatsby strains toward has been placed in the past before he can reach it. Hope that is already behind a man is memory wearing hope's clothes, and the sentence makes the reader feel the substitution in its grammar. Nostalgia, in this novel, is not a mood but a tense.
+Douglass's pronouns indict his audience before any argument does, through the relentless repetition of "your" across the speech's first movement. "This Fourth of July is yours, not mine," he tells them, insisting that "you may rejoice, I must mourn." The possessive "yours" hands the holiday back to the people who own it and refuses the fiction that the day belongs to everyone. The repetition is the argument: each "your" is a small eviction, and the audience, hearing itself addressed as the owners of the nation's freedom, is made to hear who has been left outside it.
 
-The green light exposes the same reversal through its steady retreat from the man who watches it. When Nick first sees Gatsby, the light is a destination; by the final page it is "the orgastic future that year by year recedes before us" (180). The pronoun "us" widens Gatsby's private longing into a national one, and the verb "recedes" denies the pursuit any end. A light that moves away as fast as one approaches is not a goal but a horizon, and Fitzgerald's syntax, which postpones the verb to the end of the clause, enacts the delay it describes. The dream's receding is the novel's final word on the American promise.
+The speech exposes the audience's complacency through its contrast between the Founders' revolutionary courage and the audience's inherited comfort. Douglass praises the men of 1776 as "brave" and "great," and the praise is a trap, since the listeners who applaud it must then ask what they have risked. The contrast positions the audience as heirs who have spent an inheritance they did not earn. By honoring the Founders more lavishly than the audience would, Douglass makes their descendants' silence on slavery read as betrayal rather than neutrality.
 
-What the novel finally asks is whether a nation can afford a dream that faces backward. Gatsby's longing trampled Myrtle, used Daisy, and erased his own father, and the final page implies that a country which worships a receding light will keep producing such wreckage. Nostalgia dressed as hope is dangerous precisely because it feels like virtue. If the American dream is memory rather than promise, then the people in the present are the cost, and Fitzgerald's reversed tenses are the warning we are still too hopeful to hear.`;
+Douglass's turn to "we" in the final pages insists that the nation can still be shared, and the shift is where the speech's stakes become visible. The gap between the praised nation and the permitted one is not a rhetorical flourish but the moral condition of his listeners, who have been made to feel it in their own pronouns. A celebration of freedom that leaves the enslaved outside the room is, the speech has shown, a celebration of ownership. Douglass's pronouns force the Rochester audience, and every audience since, to decide which of the two they are willing to be.`;
 const SAMPLE_WEAK = `Since the dawn of time, people have always wanted things they can't have. In today's society this is very relatable. The Great Gatsby by F. Scott Fitzgerald is about a man named Gatsby who wants Daisy. In this essay I will discuss how the book shows that the American dream is bad.
 
 Gatsby throws huge parties. He bought a big house across from Daisy and then he waited for her to show up. One day he finally meets her again through Nick. "He stretched out his arms toward the dark water in a curious way" (20). This shows that he really wants something. I think this proves that the American dream is unattainable because people can't attain it.
@@ -395,14 +497,96 @@ function readNow() {
   if (!text.trim()) { st.textContent = 'Paste an essay first.'; st.classList.add('on'); return; }
   st.classList.remove('on');
   store('essay', text);
-  const r = C.read(text, opts);
+  scored = A.score(text, Object.assign({ question }, opts));
+  const r = scored.read;
   if (!r.sentences.length) { st.textContent = 'No sentences found.'; st.classList.add('on'); return; }
+  renderBoard(scored);
   render(r);
 }
 
+/* ---------------- AP layer rendering: image over utterance */
+const SCORE_COLOR = n => n >= 5 ? 'var(--ok)' : n >= 3 ? 'var(--structure)' : 'var(--precision)';
+function dial(title, value, max, levelText, color, whyHtml, rowsHtml) {
+  const r = 38, c = 2 * Math.PI * r, frac = Math.max(0, Math.min(1, value / max));
+  return `<div class="dial" style="--c:${color}">
+    <svg viewBox="0 0 92 92" aria-hidden="true"><circle class="ring" cx="46" cy="46" r="${r}"></circle><circle class="arc" cx="46" cy="46" r="${r}" stroke-dasharray="${(frac * c).toFixed(1)} ${c.toFixed(1)}"></circle></svg>
+    <span class="ttl">${esc(title)}</span>
+    <span class="val">${value}<small> / ${max}</small></span>
+    <span class="lvl">${esc(levelText)}</span>
+    ${rowsHtml || ''}
+    ${whyHtml || ''}
+  </div>`;
+}
+function justList(good, just) {
+  return `<ul class="just">${good.map(g => `<li class="plus"><b>+</b><span>${esc(g)}</span></li>`).join('')}${just.map(j => `<li class="minus"><b>→</b><span>${esc(j)}</span></li>`).join('')}</ul>`;
+}
+function renderBoard(sc) {
+  const rub = sc.rubric;
+  const official = $('official').value === '' ? null : Number($('official').value);
+  const est = rub.rowC.possible ? `${rub.total}–${rub.total + 1}` : String(rub.total);
+  const rows = `<div class="rows">
+    <div class="rowb" style="--c:var(--structure)"><span>Thesis</span><div class="track"><span style="width:${rub.rowA.points * 100}%"></span></div><span class="pts">${rub.rowA.points}/1</span></div>
+    <div class="rowb" style="--c:var(--structure)"><span>Evidence &amp; commentary</span><div class="track"><span style="width:${rub.rowB.points * 25}%"></span></div><span class="pts">${rub.rowB.points}/4</span></div>
+    <div class="rowb ${rub.rowC.possible ? 'possible' : ''}" style="--c:var(--structure)"><span>Sophistication</span><div class="track"><span style="width:${rub.rowC.possible ? 100 : 0}%"></span></div><span class="pts">${rub.rowC.possible ? '?' : '0'}/1</span></div>
+  </div>`;
+  const calib = official == null ? '' : `<p class="cal-note">Official score <b>${official}</b> · Clinic estimate <b>${est}</b>${Math.abs(official - rub.total) <= (rub.rowC.possible ? 1 : 0) ? ' · in agreement' : (official > rub.total ? ' · the readers saw more than the rules can: look for what the shape misses' : ' · the readers saw less: the shape is there but the meaning did not carry')}</p>`;
+  $('board').innerHTML =
+    dial('Quotation integration', sc.integration.score, 6, sc.integration.level, SCORE_COLOR(sc.integration.score), `<div class="why">${justList(sc.integration.good, sc.integration.just)}</div>`) +
+    dial('Evidentiary support', sc.support.score, 6, sc.support.level, SCORE_COLOR(sc.support.score), `<div class="why">${justList(sc.support.good, sc.support.just)}</div>`) +
+    dial(`AP estimate · ${sc.question.short} ${sc.question.name}`, rub.total, 6, rub.rowC.possible ? `${rub.total}, possibly ${rub.total + 1}` : A.LEVELS[Math.max(1, rub.total)], SCORE_COLOR(rub.total), `<div class="why">${justList([], [rub.rowA.why[0], rub.rowB.why[0], rub.rowC.why[0]].filter(Boolean))}${calib}</div>`, rows);
+  const sh = sc.shape;
+  const blocks = ['intro', 'body', 'body', 'conclusion'];
+  const have = [sh.intro, sh.body >= 1, sh.body >= 2, sh.conclusion];
+  const extra = Math.max(0, sh.body - 2);
+  $('shape').innerHTML = `<span class="label">Shape</span><div class="blocks">${blocks.map((b, i) => `<span class="${have[i] ? 'on' : 'missing'}" title="${b}"></span>`).join('')}${Array.from({ length: extra }, () => '<span class="extra" title="extra body paragraph"></span>').join('')}</div><span>${esc(sh.note)}</span>`;
+  $('good').innerHTML = `<h3>What is working</h3>${sc.strengths.length ? `<div class="badges">${sc.strengths.map(x => `<span class="badge"><i>✓</i>${esc(x.text)}</span>`).join('')}</div>` : '<p class="note">Not yet: the moves below are where the good begins.</p>'}`;
+  $('moves').innerHTML = `<h3>Next moves</h3><ol>${sc.moves.map(m => `<li><b>${esc(m.area)}</b>${esc(m.text)}</li>`).join('')}</ol>`;
+}
+
+/* ---------------- question cards and library */
+function renderQuestions() {
+  const Q = A.QUESTIONS;
+  const desc = { 1: 'Six sources, one position. Cite at least three.', 2: 'One passage. Name the choices, say what they do, for whom.', 3: 'One claim, your evidence. Qualify it.' };
+  $('qcards').innerHTML = [1, 2, 3].map(k => `<button class="qcard ${question === k ? 'on' : ''}" role="radio" aria-checked="${question === k}" data-q="${k}"><span class="q">${Q[k].short}</span><span class="n">${esc(Q[k].name)}</span><span class="d">${esc(desc[k])}</span></button>`).join('');
+  $('qcards').querySelectorAll('.qcard').forEach(b => b.addEventListener('click', () => { question = Number(b.dataset.q); store('question', question); renderQuestions(); renderLibrary(); if (scored) readNow(); }));
+}
+function libEntries() {
+  const years = Object.keys(LIB.years || {}).sort((a, b) => b - a);
+  return years.map(y => ({ year: y, entry: (LIB.years[y] || {})['q' + question] })).filter(x => x.entry);
+}
+function renderLibrary() {
+  const entries = libEntries();
+  const sel = $('lib-year');
+  sel.innerHTML = '<option value="">choose a year</option>' + entries.map(e => `<option value="${e.year}" ${libYear === e.year ? 'selected' : ''}>${e.year} · ${esc((e.entry.topic || '').slice(0, 70))}</option>`).join('');
+  $('lib-note').textContent = entries.length ? `${entries.length} official ${A.QUESTIONS[question].name} prompts` : 'No prompts in the library for this question yet.';
+  const e = entries.find(x => x.year === libYear);
+  const pc = $('prompt-card');
+  const pane = $('passage-pane');
+  if (!e) { pc.innerHTML = ''; pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; return; }
+  const links = (e.entry.urls || []).map(u => `<a href="${esc(u.url)}" target="_blank" rel="noopener">${esc(u.label)} ↗</a>`).join('');
+  pc.innerHTML = `<div class="prompt-card"><span class="label">${e.year} · ${esc(A.QUESTIONS[question].short)} ${esc(A.QUESTIONS[question].name)}</span><p class="gist">${esc(e.entry.topic || '')}</p>${links ? `<div class="links">${links}</div>` : ''}${e.entry.note ? `<p class="note">${esc(e.entry.note)}</p>` : ''}</div>`;
+  const passage = (LIB.passages || []).find(p => String(p.year) === String(e.year) && question === 2 && p.pd === true && p.text);
+  if (passage) {
+    pane.style.display = '';
+    $('side').style.gridTemplateColumns = '';
+    pane.innerHTML = `<div class="passage"><h4>The passage · ${esc(passage.author)}${passage.title ? ', ' + esc(passage.title) : ''}${passage.date ? ' (' + esc(passage.date) + ')' : ''} · public domain${passage.text_source ? ` · <a href="${esc(passage.text_source)}" target="_blank" rel="noopener">source</a>` : ''}</h4>${esc(passage.text)}</div>`;
+  } else { pane.innerHTML = ''; pane.style.display = 'none'; $('side').style.gridTemplateColumns = '1fr'; }
+}
+$('lib-year').addEventListener('change', e => { libYear = e.target.value; store('year', libYear); renderLibrary(); });
+$('official').addEventListener('input', () => { if (scored) renderBoard(scored); });
+renderQuestions();
+renderLibrary();
+
 function report(r) {
   const lines = [];
-  lines.push(`THE SENTENCE CLINIC · spine ${r.passed}/10 · ${r.totals.sentences} sentences · ${r.totals.flags} flags (${r.totals.rigor} rigor, ${r.totals.precision} precision)`);
+  lines.push(`THE SENTENCE CLINIC · ${scored ? scored.question.short + ' ' + scored.question.name + ' · ' : ''}spine ${r.passed}/10 · ${r.totals.sentences} sentences · ${r.totals.flags} flags (${r.totals.rigor} rigor, ${r.totals.precision} precision)`);
+  if (scored) {
+    lines.push(`Quotation integration ${scored.integration.score}/6 (${scored.integration.level}) · Evidentiary support ${scored.support.score}/6 (${scored.support.level}) · AP estimate ${scored.rubric.total}/6 (thesis ${scored.rubric.rowA.points}, evidence and commentary ${scored.rubric.rowB.points}, sophistication ${scored.rubric.rowC.possible ? 'possible' : '0'})`);
+    lines.push('What is working: ' + scored.strengths.map(x => x.text).join('; '));
+    lines.push('Next moves:'); scored.moves.forEach((m, i) => lines.push(`  ${i + 1}. [${m.area}] ${m.text}`));
+    lines.push('Quotation integration, reasons:'); scored.integration.good.forEach(g => lines.push('  + ' + g)); scored.integration.just.forEach(j => lines.push('  - ' + j));
+    lines.push('Evidentiary support, reasons:'); scored.support.good.forEach(g => lines.push('  + ' + g)); scored.support.just.forEach(j => lines.push('  - ' + j));
+  }
   lines.push('');
   r.checklist.forEach(c => lines.push(`${c.ok ? '[x]' : (c.partial ? '[~]' : '[ ]')} ${c.label}`));
   lines.push('');
@@ -424,8 +608,8 @@ function report(r) {
 
 $('read').addEventListener('click', readNow);
 $('src').addEventListener('input', updateCount);
-$('sample-strong').addEventListener('click', () => { $('src').value = SAMPLE_STRONG; opts = {}; updateCount(); readNow(); });
-$('sample-weak').addEventListener('click', () => { $('src').value = SAMPLE_WEAK; opts = {}; updateCount(); readNow(); });
+$('sample-strong').addEventListener('click', () => { $('src').value = SAMPLE_STRONG; opts = {}; question = 2; store('question', 2); renderQuestions(); renderLibrary(); updateCount(); readNow(); });
+$('sample-weak').addEventListener('click', () => { $('src').value = SAMPLE_WEAK; opts = {}; question = 2; store('question', 2); renderQuestions(); renderLibrary(); updateCount(); readNow(); });
 $('clear').addEventListener('click', () => { $('src').value = ''; opts = {}; updateCount(); $('reading').classList.remove('on'); store('essay', ''); $('src').focus(); });
 $('th-pick').addEventListener('change', e => { const v = e.target.value; opts.thesisIndex = v === '' ? undefined : Number(v); readNow(); });
 $('th-len').addEventListener('change', e => { const v = e.target.value; opts.thesisLength = v === '' ? undefined : Number(v); readNow(); });
@@ -446,6 +630,7 @@ $('src').addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.ke
 
 const saved = recall('essay');
 if (saved) { $('src').value = saved; updateCount(); }
+$('passage-pane').style.display = 'none';
 })();
 </script>
 </body>
